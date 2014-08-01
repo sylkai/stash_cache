@@ -22,7 +22,8 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/pattern_name_hint"/>
+            android:hint="@string/pattern_name_hint"
+            android:id="@+id/pattern_name" />
 
         <TextView
             android:layout_width="match_parent"
@@ -33,7 +34,8 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/designer_hint" />
+            android:hint="@string/designer_hint"
+            android:id="@+id/designer_name" />
 
         <TextView
             android:layout_width="match_parent"

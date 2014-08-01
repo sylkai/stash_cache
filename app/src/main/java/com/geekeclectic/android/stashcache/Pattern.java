@@ -61,4 +61,8 @@ public class Pattern {
         return mHeight;
     }
 
+    public UUID getId() {
+        return mId;
+    }
+
 }
