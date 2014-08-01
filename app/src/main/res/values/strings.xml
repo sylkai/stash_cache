@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Stash Cache</string>
+    <string name="action_settings">Action Settings</string>
+    <string name="pattern_title_label">Pattern Name</string>
+    <string name="pattern_name_hint">What\'s the pattern called?</string>
+    <string name="designer_label">Designer</string>
+    <string name="designer_hint">Who designed it?</string>
+    <string name="stitched_area">Stitched Area</string>
+    <string name="pattern_width_label">Width</string>
+    <string name="pattern_height_label">Height</string>
+
+</resources>
