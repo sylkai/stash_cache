@@ -11,9 +11,9 @@ import android.widget.EditText;
 
 import java.util.UUID;
 
-public class PatternFragment extends Fragment {
+public class StashPatternFragment extends Fragment {
 
-    private Pattern mPattern;
+    private StashPattern mPattern;
     private UUID mPatternId;
     private EditText mTitleField;
     private EditText mDesignerField;
@@ -21,14 +21,14 @@ public class PatternFragment extends Fragment {
     private EditText mHeightField;
 
 
-    public PatternFragment() {
+    public StashPatternFragment() {
         // required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPattern = new Pattern();
+        mPattern = new StashPattern();
         mPatternId = mPattern.getId();
     }
 
