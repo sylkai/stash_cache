@@ -8,17 +8,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class StashPatternFragment extends Fragment {
 
     private StashPattern mPattern;
+    private StashFabric mFabric;
+    private ArrayList<StashThread> mThreadList;
     private UUID mPatternId;
     private EditText mTitleField;
-    private EditText mDesignerField;
+    private EditText mSourceField;
     private EditText mWidthField;
     private EditText mHeightField;
+    private TextView mFabricInfo;
+    private TextView mThreadInfo;
 
 
     public StashPatternFragment() {
@@ -42,8 +48,8 @@ public class StashPatternFragment extends Fragment {
         mTitleField = (EditText)v.findViewById(R.id.pattern_name);
         mTitleField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mPattern.setTitle(c.toString());
-                getActivity().setTitle(mPattern.getTitle());
+                mPattern.setPatternName(c.toString());
+                getActivity().setTitle(mPattern.getPatternName());
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -55,10 +61,10 @@ public class StashPatternFragment extends Fragment {
             }
         });
 
-        mDesignerField = (EditText)v.findViewById(R.id.designer_name);
-        mDesignerField.addTextChangedListener(new TextWatcher() {
+        mSourceField = (EditText)v.findViewById(R.id.designer_name);
+        mSourceField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mPattern.setDesigner(c.toString());
+                mPattern.setPatternSource(c.toString());
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -99,6 +105,24 @@ public class StashPatternFragment extends Fragment {
                 // intentionally left blank
             }
         });
+
+        mWidthField = (EditText)v.findViewById(R.id.pattern_width);
+        mWidthField.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence c, int start, int before, int count) {
+                mPattern.setWidth(Integer.parseInt(c.toString()));
+            }
+
+            public void beforeTextChanged(CharSequence c, int start, int count, int after) {
+                // intentionally left blank
+            }
+
+            public void afterTextChanged(Editable c) {
+                // intentionally left blank
+            }
+        });
+
+        mFabricInfo = (TextView)v.findViewById(R.id.pattern_fabric_display);
+        mThreadInfo = (TextView)v.findViewById(R.id.pattern_thread_display);
 
         return v;
     }

@@ -3,12 +3,16 @@
 
     <string name="app_name">Stash Cache</string>
     <string name="action_settings">Action Settings</string>
-    <string name="pattern_title_label">Pattern Name</string>
-    <string name="pattern_name_hint">What\'s the pattern called?</string>
-    <string name="designer_label">Designer</string>
-    <string name="designer_hint">Who designed it?</string>
+    <string name="pattern_info">Pattern Info</string>
+    <string name="pattern_name_hint">Pattern Name</string>
+    <string name="designer_hint">Source</string>
     <string name="stitched_area">Stitched Area</string>
     <string name="pattern_width_label">Width</string>
     <string name="pattern_height_label">Height</string>
+    <string name="pattern_thread_info">Threads</string>
+    <string name="pattern_thread_details"> </string>
+    <string name="pattern_fabric_title">Fabric</string>
+    <string name="pattern_fabric_detail">No fabric selected.</string>
+    <string name="pattern_list_title">Patterns</string>
 
 </resources>

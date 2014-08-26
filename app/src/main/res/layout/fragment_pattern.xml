@@ -3,20 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginRight="16dp"
+    android:layout_marginLeft="16dp"
     tools:context="com.geekeclectic.android.stashcache.StashPatternFragment"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pattern_title_label"
+            android:text="@string/pattern_info"
             style="?android:listSeparatorTextViewStyle" />
 
         <EditText
@@ -25,25 +25,19 @@
             android:hint="@string/pattern_name_hint"
             android:id="@+id/pattern_name" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/designer_label"
-            style="?android:listSeparatorTextViewStyle" />
-
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/designer_hint"
             android:id="@+id/designer_name" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/stitched_area"
-            style="?android:listSeparatorTextViewStyle" />
-
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/stitched_area"
+        style="?android:listSeparatorTextViewStyle" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -82,5 +76,30 @@
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/pattern_fabric_title"
+        android:layout_marginBottom="4dp"
+        style="?android:listSeparatorTextViewStyle" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pattern_fabric_display"
+        android:text="@string/pattern_fabric_detail" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/pattern_thread_info"
+        android:layout_marginBottom="4dp"
+        style="?android:listSeparatorTextViewStyle" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pattern_thread_display"
+        android:text="@string/pattern_thread_details" />
 
 </LinearLayout>

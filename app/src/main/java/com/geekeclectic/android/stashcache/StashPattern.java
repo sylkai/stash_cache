@@ -149,4 +149,13 @@ public class StashPattern {
         return mThreads;
     }
 
+    public UUID getId() {
+        return mPatternId;
+    }
+
+    @Override
+    public String toString() {
+        return mPatternName;
+    }
+
 }
