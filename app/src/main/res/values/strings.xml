@@ -3,6 +3,7 @@
 
     <string name="app_name">Stash Cache</string>
     <string name="action_settings">Action Settings</string>
+
     <string name="pattern_info">Pattern Info</string>
     <string name="pattern_name_hint">Pattern Name</string>
     <string name="designer_hint">Source</string>
@@ -13,6 +14,26 @@
     <string name="pattern_thread_details"> </string>
     <string name="pattern_fabric_title">Fabric</string>
     <string name="pattern_fabric_detail">No fabric selected.</string>
+
     <string name="pattern_list_title">Patterns</string>
+
+    <string name="thread_info">Thread Info</string>
+    <string name="thread_source_hint">Manufacturer</string>
+    <string name="thread_type_hint">Floss Type</string>
+    <string name="thread_id_hint">ID Code</string>
+    <string name="thread_pattern_info">Used In</string>
+    <string name="thread_pattern_detail">Not used in any patterns.</string>
+
+    <string name="fabric_info">Fabric Info</string>
+    <string name="fabric_source_hint">Company</string>
+    <string name="fabric_type_hint">Fabric Type</string>
+    <string name="fabric_color_hint">Color</string>
+    <string name="fabric_count_label">Count</string>
+    <string name="fabric_size">Fabric Size</string>
+    <string name="fabric_width_label">Width</string>
+    <string name="fabric_height_label">Height</string>
+    <string name="fabric_pattern_info">Used For</string>
+    <string name="fabric_pattern_detail">Not associated with any patterns.</string>
+
 
 </resources>
