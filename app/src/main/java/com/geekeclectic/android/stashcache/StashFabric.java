@@ -148,6 +148,18 @@ public class StashFabric {
         return mFabricId.toString();
     }
 
+    public String getInfo() {
+        return mFabricType + " - " + mFabricCount + " count, " + mFabricColor;
+    }
+
+    public String getSize() {
+        return mFabricWidth + " inches x " + mFabricHeight + " inches";
+    }
+
+    public boolean isAssigned() {
+        return (mFabricFor != null);
+    }
+
     private void updateStitchableArea() {
         mStitchWidth = (mFabricWidth - EDGE_BUFFER * 2) * mFabricCount;
         mStitchHeight = (mFabricHeight - EDGE_BUFFER * 2) * mFabricCount;

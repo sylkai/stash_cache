@@ -102,4 +102,13 @@ public class StashThread {
         return (mSkeinsOwned != 0);
     }
 
+    @Override
+    public String toString() {
+        if (mType != null) {
+            return getKey();
+        } else {
+            return mSource + " " + mId;
+        }
+    }
+
 }
