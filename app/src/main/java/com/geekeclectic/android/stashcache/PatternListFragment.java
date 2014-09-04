@@ -32,6 +32,12 @@ public class PatternListFragment extends ListFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashPattern from the adapter
         StashPattern pattern = ((PatternAdapter)getListAdapter()).getItem(position);

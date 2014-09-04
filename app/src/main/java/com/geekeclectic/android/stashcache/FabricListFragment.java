@@ -34,6 +34,12 @@ public class FabricListFragment extends ListFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashFabric from the adapter
         StashFabric fabric = ((FabricAdapter)getListAdapter()).getItem(position);

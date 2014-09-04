@@ -33,6 +33,12 @@ public class ThreadListFragment extends ListFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashThread from adapter
         StashThread thread = ((ThreadAdapter)getListAdapter()).getItem(position);
