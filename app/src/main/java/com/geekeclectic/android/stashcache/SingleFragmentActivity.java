@@ -1,14 +1,14 @@
 package com.geekeclectic.android.stashcache;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 
 /**
  * Created by sylk on 7/31/2014.
  */
-public abstract class SingleFragmentActivity extends Activity {
+public abstract class SingleFragmentActivity extends FragmentActivity {
 
     protected abstract Fragment createFragment();
 
@@ -21,7 +21,7 @@ public abstract class SingleFragmentActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
 
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
         if (fragment == null) {

@@ -31,7 +31,7 @@ public class StashCacheJSONSerializer {
     }
 
     public StashData loadStash() throws IOException, JSONException {
-        StashData stash = new StashData();
+        StashData stash = StashData.get(mContext);
         BufferedReader reader = null;
 
         try {
