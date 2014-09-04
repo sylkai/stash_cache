@@ -16,15 +16,15 @@ public class StashFabric {
 
     private UUID mFabricId;
     private int mFabricCount;
-    private int mFabricWidth;
-    private int mFabricHeight;
+    private double mFabricWidth;
+    private double mFabricHeight;
     private String mFabricColor;
     private String mFabricType;
     private String mFabricSource;
     private StashPattern mFabricFor;
 
-    private int mStitchWidth;
-    private int mStitchHeight;
+    private double mStitchWidth;
+    private double mStitchHeight;
 
     private static final String JSON_COUNT = "fabric count";
     private static final String JSON_WIDTH = "fabric width";
@@ -122,21 +122,21 @@ public class StashFabric {
         return mFabricCount;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(double width) {
         mFabricWidth = width;
         updateStitchableArea();
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return mFabricWidth;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(double height) {
         mFabricHeight = height;
         updateStitchableArea();
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return mFabricHeight;
     }
 

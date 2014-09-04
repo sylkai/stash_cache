@@ -4,31 +4,35 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by sylk on 8/22/2014.
  */
 public class StashThread {
 
+    private UUID mId;
     private String mSource;
-    private String mId;
+    private String mCode;
     private String mType;
     private int mSkeinsOwned;
     private ArrayList<StashPattern> mUsedIn;
 
     private static final String JSON_SOURCE = "source";
     private static final String JSON_TYPE = "floss type";
-    private static final String JSON_ID = "id code";
+    private static final String JSON_CODE = "id code";
     private static final String JSON_OWNED = "number owned";
+    private static final String JSON_ID = "program id";
 
     public StashThread() {
         mSkeinsOwned = 0;
         mUsedIn = new ArrayList<StashPattern>();
+        mId = UUID.randomUUID();
     }
 
     public StashThread(JSONObject json) throws JSONException {
         mSource = json.getString(JSON_SOURCE);
-        mId = json.getString(JSON_ID);
+        mCode = json.getString(JSON_CODE);
         mSkeinsOwned = json.getInt(JSON_OWNED);
 
         if (json.has(JSON_TYPE)) {
@@ -40,7 +44,7 @@ public class StashThread {
         JSONObject json = new JSONObject();
 
         json.put(JSON_SOURCE, mSource);
-        json.put(JSON_ID, mId);
+        json.put(JSON_CODE, mCode);
         json.put(JSON_OWNED, mSkeinsOwned);
 
         if (mType != null) {
@@ -70,11 +74,15 @@ public class StashThread {
         return mSource;
     }
 
-    public void setId(String idCode) {
-        mId = idCode;
+    public void setCode(String idCode) {
+        mCode = idCode;
     }
 
-    public String getId() {
+    public String getCode() {
+        return mCode;
+    }
+
+    public UUID getId() {
         return mId;
     }
 
@@ -87,7 +95,7 @@ public class StashThread {
     }
 
     public String getKey() {
-        return mSource + " " + mType + " " + mId;
+        return mId.toString();
     }
 
     public void setSkeinsOwned(int number) {
@@ -107,7 +115,7 @@ public class StashThread {
         if (mType != null) {
             return getKey();
         } else {
-            return mSource + " " + mId;
+            return mSource + " " + mCode;
         }
     }
 

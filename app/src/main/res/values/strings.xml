@@ -21,6 +21,8 @@
     <string name="thread_source_hint">Manufacturer</string>
     <string name="thread_type_hint">Floss Type</string>
     <string name="thread_id_hint">ID Code</string>
+    <string name="skeins_info">In Stash</string>
+    <string name="skeins_owned_label">Skeins Owned</string>
     <string name="thread_pattern_info">Used In</string>
     <string name="thread_pattern_detail">Not used in any patterns.</string>
 

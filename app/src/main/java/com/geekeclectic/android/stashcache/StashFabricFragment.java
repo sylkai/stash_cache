@@ -10,10 +10,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.UUID;
+
 /**
  * Created by sylk on 8/27/2014.
  */
 public class StashFabricFragment extends Fragment {
+
+    public static final String EXTRA_FABRIC_ID = "com.geekeclectic.android.stashcache.fabric_id";
 
     private StashFabric mFabric;
     private StashPattern mPattern;
@@ -33,7 +37,19 @@ public class StashFabricFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mFabric = new StashFabric();
+        UUID fabricId = (UUID)getArguments().getSerializable(EXTRA_FABRIC_ID);
+
+        mFabric = StashData.get(getActivity()).getFabric(fabricId);
+    }
+
+    public static StashFabricFragment newInstance(UUID patternId) {
+        Bundle args = new Bundle();
+        args.putSerializable(EXTRA_FABRIC_ID, patternId);
+
+        StashFabricFragment fragment = new StashFabricFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
@@ -42,6 +58,7 @@ public class StashFabricFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_fabric, container, false);
 
         mFabricSource = (EditText)v.findViewById(R.id.fabric_source);
+        mFabricSource.setText(mFabric.getSource());
         mFabricSource.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mFabric.setSource(c.toString());
@@ -57,6 +74,7 @@ public class StashFabricFragment extends Fragment {
         });
 
         mFabricType = (EditText)v.findViewById(R.id.fabric_type);
+        mFabricType.setText(mFabric.getType());
         mFabricType.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mFabric.setType(c.toString());
@@ -72,6 +90,7 @@ public class StashFabricFragment extends Fragment {
         });
 
         mFabricColor = (EditText)v.findViewById(R.id.fabric_color);
+        mFabricColor.setText(mFabric.getColor());
         mFabricColor.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mFabric.setColor(c.toString());
@@ -87,6 +106,7 @@ public class StashFabricFragment extends Fragment {
         });
 
         mFabricCount = (EditText)v.findViewById(R.id.fabric_count);
+        mFabricCount.setText(Integer.toString(mFabric.getCount()));
         mFabricCount.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mFabric.setCount(Integer.parseInt(c.toString()));
@@ -102,9 +122,10 @@ public class StashFabricFragment extends Fragment {
         });
 
         mFabricWidth = (EditText)v.findViewById(R.id.fabric_width);
+        mFabricWidth.setText(Double.toString(mFabric.getWidth()));
         mFabricWidth.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mFabric.setWidth(Integer.parseInt(c.toString()));
+                mFabric.setWidth(Double.parseDouble(c.toString()));
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -117,9 +138,10 @@ public class StashFabricFragment extends Fragment {
         });
 
         mFabricHeight = (EditText)v.findViewById(R.id.fabric_height);
+        mFabricHeight.setText(Double.toString(mFabric.getHeight()));
         mFabricHeight.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mFabric.setHeight(Integer.parseInt(c.toString()));
+                mFabric.setHeight(Double.parseDouble(c.toString()));
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

@@ -11,17 +11,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by sylk on 8/27/2014.
  */
 public class StashThreadFragment extends Fragment {
 
+    public static final String EXTRA_THREAD_ID = "com.geekeclectic.android.stashcache.thread_id";
+
     private StashThread mThread;
     private ArrayList<StashPattern> mPatterns;
     private EditText mThreadSource;
     private EditText mThreadType;
     private EditText mThreadId;
+    private EditText mSkeinsOwned;
     private TextView mPatternInfo;
 
     public StashThreadFragment() {
@@ -32,7 +36,19 @@ public class StashThreadFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mThread = new StashThread();
+        UUID threadId = (UUID)getArguments().getSerializable(EXTRA_THREAD_ID);
+
+        mThread = StashData.get(getActivity()).getThread(threadId.toString());
+    }
+
+    public static StashThreadFragment newInstance(UUID threadId) {
+        Bundle args = new Bundle();
+        args.putSerializable(EXTRA_THREAD_ID, threadId);
+
+        StashThreadFragment fragment = new StashThreadFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
@@ -42,6 +58,7 @@ public class StashThreadFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_thread, container, false);
 
         mThreadSource = (EditText)v.findViewById(R.id.thread_source);
+        mThreadSource.setText(mThread.getCompany());
         mThreadSource.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mThread.setCompany(c.toString());
@@ -57,6 +74,7 @@ public class StashThreadFragment extends Fragment {
         });
 
         mThreadType = (EditText)v.findViewById(R.id.thread_type);
+        mThreadType.setText(mThread.getType());
         mThreadType.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mThread.setType(c.toString());
@@ -72,9 +90,26 @@ public class StashThreadFragment extends Fragment {
         });
 
         mThreadId = (EditText)v.findViewById(R.id.thread_id);
+        mThreadId.setText(mThread.getCode());
         mThreadId.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mThread.setId(c.toString());
+                mThread.setCode(c.toString());
+            }
+
+            public void beforeTextChanged(CharSequence c, int start, int count, int after) {
+                // intentionally left blank
+            }
+
+            public void afterTextChanged(Editable c) {
+                // intentionally left blank
+            }
+        });
+
+        mSkeinsOwned = (EditText)v.findViewById(R.id.skeins_owned);
+        mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
+        mSkeinsOwned.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence c, int start, int before, int count) {
+                mThread.setSkeinsOwned(Integer.parseInt(c.toString()));
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

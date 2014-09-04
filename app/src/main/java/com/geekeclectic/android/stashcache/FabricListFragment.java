@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by sylk on 8/27/2014.
@@ -33,8 +35,14 @@ public class FabricListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        // get StashFabric from the adapter
         StashFabric fabric = ((FabricAdapter)getListAdapter()).getItem(position);
         Log.d(TAG, fabric.getId() + " was selected.");
+
+        // start StashFabricActivity
+        Intent i = new Intent(getActivity(), StashFabricActivity.class);
+        i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, UUID.fromString(fabric.getId()));
+        startActivity(i);
     }
 
     private class FabricAdapter extends ArrayAdapter<StashFabric> {

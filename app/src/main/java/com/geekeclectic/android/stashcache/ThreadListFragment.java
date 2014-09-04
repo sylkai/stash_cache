@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,8 +34,14 @@ public class ThreadListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        // get StashThread from adapter
         StashThread thread = ((ThreadAdapter)getListAdapter()).getItem(position);
         Log.d(TAG, thread.toString() + " was clicked.");
+
+        // start StashThreadActivity
+        Intent i = new Intent(getActivity(), StashThreadActivity.class);
+        i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
+        startActivity(i);
     }
 
     private class ThreadAdapter extends ArrayAdapter<StashThread> {

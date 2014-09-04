@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -32,8 +33,14 @@ public class PatternListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        // get StashPattern from the adapter
         StashPattern pattern = ((PatternAdapter)getListAdapter()).getItem(position);
         Log.d(TAG, pattern.getPatternName() + "wasClicked");
+
+        // start StashPatternActivity
+        Intent i = new Intent(getActivity(), StashPatternActivity.class);
+        i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
+        startActivity(i);
     }
 
     private class PatternAdapter extends ArrayAdapter<StashPattern> {
