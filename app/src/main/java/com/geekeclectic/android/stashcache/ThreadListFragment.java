@@ -44,8 +44,8 @@ public class ThreadListFragment extends ListFragment {
         StashThread thread = ((ThreadAdapter)getListAdapter()).getItem(position);
         Log.d(TAG, thread.toString() + " was clicked.");
 
-        // start StashThreadActivity
-        Intent i = new Intent(getActivity(), StashThreadActivity.class);
+        // start StashThreadPagerActivity
+        Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
         i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
         startActivity(i);
     }

@@ -45,8 +45,8 @@ public class FabricListFragment extends ListFragment {
         StashFabric fabric = ((FabricAdapter)getListAdapter()).getItem(position);
         Log.d(TAG, fabric.getId() + " was selected.");
 
-        // start StashFabricActivity
-        Intent i = new Intent(getActivity(), StashFabricActivity.class);
+        // start StashFabricPagerActivity
+        Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
         i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, UUID.fromString(fabric.getId()));
         startActivity(i);
     }

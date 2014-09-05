@@ -43,8 +43,8 @@ public class PatternListFragment extends ListFragment {
         StashPattern pattern = ((PatternAdapter)getListAdapter()).getItem(position);
         Log.d(TAG, pattern.getPatternName() + "wasClicked");
 
-        // start StashPatternActivity
-        Intent i = new Intent(getActivity(), StashPatternActivity.class);
+        // start StashPatternPagerActivity
+        Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
         i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
         startActivity(i);
     }
