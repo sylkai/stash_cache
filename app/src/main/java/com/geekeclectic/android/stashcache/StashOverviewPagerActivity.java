@@ -37,6 +37,11 @@ public class StashOverviewPagerActivity extends FragmentActivity {
         }
 
         @Override
+        public int getCount() {
+            return ITEMS;
+        }
+
+        @Override
         public Fragment getItem(int i) {
             switch (i) {
                 case 1: // fabric list
@@ -46,11 +51,6 @@ public class StashOverviewPagerActivity extends FragmentActivity {
                 default: // pattern list
                     return new PatternListFragment();
             }
-        }
-
-        @Override
-        public int getCount() {
-            return ITEMS;
         }
 
         @Override

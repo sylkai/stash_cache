@@ -99,7 +99,7 @@ public class StashCacheJSONSerializer {
 
         for (int i = 0; i < array.length(); i++) {
             StashFabric fabric = new StashFabric(array.getJSONObject(i));
-            fabricMap.put(fabric.getId(), fabric);
+            fabricMap.put(fabric.getKey(), fabric);
         }
 
         return fabricMap;

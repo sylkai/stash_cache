@@ -87,7 +87,7 @@ public class StashPattern {
         }
 
         if (mPatternFabric != null) {
-            json.put(JSON_FABRIC, mPatternFabric.getId());
+            json.put(JSON_FABRIC, mPatternFabric.getKey());
         }
 
         if (!mThreads.isEmpty()) {

@@ -23,9 +23,9 @@ public class StashData {
 
     private StashData(Context appContext) {
         mAppContext = appContext;
-        HashMap<String, StashThread> mThreadsData = new HashMap<String, StashThread>();
-        HashMap<String, StashFabric> mFabricData = new HashMap<String, StashFabric>();
-        ArrayList<StashPattern> mPatternsData = new ArrayList<StashPattern>();
+        mThreadsData = new HashMap<String, StashThread>();
+        mFabricData = new HashMap<String, StashFabric>();
+        mPatternsData = new ArrayList<StashPattern>();
     }
 
     public static StashData get (Context c) {
@@ -97,7 +97,7 @@ public class StashData {
     }
 
     public void addFabric(StashFabric fabric) {
-        mFabricData.put(fabric.getId(), fabric);
+        mFabricData.put(fabric.getKey(), fabric);
     }
 
 }

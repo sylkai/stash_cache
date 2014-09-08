@@ -144,7 +144,11 @@ public class StashFabric {
         return (mStitchWidth >= width && mStitchHeight >= height);
     }
 
-    public String getId() {
+    public UUID getId() {
+        return mFabricId;
+    }
+
+    public String getKey() {
         return mFabricId.toString();
     }
 

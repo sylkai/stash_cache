@@ -68,11 +68,11 @@ public class FabricListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashFabric from the adapter
         StashFabric fabric = ((FabricAdapter)getListAdapter()).getItem(position);
-        Log.d(TAG, fabric.getId() + " was selected.");
+        Log.d(TAG, fabric.getKey() + " was selected.");
 
         // start StashFabricPagerActivity
         Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
-        i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, UUID.fromString(fabric.getId()));
+        i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabric.getId());
         startActivity(i);
     }
 

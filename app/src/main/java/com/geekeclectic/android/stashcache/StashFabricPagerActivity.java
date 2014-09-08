@@ -38,13 +38,13 @@ public class StashFabricPagerActivity extends FragmentActivity {
             @Override
             public Fragment getItem(int pos) {
                 StashFabric fabric = mFabrics.get(pos);
-                return StashFabricFragment.newInstance(UUID.fromString(fabric.getId()));
+                return StashFabricFragment.newInstance(fabric.getId());
             }
         });
 
         UUID fabricId = (UUID)getIntent().getSerializableExtra(StashFabricFragment.EXTRA_FABRIC_ID);
         for (int i = 0; i < mFabrics.size(); i++) {
-            if (mFabrics.get(i).getId().equals(fabricId.toString())) {
+            if (mFabrics.get(i).getKey().equals(fabricId.toString())) {
                 mViewPager.setCurrentItem(i);
                 break;
             }
