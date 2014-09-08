@@ -109,7 +109,9 @@ public class StashFabricFragment extends Fragment {
         mFabricCount.setText(Integer.toString(mFabric.getCount()));
         mFabricCount.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mFabric.setCount(Integer.parseInt(c.toString()));
+                if (c.length() > 0) {
+                    mFabric.setCount(Integer.parseInt(c.toString()));
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -125,7 +127,9 @@ public class StashFabricFragment extends Fragment {
         mFabricWidth.setText(Double.toString(mFabric.getWidth()));
         mFabricWidth.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mFabric.setWidth(Double.parseDouble(c.toString()));
+                if (c.length() > 0) {
+                    mFabric.setWidth(Double.parseDouble(c.toString()));
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -141,7 +145,9 @@ public class StashFabricFragment extends Fragment {
         mFabricHeight.setText(Double.toString(mFabric.getHeight()));
         mFabricHeight.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mFabric.setHeight(Double.parseDouble(c.toString()));
+                if (c.length() > 0) {
+                    mFabric.setHeight(Double.parseDouble(c.toString()));
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

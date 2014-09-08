@@ -95,7 +95,9 @@ public class StashPatternFragment extends Fragment {
         mWidthField.setText(Integer.toString(mPattern.getWidth()));
         mWidthField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mPattern.setWidth(Integer.parseInt(c.toString()));
+                if (c.length() > 0) {
+                    mPattern.setWidth(Integer.parseInt(c.toString()));
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -111,7 +113,9 @@ public class StashPatternFragment extends Fragment {
         mHeightField.setText(Integer.toString(mPattern.getHeight()));
         mHeightField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mPattern.setHeight(Integer.parseInt(c.toString()));
+                if (c.length() > 0) {
+                    mPattern.setHeight(Integer.parseInt(c.toString()));
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

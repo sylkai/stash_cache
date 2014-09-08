@@ -109,7 +109,9 @@ public class StashThreadFragment extends Fragment {
         mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
         mSkeinsOwned.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mThread.setSkeinsOwned(Integer.parseInt(c.toString()));
+                if (c.length() > 0) {
+                    mThread.setSkeinsOwned(Integer.parseInt(c.toString()));
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
