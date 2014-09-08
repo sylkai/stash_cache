@@ -1,10 +1,14 @@
 package com.geekeclectic.android.stashcache;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -36,8 +40,9 @@ public class StashPatternFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPatternId = (UUID)getArguments().getSerializable(EXTRA_PATTERN_ID);
+        setHasOptionsMenu(true);
 
+        mPatternId = (UUID)getArguments().getSerializable(EXTRA_PATTERN_ID);
         mPattern = StashData.get(getActivity()).getPattern(mPatternId);
     }
 
@@ -51,12 +56,31 @@ public class StashPatternFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                if (NavUtils.getParentActivityName(getActivity()) != null) {
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
+    @TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_pattern, container, false);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (NavUtils.getParentActivityName(getActivity()) != null) {
+                getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+        }
 
         mTitleField = (EditText)v.findViewById(R.id.pattern_name);
         mTitleField.setText(mPattern.getPatternName());
