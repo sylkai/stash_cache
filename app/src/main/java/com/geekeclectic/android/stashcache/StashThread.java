@@ -113,7 +113,7 @@ public class StashThread {
     @Override
     public String toString() {
         if (mType != null) {
-            return getKey();
+            return mSource + " " + mType + " " + mCode;
         } else {
             return mSource + " " + mCode;
         }

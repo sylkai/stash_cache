@@ -88,4 +88,16 @@ public class StashData {
         return null;
     }
 
+    public void addPattern(StashPattern pattern) {
+        mPatternsData.add(pattern);
+    }
+
+    public void addThread(StashThread thread) {
+        mThreadsData.put(thread.getKey(), thread);
+    }
+
+    public void addFabric(StashFabric fabric) {
+        mFabricData.put(fabric.getId(), fabric);
+    }
+
 }

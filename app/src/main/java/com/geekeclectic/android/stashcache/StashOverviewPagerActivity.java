@@ -15,6 +15,7 @@ public class StashOverviewPagerActivity extends FragmentActivity {
     static final int ITEMS = 3;
 
     private ViewPager mViewPager;
+    private StashOverviewPagerAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,6 +23,9 @@ public class StashOverviewPagerActivity extends FragmentActivity {
         setContentView(R.layout.activity_stash_overview);
 
         mViewPager = (ViewPager)findViewById(R.id.stashViewPager);
+        mAdapter = new StashOverviewPagerAdapter(getSupportFragmentManager());
+
+        mViewPager.setAdapter(mAdapter);
 
     }
 
@@ -47,6 +51,18 @@ public class StashOverviewPagerActivity extends FragmentActivity {
         @Override
         public int getCount() {
             return ITEMS;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 1: // fabric list
+                    return getString(R.string.fabric_list_title).toUpperCase();
+                case 2: // thread list
+                    return getString(R.string.thread_list_title).toUpperCase();
+                default: // pattern list
+                    return getString(R.string.pattern_list_title).toUpperCase();
+            }
         }
     }
 

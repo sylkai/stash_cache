@@ -15,8 +15,6 @@
     <string name="pattern_fabric_title">Fabric</string>
     <string name="pattern_fabric_detail">No fabric selected.</string>
 
-    <string name="pattern_list_title">Patterns</string>
-
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>
     <string name="thread_type_hint">Floss Type</string>
@@ -37,5 +35,13 @@
     <string name="fabric_pattern_info">Used For</string>
     <string name="fabric_pattern_detail">Not associated with any patterns.</string>
 
+    <string name="fabric_list_title">Fabric</string>
+    <string name="thread_list_title">Threads</string>
+    <string name="pattern_list_title">Patterns</string>
+
+    <string name="new_pattern">New Pattern</string>
+    <string name="new_thread">New Thread</string>
+    <string name="new_fabric">New Fabric</string>
+    <string name="delete">Delete</string>
 
 </resources>
