@@ -68,6 +68,12 @@ public class StashThreadFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        StashData.get(getActivity()).saveStash();
+    }
+
     @TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

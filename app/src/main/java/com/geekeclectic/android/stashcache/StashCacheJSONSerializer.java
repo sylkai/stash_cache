@@ -30,8 +30,7 @@ public class StashCacheJSONSerializer {
         mFilename = f;
     }
 
-    public StashData loadStash() throws IOException, JSONException {
-        StashData stash = StashData.get(mContext);
+    public void loadStash(StashData stashData) throws IOException, JSONException {
         BufferedReader reader = null;
 
         try {
@@ -49,9 +48,9 @@ public class StashCacheJSONSerializer {
             // parse the JSON using the Tokener
             JSONArray array = (JSONArray) new JSONTokener(jsonString.toString()).nextValue();
 
-            stash.setThreadData(fillThreadData(array.getJSONArray(0)));
-            stash.setFabricData(fillFabricData(array.getJSONArray(1)));
-            stash.setPatternData(fillPatternData(array.getJSONArray(2), stash.getThreadData(), stash.getFabricData()));
+            stashData.setThreadData(fillThreadData(array.getJSONArray(0)));
+            stashData.setFabricData(fillFabricData(array.getJSONArray(1)));
+            stashData.setPatternData(fillPatternData(array.getJSONArray(2), stashData.getThreadData(), stashData.getFabricData()));
         } catch (FileNotFoundException e) {
             // ignore because it happens when program is opened for the first time
         } finally {
@@ -59,8 +58,6 @@ public class StashCacheJSONSerializer {
                 reader.close();
             }
         }
-
-        return stash;
     }
 
     public void saveStash(StashData stash) throws JSONException, IOException {

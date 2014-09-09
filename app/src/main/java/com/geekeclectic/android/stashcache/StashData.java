@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,21 +15,38 @@ import java.util.UUID;
  */
 public class StashData {
 
+    private static final String TAG = "StashData";
+    private static final String FILENAME = "stash.json";
+
     private static StashData sStash;
     private Context mAppContext;
+
+    private StashCacheJSONSerializer mSerializer;
 
     private ArrayList<StashPattern> mPatternsData;
     private HashMap<String, StashThread> mThreadsData;
     private HashMap<String, StashFabric> mFabricData;
 
+
+
     private StashData(Context appContext) {
         mAppContext = appContext;
+        mSerializer = new StashCacheJSONSerializer(mAppContext, FILENAME);
         mThreadsData = new HashMap<String, StashThread>();
         mFabricData = new HashMap<String, StashFabric>();
         mPatternsData = new ArrayList<StashPattern>();
+
+        sStash = this;
+
+        try {
+            mSerializer.loadStash(sStash);
+        } catch (Exception e) {
+            Log.e(TAG, "error loading stash: ", e);
+        }
+
     }
 
-    public static StashData get (Context c) {
+    public static StashData get(Context c) {
         if (sStash == null) {
             sStash = new StashData(c.getApplicationContext());
         }
@@ -98,6 +116,17 @@ public class StashData {
 
     public void addFabric(StashFabric fabric) {
         mFabricData.put(fabric.getKey(), fabric);
+    }
+
+    public boolean saveStash() {
+        try {
+            mSerializer.saveStash(sStash);
+            Log.d(TAG, "stash saved to file");
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving stash: ", e);
+            return false;
+        }
     }
 
 }
