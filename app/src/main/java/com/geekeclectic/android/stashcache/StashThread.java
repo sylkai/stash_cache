@@ -34,6 +34,7 @@ public class StashThread {
         mSource = json.getString(JSON_SOURCE);
         mCode = json.getString(JSON_CODE);
         mSkeinsOwned = json.getInt(JSON_OWNED);
+        mId = UUID.fromString(json.getString(JSON_ID));
 
         if (json.has(JSON_TYPE)) {
             mType = json.getString(JSON_TYPE);
@@ -46,6 +47,7 @@ public class StashThread {
         json.put(JSON_SOURCE, mSource);
         json.put(JSON_CODE, mCode);
         json.put(JSON_OWNED, mSkeinsOwned);
+        json.put(JSON_ID, mId.toString());
 
         if (mType != null) {
             json.put(JSON_TYPE, mType);
@@ -113,7 +115,7 @@ public class StashThread {
     @Override
     public String toString() {
         if (mType != null) {
-            return mSource + " " + mType + " " + mCode;
+            return mSource + " " + mCode + " - " + mType;
         } else {
             return mSource + " " + mCode;
         }
