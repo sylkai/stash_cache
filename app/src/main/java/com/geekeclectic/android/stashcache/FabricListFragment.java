@@ -4,12 +4,16 @@ import android.support.v4.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,7 +26,9 @@ import java.util.UUID;
  */
 public class FabricListFragment extends ListFragment {
 
-    private ArrayList<StashFabric> mFabrics;
+    //private ArrayList<StashFabric> mFabrics;
+    FabricAdapter adapter;
+    ArrayList<UUID> mFabrics;
 
     private static final String TAG = "FabricListFragment";
 
@@ -33,8 +39,18 @@ public class FabricListFragment extends ListFragment {
 
         mFabrics = StashData.get(getActivity()).getFabricList();
 
-        FabricAdapter adapter = new FabricAdapter(mFabrics);
+        adapter = new FabricAdapter(mFabrics);
         setListAdapter(adapter);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        View v = super.onCreateView(inflater, parent, savedInstanceState);
+
+        ListView listView = (ListView)v.findViewById(android.R.id.list);
+        registerForContextMenu(listView);
+
+        return v;
     }
 
     @Override
@@ -65,9 +81,31 @@ public class FabricListFragment extends ListFragment {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo contextMenuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.fabric_list_item_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+        int position = info.position;
+        FabricAdapter adapter = (FabricAdapter)getListAdapter();
+        StashFabric fabric = StashData.get(getActivity()).getFabric(adapter.getItem(position));
+
+        switch(item.getItemId()) {
+            case R.id.menu_item_delete_fabric:
+                StashData.get(getActivity()).deleteFabric(fabric);
+                adapter.notifyDataSetChanged();
+                return true;
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashFabric from the adapter
-        StashFabric fabric = ((FabricAdapter)getListAdapter()).getItem(position);
+        StashFabric fabric = StashData.get(getActivity()).getFabric(((FabricAdapter)getListAdapter()).getItem(position));
         Log.d(TAG, fabric.getKey() + " was selected.");
 
         // start StashFabricPagerActivity
@@ -76,8 +114,8 @@ public class FabricListFragment extends ListFragment {
         startActivity(i);
     }
 
-    private class FabricAdapter extends ArrayAdapter<StashFabric> {
-        public FabricAdapter(ArrayList<StashFabric> fabrics) {
+    private class FabricAdapter extends ArrayAdapter<UUID> {
+        public FabricAdapter(ArrayList<UUID> fabrics) {
             super(getActivity(), 0, fabrics);
         }
 
@@ -89,7 +127,7 @@ public class FabricListFragment extends ListFragment {
             }
 
             // configure view for this fabric
-            StashFabric fabric = getItem(position);
+            StashFabric fabric = StashData.get(getActivity()).getFabric(getItem(position));
 
             TextView fabricInfoTextView = (TextView) convertView.findViewById(R.id.fabric_list_item_infoTextView);
             fabricInfoTextView.setText(fabric.getInfo());

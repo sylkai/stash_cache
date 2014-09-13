@@ -8,6 +8,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -25,15 +26,17 @@ public class StashData {
 
     private ArrayList<StashPattern> mPatternsData;
     private HashMap<String, StashThread> mThreadsData;
+    private ArrayList<UUID> mThreadsList;
     private HashMap<String, StashFabric> mFabricData;
-
-
+    private ArrayList<UUID> mFabricList;
 
     private StashData(Context appContext) {
         mAppContext = appContext;
         mSerializer = new StashCacheJSONSerializer(mAppContext, FILENAME);
         mThreadsData = new HashMap<String, StashThread>();
+        mThreadsList = new ArrayList<UUID>();
         mFabricData = new HashMap<String, StashFabric>();
+        mFabricList = new ArrayList<UUID>();
         mPatternsData = new ArrayList<StashPattern>();
 
         sStash = this;
@@ -44,6 +47,8 @@ public class StashData {
             Log.e(TAG, "error loading stash: ", e);
         }
 
+        setThreadsList();
+        setFabricList();
     }
 
     public static StashData get(Context c) {
@@ -62,13 +67,21 @@ public class StashData {
         return mThreadsData;
     }
 
-    public ArrayList<StashThread> getThreadList() {
-        ArrayList<StashThread> threadList = new ArrayList<StashThread>(mThreadsData.values());
-        return threadList;
+    public ArrayList<UUID> getThreadList() {
+        return mThreadsList;
     }
 
-    public StashThread getThread(String key) {
-        return mThreadsData.get(key);
+    public void setThreadsList() {
+        if (mThreadsData.size() > 0) {
+            for (Map.Entry<String, StashThread> entry : mThreadsData.entrySet()) {
+                StashThread thread = entry.getValue();
+                mThreadsList.add(thread.getId());
+            }
+        }
+    }
+
+    public StashThread getThread(UUID key) {
+        return mThreadsData.get(key.toString());
     }
 
     public void setFabricData(HashMap<String, StashFabric> fabricMap) {
@@ -79,9 +92,17 @@ public class StashData {
         return mFabricData;
     }
 
-    public ArrayList<StashFabric> getFabricList() {
-        ArrayList<StashFabric> fabricList = new ArrayList<StashFabric>(mFabricData.values());
-        return fabricList;
+    public ArrayList<UUID> getFabricList() {
+        return mFabricList;
+    }
+
+    public void setFabricList() {
+        if (mFabricData.size() > 0) {
+            for (Map.Entry<String, StashFabric> entry : mFabricData.entrySet()) {
+                StashFabric fabric = entry.getValue();
+                mFabricList.add(fabric.getId());
+            }
+        }
     }
 
     public StashFabric getFabric(UUID key) {
@@ -110,12 +131,28 @@ public class StashData {
         mPatternsData.add(pattern);
     }
 
+    public void deletePattern(StashPattern pattern) {
+        mPatternsData.remove(pattern);
+    }
+
     public void addThread(StashThread thread) {
         mThreadsData.put(thread.getKey(), thread);
+        mThreadsList.add(thread.getId());
+    }
+
+    public void deleteThread(StashThread thread) {
+        mThreadsData.remove(thread.getKey());
+        mThreadsList.remove(thread.getId());
     }
 
     public void addFabric(StashFabric fabric) {
         mFabricData.put(fabric.getKey(), fabric);
+        mFabricList.add(fabric.getId());
+    }
+
+    public void deleteFabric(StashFabric fabric) {
+        mFabricData.remove(fabric.getKey());
+        mFabricList.remove(fabric.getId());
     }
 
     public boolean saveStash() {

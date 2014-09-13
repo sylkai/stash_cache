@@ -85,7 +85,7 @@ public class StashCacheJSONSerializer {
 
         for (int i = 0; i < array.length(); i++) {
             StashThread thread = new StashThread(array.getJSONObject(i));
-            threadMap.put(thread.toString(), thread);
+            threadMap.put(thread.getKey(), thread);
         }
 
         return threadMap;

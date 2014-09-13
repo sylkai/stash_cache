@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by sylk on 9/4/2014.
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 public class StashThreadPagerActivity extends FragmentActivity {
 
     private ViewPager mViewPager;
-    private ArrayList<StashThread> mThreads;
+    private ArrayList<UUID> mThreads;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
             @Override
             public Fragment getItem(int pos) {
-                StashThread thread = mThreads.get(pos);
+                StashThread thread = StashData.get(getParent()).getThread(mThreads.get(pos));
                 return StashThreadFragment.newInstance(thread.getId());
             }
         });

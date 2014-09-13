@@ -42,6 +42,8 @@
     <string name="new_pattern">New Pattern</string>
     <string name="new_thread">New Thread</string>
     <string name="new_fabric">New Fabric</string>
-    <string name="delete">Delete</string>
+    <string name="delete_pattern">Delete Pattern</string>
+    <string name="delete_thread">Delete Thread</string>
+    <string name="delete_fabric">Delete Fabric</string>
 
 </resources>

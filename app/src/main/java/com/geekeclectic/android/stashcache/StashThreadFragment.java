@@ -42,7 +42,7 @@ public class StashThreadFragment extends Fragment {
         setHasOptionsMenu(true);
 
         UUID threadId = (UUID)getArguments().getSerializable(EXTRA_THREAD_ID);
-        mThread = StashData.get(getActivity()).getThread(threadId.toString());
+        mThread = StashData.get(getActivity()).getThread(threadId);
     }
 
     public static StashThreadFragment newInstance(UUID threadId) {

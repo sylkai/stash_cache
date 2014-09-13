@@ -16,7 +16,7 @@ import java.util.UUID;
 public class StashFabricPagerActivity extends FragmentActivity {
 
     private ViewPager mViewPager;
-    private ArrayList<StashFabric> mFabrics;
+    private ArrayList<UUID> mFabrics;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,14 +37,14 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
             @Override
             public Fragment getItem(int pos) {
-                StashFabric fabric = mFabrics.get(pos);
+                StashFabric fabric = StashData.get(getParent()).getFabric(mFabrics.get(pos));
                 return StashFabricFragment.newInstance(fabric.getId());
             }
         });
 
         UUID fabricId = (UUID)getIntent().getSerializableExtra(StashFabricFragment.EXTRA_FABRIC_ID);
         for (int i = 0; i < mFabrics.size(); i++) {
-            if (mFabrics.get(i).getKey().equals(fabricId.toString())) {
+            if (StashData.get(getParent()).getFabric(mFabrics.get(i)).equals(fabricId)) {
                 mViewPager.setCurrentItem(i);
                 break;
             }

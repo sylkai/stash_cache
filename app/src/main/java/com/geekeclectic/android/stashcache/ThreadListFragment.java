@@ -4,24 +4,29 @@ import android.support.v4.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by sylk on 8/27/2014.
  */
 public class ThreadListFragment extends ListFragment {
 
-    private ArrayList<StashThread> mThreads;
+    private ArrayList<UUID> mThreads;
 
     private static final String TAG = "ThreadListFragment";
 
@@ -34,6 +39,16 @@ public class ThreadListFragment extends ListFragment {
 
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
         setListAdapter(adapter);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        View v = super.onCreateView(inflater, parent, savedInstanceState);
+
+        ListView listView = (ListView)v.findViewById(android.R.id.list);
+        registerForContextMenu(listView);
+
+        return v;
     }
 
     @Override
@@ -64,9 +79,32 @@ public class ThreadListFragment extends ListFragment {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.thread_list_item_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+        int position = info.position;
+        ThreadAdapter adapter = (ThreadAdapter)getListAdapter();
+        StashThread thread = StashData.get(getActivity()).getThread(adapter.getItem(position));
+
+        switch (item.getItemId()) {
+            case R.id.menu_item_delete_thread:
+                StashData.get(getActivity()).deleteThread(thread);
+                mThreads = StashData.get(getActivity()).getThreadList();
+                adapter.notifyDataSetChanged();
+                return true;
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashThread from adapter
-        StashThread thread = ((ThreadAdapter)getListAdapter()).getItem(position);
+        StashThread thread = StashData.get(getActivity()).getThread(((ThreadAdapter)getListAdapter()).getItem(position));
         Log.d(TAG, thread.toString() + " was clicked.");
 
         // start StashThreadPagerActivity
@@ -75,9 +113,9 @@ public class ThreadListFragment extends ListFragment {
         startActivity(i);
     }
 
-    private class ThreadAdapter extends ArrayAdapter<StashThread> {
+    private class ThreadAdapter extends ArrayAdapter<UUID> {
 
-        public ThreadAdapter(ArrayList<StashThread> threads) {
+        public ThreadAdapter(ArrayList<UUID> threads) {
             super(getActivity(), 0, threads);
         }
 
@@ -89,7 +127,7 @@ public class ThreadListFragment extends ListFragment {
             }
 
             // configure the view for this thread
-            StashThread thread = getItem(position);
+            StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
 
             TextView threadTextView = (TextView)convertView.findViewById(R.id.thread_list_item_flossIdTextView);
             threadTextView.setText(thread.toString());
