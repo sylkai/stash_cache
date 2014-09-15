@@ -1,9 +1,11 @@
 package com.geekeclectic.android.stashcache;
 
+import android.os.Build;
 import android.support.v4.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
@@ -46,7 +49,56 @@ public class PatternListFragment extends ListFragment {
         View v = super.onCreateView(inflater, parent, savedInstanceState);
 
         ListView listView = (ListView)v.findViewById(android.R.id.list);
-        registerForContextMenu(listView);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            registerForContextMenu(listView);
+        } else {
+            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+            listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
+                public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                    // required but not used here
+                }
+
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    MenuInflater inflater = mode.getMenuInflater();
+                    inflater.inflate(R.menu.pattern_list_item_context, menu);
+                    return true;
+                }
+
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    // required but not used here
+                    return false;
+                }
+
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    if (item.getGroupId() == PATTERN_GROUP_ID) {
+                        switch (item.getItemId()) {
+                            case R.id.menu_item_delete_pattern:
+                                PatternAdapter adapter = (PatternAdapter)getListAdapter();
+                                StashData stash = StashData.get(getActivity());
+                                for (int i = adapter.getCount() - 1; i >=0; i--) {
+                                    if (getListView().isItemChecked(i)) {
+                                        stash.deletePattern(adapter.getItem(i));
+                                    }
+                                }
+
+                                mode.finish();
+                                adapter.notifyDataSetChanged();
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+
+                    return false;
+                }
+
+                public void onDestroyActionMode(ActionMode mode) {
+                    // required but not used here
+                }
+            });
+        }
+
 
         return v;
     }
