@@ -31,6 +31,7 @@ public class FabricListFragment extends ListFragment {
     ArrayList<UUID> mFabrics;
 
     private static final String TAG = "FabricListFragment";
+    private static final int FABRIC_GROUP_ID = R.id.fabric_context_menu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,16 +88,18 @@ public class FabricListFragment extends ListFragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-        int position = info.position;
-        FabricAdapter adapter = (FabricAdapter)getListAdapter();
-        StashFabric fabric = StashData.get(getActivity()).getFabric(adapter.getItem(position));
+        if (item.getGroupId() == FABRIC_GROUP_ID) {
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            int position = info.position;
+            FabricAdapter adapter = (FabricAdapter) getListAdapter();
+            StashFabric fabric = StashData.get(getActivity()).getFabric(adapter.getItem(position));
 
-        switch(item.getItemId()) {
-            case R.id.menu_item_delete_fabric:
-                StashData.get(getActivity()).deleteFabric(fabric);
-                adapter.notifyDataSetChanged();
-                return true;
+            switch (item.getItemId()) {
+                case R.id.menu_item_delete_fabric:
+                    StashData.get(getActivity()).deleteFabric(fabric);
+                    adapter.notifyDataSetChanged();
+                    return true;
+            }
         }
 
         return super.onContextItemSelected(item);

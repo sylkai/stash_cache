@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 public class PatternListFragment extends ListFragment {
 
     private static final String TAG = "PatternListFragment";
+    private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
 
     private ArrayList<StashPattern> mPatterns;
 
@@ -84,16 +85,18 @@ public class PatternListFragment extends ListFragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-        int position = info.position;
-        PatternAdapter adapter = (PatternAdapter)getListAdapter();
-        StashPattern pattern = adapter.getItem(position);
+        if (item.getGroupId() == PATTERN_GROUP_ID) {
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            int position = info.position;
+            PatternAdapter adapter = (PatternAdapter) getListAdapter();
+            StashPattern pattern = adapter.getItem(position);
 
-        switch (item.getItemId()) {
-            case R.id.menu_item_delete_pattern:
-                StashData.get(getActivity()).deletePattern(pattern);
-                adapter.notifyDataSetChanged();
-                return true;
+            switch (item.getItemId()) {
+                case R.id.menu_item_delete_pattern:
+                    StashData.get(getActivity()).deletePattern(pattern);
+                    adapter.notifyDataSetChanged();
+                    return true;
+            }
         }
 
         return super.onContextItemSelected(item);

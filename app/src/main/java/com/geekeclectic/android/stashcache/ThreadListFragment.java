@@ -29,6 +29,7 @@ public class ThreadListFragment extends ListFragment {
     private ArrayList<UUID> mThreads;
 
     private static final String TAG = "ThreadListFragment";
+    private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,17 +86,19 @@ public class ThreadListFragment extends ListFragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
-        int position = info.position;
-        ThreadAdapter adapter = (ThreadAdapter)getListAdapter();
-        StashThread thread = StashData.get(getActivity()).getThread(adapter.getItem(position));
+        if (item.getGroupId() == THREAD_GROUP_ID) {
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            int position = info.position;
+            ThreadAdapter adapter = (ThreadAdapter) getListAdapter();
+            StashThread thread = StashData.get(getActivity()).getThread(adapter.getItem(position));
 
-        switch (item.getItemId()) {
-            case R.id.menu_item_delete_thread:
-                StashData.get(getActivity()).deleteThread(thread);
-                mThreads = StashData.get(getActivity()).getThreadList();
-                adapter.notifyDataSetChanged();
-                return true;
+            switch (item.getItemId()) {
+                case R.id.menu_item_delete_thread:
+                    StashData.get(getActivity()).deleteThread(thread);
+                    mThreads = StashData.get(getActivity()).getThreadList();
+                    adapter.notifyDataSetChanged();
+                    return true;
+            }
         }
 
         return super.onContextItemSelected(item);
