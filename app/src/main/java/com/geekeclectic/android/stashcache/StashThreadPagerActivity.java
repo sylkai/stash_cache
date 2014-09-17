@@ -41,6 +41,14 @@ public class StashThreadPagerActivity extends FragmentActivity {
                 return StashThreadFragment.newInstance(thread.getId());
             }
         });
+
+        UUID threadId = (UUID)getIntent().getSerializableExtra(StashThreadFragment.EXTRA_THREAD_ID);
+        for (int i = 0; i < mThreads.size(); i++) {
+            if (mThreads.get(i).equals(threadId)) {
+                mViewPager.setCurrentItem(i);
+                break;
+            }
+        }
     }
 
 }

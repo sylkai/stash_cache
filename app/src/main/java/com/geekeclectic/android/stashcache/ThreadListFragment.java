@@ -159,12 +159,12 @@ public class ThreadListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashThread from adapter
-        StashThread thread = StashData.get(getActivity()).getThread(((ThreadAdapter)getListAdapter()).getItem(position));
-        Log.d(TAG, thread.toString() + " was clicked.");
+        UUID threadId = ((ThreadAdapter)getListAdapter()).getItem(position);
+        Log.d(TAG, threadId.toString() + " was clicked.");
 
         // start StashThreadPagerActivity
         Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
-        i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
+        i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, threadId);
         startActivity(i);
     }
 

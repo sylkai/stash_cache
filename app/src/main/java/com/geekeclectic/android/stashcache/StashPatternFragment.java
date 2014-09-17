@@ -4,14 +4,17 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,6 +24,8 @@ public class StashPatternFragment extends Fragment {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
 
+    private static final String DIALOG_FABRIC = "fabric";
+
     private StashPattern mPattern;
     private StashFabric mFabric;
     private ArrayList<StashThread> mThreadList;
@@ -29,6 +34,7 @@ public class StashPatternFragment extends Fragment {
     private EditText mSourceField;
     private EditText mWidthField;
     private EditText mHeightField;
+    private ImageButton mEditFabric;
     private TextView mFabricInfo;
     private TextView mThreadInfo;
 
@@ -157,7 +163,21 @@ public class StashPatternFragment extends Fragment {
             }
         });
 
+        mEditFabric = (ImageButton)v.findViewById(R.id.pattern_fabric_edit);
+        /*mEditFabric.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                PickOneFragment dialog = new PickOneFragment();
+                dialog.show(fm, DIALOG_FABRIC);
+            }
+        });*/
+
         mFabricInfo = (TextView)v.findViewById(R.id.pattern_fabric_display);
+        if (mFabric != null) {
+            mFabricInfo.setText(mFabric.getInfo());
+            mFabricInfo.append(mFabric.getSize());
+        }
+
         mThreadInfo = (TextView)v.findViewById(R.id.pattern_thread_display);
 
         return v;

@@ -44,7 +44,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
         UUID fabricId = (UUID)getIntent().getSerializableExtra(StashFabricFragment.EXTRA_FABRIC_ID);
         for (int i = 0; i < mFabrics.size(); i++) {
-            if (StashData.get(getParent()).getFabric(mFabrics.get(i)).equals(fabricId)) {
+            if (mFabrics.get(i).equals(fabricId)) {
                 mViewPager.setCurrentItem(i);
                 break;
             }
