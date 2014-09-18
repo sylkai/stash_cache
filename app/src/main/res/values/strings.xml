@@ -46,4 +46,9 @@
     <string name="delete_thread">Delete Thread</string>
     <string name="delete_fabric">Delete Fabric</string>
 
+    <string-array name="fabric_choice_picker">
+        <item>Choose existing fabric</item>
+        <item>Enter new fabric</item>
+    </string-array>
+
 </resources>

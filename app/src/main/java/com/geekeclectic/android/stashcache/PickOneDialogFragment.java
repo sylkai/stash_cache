@@ -10,7 +10,7 @@ import android.support.v4.app.DialogFragment;
 /**
  * Created by sylk on 9/15/2014.
  */
-public class PickOneFragment extends DialogFragment {
+public class PickOneDialogFragment extends DialogFragment {
 
     static final String TAG = "PickOneDialog";
 
