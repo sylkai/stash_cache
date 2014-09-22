@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Stash Cache</string>
+    <string name="action_settings">Action Settings</string>
+
+    <string name="pattern_info">Pattern Info</string>
+    <string name="pattern_name_hint">Pattern Name</string>
+    <string name="designer_hint">Source</string>
+    <string name="stitched_area">Stitched Area</string>
+    <string name="pattern_width_label">Width</string>
+    <string name="pattern_height_label">Height</string>
+    <string name="pattern_thread_info">Threads</string>
+    <string name="pattern_thread_details"> </string>
+    <string name="pattern_fabric_title">Fabric</string>
+    <string name="pattern_fabric_detail">No fabric selected.</string>
+
+    <string name="thread_info">Thread Info</string>
+    <string name="thread_source_hint">Manufacturer</string>
+    <string name="thread_type_hint">Floss Type</string>
+    <string name="thread_id_hint">ID Code</string>
+    <string name="skeins_info">In Stash</string>
+    <string name="skeins_owned_label">Skeins Owned</string>
+    <string name="thread_pattern_info">Used In</string>
+    <string name="thread_pattern_detail">Not used in any patterns.</string>
+
+    <string name="fabric_info">Fabric Info</string>
+    <string name="fabric_source_hint">Company</string>
+    <string name="fabric_type_hint">Fabric Type</string>
+    <string name="fabric_color_hint">Color</string>
+    <string name="fabric_count_label">Count</string>
+    <string name="fabric_size">Fabric Size</string>
+    <string name="fabric_width_label">Width</string>
+    <string name="fabric_height_label">Height</string>
+    <string name="fabric_pattern_info">Used For</string>
+    <string name="fabric_pattern_detail">Not associated with any patterns.</string>
+
+    <string name="fabric_list_title">Fabric</string>
+    <string name="thread_list_title">Threads</string>
+    <string name="pattern_list_title">Patterns</string>
+
+    <string name="new_pattern">New Pattern</string>
+    <string name="new_thread">New Thread</string>
+    <string name="new_fabric">New Fabric</string>
+    <string name="delete_pattern">Delete Pattern</string>
+    <string name="delete_thread">Delete Thread</string>
+    <string name="delete_fabric">Delete Fabric</string>
+
+    <string-array name="fabric_choice_picker">
+        <item>Choose existing fabric</item>
+        <item>Enter new fabric</item>
+    </string-array>
+
+</resources>
