@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 public class StashOverviewPagerActivity extends FragmentActivity {
 
     static final int ITEMS = 3;
+    public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
 
     private ViewPager mViewPager;
     private StashOverviewPagerAdapter mAdapter;
@@ -26,6 +27,11 @@ public class StashOverviewPagerActivity extends FragmentActivity {
         mAdapter = new StashOverviewPagerAdapter(getSupportFragmentManager());
 
         mViewPager.setAdapter(mAdapter);
+
+        if (getIntent() != null) {
+            int mFragmentId = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, 0);
+            mViewPager.setCurrentItem(mFragmentId, false);
+        }
 
     }
 

@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ public class StashPatternFragment extends Fragment {
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
 
     private static final String DIALOG_FABRIC = "fabric";
+    private static final int CATEGORY_ID = 0;
 
     private StashPattern mPattern;
     private StashFabric mFabric;
@@ -67,7 +69,9 @@ public class StashPatternFragment extends Fragment {
         switch(item.getItemId()) {
             case android.R.id.home:
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
-                    NavUtils.navigateUpFromSameTask(getActivity());
+                    Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
+                    i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;
             default:
