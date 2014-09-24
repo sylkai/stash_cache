@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -23,6 +24,8 @@ import java.util.UUID;
 public class StashThreadFragment extends Fragment {
 
     public static final String EXTRA_THREAD_ID = "com.geekeclectic.android.stashcache.thread_id";
+
+    private static final int CATEGORY_ID = 2;
 
     private StashThread mThread;
     private ArrayList<StashPattern> mPatterns;
@@ -60,7 +63,9 @@ public class StashThreadFragment extends Fragment {
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
-                    NavUtils.navigateUpFromSameTask(getActivity());
+                    Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
+                    i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;
             default:
