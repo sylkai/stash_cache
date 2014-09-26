@@ -47,6 +47,8 @@ public class StashFabricFragment extends Fragment {
 
         UUID fabricId = (UUID)getArguments().getSerializable(EXTRA_FABRIC_ID);
         mFabric = StashData.get(getActivity()).getFabric(fabricId);
+
+        mPattern = mFabric.usedFor();
     }
 
     public static StashFabricFragment newInstance(UUID patternId) {

@@ -58,6 +58,9 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mPatternId = (UUID)getArguments().getSerializable(EXTRA_PATTERN_ID);
         mPattern = StashData.get(getActivity()).getPattern(mPatternId);
         mFragment = this;
+
+        mFabric = mPattern.getFabric();
+        mThreadList = mPattern.getThreadList();
     }
 
     public static StashPatternFragment newInstance(UUID patternId) {
@@ -192,21 +195,25 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     }
 
     public void onSelectedOption(int selectedIndex) {
+        if (mFabric != null) {
+            mFabric.setUsedFor(null);
+        }
+
         if (selectedIndex == 0) {
             Log.d(TAG, "User chose to use existing fabric");
         } else {
             Log.d(TAG, "User chose to create new fabric");
 
-            StashFabric fabric = new StashFabric();
-            StashData.get(getActivity()).addFabric(fabric);
+            mFabric = new StashFabric();
+            StashData.get(getActivity()).addFabric(mFabric);
 
-            mFabric = fabric;
-            fabric.setUsedFor(mPattern);
+            mFabric.setUsedFor(mPattern);
+            mPattern.setFabric(mFabric);
 
             updateFabricInfo();
 
             Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
-            i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabric.getId());
+            i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, mFabric.getId());
             startActivityForResult(i, PICK_FABRIC_REQUEST);
         }
     }
@@ -222,7 +229,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     private void updateFabricInfo() {
         if (mFabric != null) {
-            mFabricInfo.setText(mFabric.getInfo());
+            mFabricInfo.setText(mFabric.getInfo() + "\n");
             mFabricInfo.append(mFabric.getSize());
         } else {
             mFabricInfo.setText(R.string.pattern_no_fabric);

@@ -52,6 +52,7 @@ public class StashPattern {
 
         if (json.has(JSON_FABRIC)) {
             mPatternFabric = fabricMap.get(json.getString(JSON_FABRIC));
+            mPatternFabric.setUsedFor(this);
         }
 
         mThreads = new ArrayList<StashThread>();
