@@ -201,4 +201,5 @@ public class StashFabricFragment extends Fragment {
 
         return v;
     }
+
 }

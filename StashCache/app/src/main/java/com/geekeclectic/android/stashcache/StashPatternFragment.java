@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,14 +22,18 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class StashPatternFragment extends Fragment {
+public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
+    public static final String TAG = "StashPatternFragment";
+    private static final int PICK_FABRIC_REQUEST = 0;
+    private static final int RESULT_OK = 0;
 
     private static final String DIALOG_FABRIC = "fabric";
     private static final int CATEGORY_ID = 0;
 
     private StashPattern mPattern;
+    private StashPatternFragment mFragment;
     private StashFabric mFabric;
     private ArrayList<StashThread> mThreadList;
     private UUID mPatternId;
@@ -52,6 +57,7 @@ public class StashPatternFragment extends Fragment {
 
         mPatternId = (UUID)getArguments().getSerializable(EXTRA_PATTERN_ID);
         mPattern = StashData.get(getActivity()).getPattern(mPatternId);
+        mFragment = this;
     }
 
     public static StashPatternFragment newInstance(UUID patternId) {
@@ -168,23 +174,59 @@ public class StashPatternFragment extends Fragment {
         });
 
         mEditFabric = (ImageButton)v.findViewById(R.id.pattern_fabric_edit);
-        /*mEditFabric.setOnClickListener(new OnClickListener() {
+        mEditFabric.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
-                PickOneFragment dialog = new PickOneFragment();
+                PickOneDialogFragment dialog = PickOneDialogFragment.newInstance(R.array.fabric_choice_picker, 0);
+                dialog.setDialogPickOneListener(mFragment);
                 dialog.show(fm, DIALOG_FABRIC);
             }
-        });*/
+        });
 
         mFabricInfo = (TextView)v.findViewById(R.id.pattern_fabric_display);
-        if (mFabric != null) {
-            mFabricInfo.setText(mFabric.getInfo());
-            mFabricInfo.append(mFabric.getSize());
-        }
+        updateFabricInfo();
 
         mThreadInfo = (TextView)v.findViewById(R.id.pattern_thread_display);
 
         return v;
+    }
+
+    public void onSelectedOption(int selectedIndex) {
+        if (selectedIndex == 0) {
+            Log.d(TAG, "User chose to use existing fabric");
+        } else {
+            Log.d(TAG, "User chose to create new fabric");
+
+            StashFabric fabric = new StashFabric();
+            StashData.get(getActivity()).addFabric(fabric);
+
+            mFabric = fabric;
+            fabric.setUsedFor(mPattern);
+
+            updateFabricInfo();
+
+            Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
+            i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabric.getId());
+            startActivityForResult(i, PICK_FABRIC_REQUEST);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_FABRIC_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                updateFabricInfo();
+            }
+        }
+    }
+
+    private void updateFabricInfo() {
+        if (mFabric != null) {
+            mFabricInfo.setText(mFabric.getInfo());
+            mFabricInfo.append(mFabric.getSize());
+        } else {
+            mFabricInfo.setText(R.string.pattern_no_fabric);
+        }
     }
 
 
