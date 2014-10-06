@@ -20,13 +20,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
-public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener {
+public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
     public static final String TAG = "StashPatternFragment";
-    private static final int PICK_FABRIC_REQUEST = 0;
+    private static final int PICK_NEW_FABRIC_REQUEST = 0;
     private static final int RESULT_OK = 0;
 
     private static final String DIALOG_FABRIC = "fabric";
@@ -195,14 +196,31 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     }
 
     public void onSelectedOption(int selectedIndex) {
-        if (mFabric != null) {
-            mFabric.setUsedFor(null);
-        }
-
         if (selectedIndex == 0) {
             Log.d(TAG, "User chose to use existing fabric");
+
+            ArrayList<UUID> fabricStash = StashData.get(getActivity()).getFabricList();
+            ArrayList<UUID> possibleFabrics = new ArrayList<UUID>();
+
+            for (UUID fabricId : fabricStash) {
+                StashFabric fabric = StashData.get(getActivity()).getFabric(fabricId);
+                if (fabric.willFit(mPattern.getWidth(), mPattern.getHeight()) || fabric.willFit(mPattern.getHeight(), mPattern.getWidth())) {
+                    possibleFabrics.add(fabricId);
+                }
+            }
+
+            int previousFabric = possibleFabrics.indexOf(mFabric.getId());
+
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+            SelectFabricDialogFragment dialog = SelectFabricDialogFragment.newInstance(possibleFabrics, previousFabric);
+            dialog.setSelectFabricDialogListener(mFragment);
+            dialog.show(fm, DIALOG_FABRIC);
         } else {
             Log.d(TAG, "User chose to create new fabric");
+
+            if (mFabric != null) {
+                mFabric.setUsedFor(null);
+            }
 
             mFabric = new StashFabric();
             StashData.get(getActivity()).addFabric(mFabric);
@@ -210,17 +228,28 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             mFabric.setUsedFor(mPattern);
             mPattern.setFabric(mFabric);
 
-            updateFabricInfo();
-
             Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
             i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, mFabric.getId());
-            startActivityForResult(i, PICK_FABRIC_REQUEST);
+            startActivityForResult(i, PICK_NEW_FABRIC_REQUEST);
         }
+    }
+
+    public void onSelectedFabric(UUID fabricId) {
+        if (mFabric != null) {
+            mFabric.setUsedFor(null);
+        }
+
+        mFabric = StashData.get(getActivity()).getFabric(fabricId);
+
+        mFabric.setUsedFor(mPattern);
+        mPattern.setFabric(mFabric);
+
+        updateFabricInfo();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_FABRIC_REQUEST) {
+        if (requestCode == PICK_NEW_FABRIC_REQUEST) {
             if (resultCode == RESULT_OK) {
                 updateFabricInfo();
             }

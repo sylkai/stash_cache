@@ -54,4 +54,6 @@
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
 
+    <string name="fabric_selectPattern">Not assigned to any pattern.</string>
+
 </resources>
