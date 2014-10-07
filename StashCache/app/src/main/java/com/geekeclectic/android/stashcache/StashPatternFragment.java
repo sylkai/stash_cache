@@ -219,6 +219,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             Log.d(TAG, "User chose to create new fabric");
 
             if (mFabric != null) {
+                mFabric.usedFor().setFabric(null);
                 mFabric.setUsedFor(null);
             }
 
