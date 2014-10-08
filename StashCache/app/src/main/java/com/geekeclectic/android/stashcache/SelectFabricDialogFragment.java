@@ -1,8 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.app.AlertDialog.Builder;
 import android.os.Bundle;

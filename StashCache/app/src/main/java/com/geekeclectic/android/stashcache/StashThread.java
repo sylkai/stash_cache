@@ -31,6 +31,8 @@ public class StashThread {
     }
 
     public StashThread(JSONObject json) throws JSONException {
+        mUsedIn = new ArrayList<StashPattern>();
+
         mSource = json.getString(JSON_SOURCE);
         mCode = json.getString(JSON_CODE);
         mSkeinsOwned = json.getInt(JSON_OWNED);
@@ -61,10 +63,8 @@ public class StashThread {
     }
 
     public void removePattern(StashPattern pattern) {
-        int index = mUsedIn.indexOf(pattern);
-
-        if (index != -1) {
-            mUsedIn.remove(index);
+        if (mUsedIn.contains(pattern)) {
+            mUsedIn.remove(pattern);
         }
     }
 

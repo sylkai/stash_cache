@@ -10,7 +10,7 @@ import java.util.*;
 public class StashPattern {
 
     private UUID mPatternId;
-    private ArrayList<StashThread> mThreads;
+    private ArrayList<UUID> mThreads;
     private int mPatternHeight;
     private int mPatternWidth;
     private String mPatternName;
@@ -28,7 +28,7 @@ public class StashPattern {
     public StashPattern() {
         // generate random id
         mPatternId = UUID.randomUUID();
-        mThreads = new ArrayList<StashThread>();
+        mThreads = new ArrayList<UUID>();
     }
 
     public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap) throws JSONException {
@@ -55,13 +55,13 @@ public class StashPattern {
             mPatternFabric.setUsedFor(this);
         }
 
-        mThreads = new ArrayList<StashThread>();
+        mThreads = new ArrayList<UUID>();
         if (json.has(JSON_THREADS)) {
             JSONArray array = json.getJSONArray(JSON_THREADS);
             for (int i = 0; i < array.length(); i++) {
                 StashThread thread = threadMap.get(array.getString(i));
                 thread.usedInPattern(this);
-                mThreads.add(thread);
+                mThreads.add(thread.getId());
             }
         }
 
@@ -93,8 +93,8 @@ public class StashPattern {
 
         if (!mThreads.isEmpty()) {
             JSONArray array = new JSONArray();
-            for (StashThread thread : mThreads) {
-                array.put(thread.getKey());
+            for (UUID threadId : mThreads) {
+                array.put(threadId.toString());
             }
             json.put(JSON_THREADS, array);
         }
@@ -143,10 +143,14 @@ public class StashPattern {
     }
 
     public void addThread(StashThread thread) {
-        mThreads.add(thread);
+        mThreads.add(thread.getId());
     }
 
-    public ArrayList<StashThread> getThreadList() {
+    public void removeThread(StashThread thread) {
+        mThreads.remove(thread.getId());
+    }
+
+    public ArrayList<UUID> getThreadList() {
         return mThreads;
     }
 

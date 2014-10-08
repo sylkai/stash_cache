@@ -109,12 +109,33 @@
         android:layout_height="wrap_content"
         android:id="@+id/pattern_fabric_display" />
 
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/pattern_thread_info"
-        android:layout_marginBottom="4dp"
-        style="?android:listSeparatorTextViewStyle" />
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:src="@android:drawable/ic_menu_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pattern_thread_edit"
+            android:background= "@android:color/background_light"
+            android:clickable="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pattern_thread_info"
+            android:layout_marginBottom="4dp"
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_toLeftOf="@id/pattern_thread_edit"
+            android:layout_toStartOf="@id/pattern_thread_edit"/>
+
+    </RelativeLayout>
 
     <TextView
         android:layout_width="match_parent"
