@@ -50,6 +50,7 @@
     <string-array name="fabric_choice_picker">
         <item>Choose existing fabric</item>
         <item>Enter new fabric</item>
+        <item>Remove assigned fabric</item>
     </string-array>
 
     <string name="ok">Ok</string>

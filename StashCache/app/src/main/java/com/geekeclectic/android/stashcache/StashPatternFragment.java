@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,10 +21,15 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
-public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener {
+/**
+ * Display fragment for pattern detail.
+ */
+
+public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener, Observer {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
     public static final String TAG = "StashPatternFragment";
@@ -47,7 +53,11 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private ImageButton mEditThread;
     private TextView mFabricInfo;
     private TextView mThreadInfo;
+    private ChangedFragmentListener mCallback;
 
+    public interface ChangedFragmentListener {
+        public void updateFragments();
+    }
 
     public StashPatternFragment() {
         // required empty public constructor
@@ -58,15 +68,30 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        // get patternId and use it to get pattern
         mPatternId = (UUID)getArguments().getSerializable(EXTRA_PATTERN_ID);
         mPattern = StashData.get(getActivity()).getPattern(mPatternId);
+
+        // set reference to fragment for setting listeners
         mFragment = this;
 
         mFabric = mPattern.getFabric();
         mThreadList = mPattern.getThreadList();
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (ChangedFragmentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement ChangedFragmentListener");
+        }
+    }
+
     public static StashPatternFragment newInstance(UUID patternId) {
+        // associate patternId with the fragment through arguments
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_PATTERN_ID, patternId);
 
@@ -80,8 +105,11 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case android.R.id.home:
+                // set up navigation
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
+
+                    // note which category is calling the up to display appropriate fragment (pattern)
                     i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
@@ -97,19 +125,27 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         StashData.get(getActivity()).saveStash();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateFabricInfo();
+    }
+
     @TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_pattern, container, false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (NavUtils.getParentActivityName(getActivity()) != null) {
+                // turn on up navigation
                 getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
 
+        // editText for pattern name
         mTitleField = (EditText)v.findViewById(R.id.pattern_name);
         mTitleField.setText(mPattern.getPatternName());
         mTitleField.addTextChangedListener(new TextWatcher() {
@@ -127,6 +163,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
         });
 
+        // editText for the designer name
         mSourceField = (EditText)v.findViewById(R.id.designer_name);
         mSourceField.setText(mPattern.getPatternSource());
         mSourceField.addTextChangedListener(new TextWatcher() {
@@ -143,6 +180,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
         });
 
+        // editText for pattern width in stitches
         mWidthField = (EditText)v.findViewById(R.id.pattern_width);
         mWidthField.setText(Integer.toString(mPattern.getWidth()));
         mWidthField.addTextChangedListener(new TextWatcher() {
@@ -161,6 +199,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
         });
 
+        // editText for pattern height in stitches
         mHeightField = (EditText)v.findViewById(R.id.pattern_height);
         mHeightField.setText(Integer.toString(mPattern.getHeight()));
         mHeightField.addTextChangedListener(new TextWatcher() {
@@ -179,6 +218,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
         });
 
+        // button to allow selection of fabric linked to pattern
         mEditFabric = (ImageButton)v.findViewById(R.id.pattern_fabric_edit);
         mEditFabric.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -192,10 +232,13 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mFabricInfo = (TextView)v.findViewById(R.id.pattern_fabric_display);
         updateFabricInfo();
 
+        // button to allow selection of threads used in pattern
         mEditThread = (ImageButton)v.findViewById(R.id.pattern_thread_edit);
         mEditThread.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
+
+                // create a copy of the thread list to avoid modification errors
                 SelectThreadDialogFragment dialog = SelectThreadDialogFragment.newInstance(StashData.get(getActivity()).getThreadList(), new ArrayList<UUID>(mThreadList));
                 dialog.setSelectThreadDialogListener(mFragment);
                 dialog.show(fm, DIALOG_THREAD);
@@ -210,6 +253,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     public void onSelectedOption(int selectedIndex) {
         if (selectedIndex == 0) {
+            // user chose to use existing fabric
             Log.d(TAG, "User chose to use existing fabric");
 
             // get list of all fabric
@@ -237,7 +281,16 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             SelectFabricDialogFragment dialog = SelectFabricDialogFragment.newInstance(possibleFabrics, previousFabric);
             dialog.setSelectFabricDialogListener(mFragment);
             dialog.show(fm, DIALOG_FABRIC);
+        } else if (selectedIndex == 2) {
+            // user chose to remove fabric
+
+            mPattern.setFabric(null);
+            mFabric.setUsedFor(null);
+            mFabric = null;
+
+            updateFabricInfo();
         } else {
+            // user chose to create new fabric
             Log.d(TAG, "User chose to create new fabric");
 
             if (mFabric != null) {
@@ -261,7 +314,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     }
 
     public void onSelectedFabric(UUID fabricId) {
-        if (mFabric == null || (mFabric != null && mFabric.getId() != fabricId)) {
+        if (mFabric == null || mFabric.getId() != fabricId) {
             // if user kept the same fabric, do nothing
 
             if (mFabric != null) {
@@ -281,6 +334,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             mPattern.setFabric(mFabric);
 
             updateFabricInfo();
+            mCallback.updateFragments();
         }
     }
 
@@ -328,6 +382,12 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 updateFabricInfo();
             }
         }
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        mFabric = mPattern.getFabric();
+        updateFabricInfo();
     }
 
     private void updateFabricInfo() {

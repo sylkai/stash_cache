@@ -1,8 +1,8 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 10/6/2014.
+ * Dialog to select existing fabric to be linked to a pattern.  mSelectedIndex and mFabrics are
+ * static at this time in order to allow the dialog to be recreated if necessary.  This may change
+ * in a future iteration.
  */
 public class SelectFabricDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -93,9 +95,11 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
             TextView fabricSizeTextView = (TextView) convertView.findViewById(R.id.fabric_select_list_item_sizeTextView);
             fabricSizeTextView.setText(fabric.getSize());
 
+            TextView fabricPatternTextView = (TextView) convertView.findViewById(R.id.fabric_select_list_item_patternTextView);
             if(fabric.isAssigned()) {
-                TextView fabricPatternTextView = (TextView) convertView.findViewById(R.id.fabric_select_list_item_patternTextView);
                 fabricPatternTextView.setText(fabric.usedFor().getPatternName());
+            } else {
+                fabricPatternTextView.setText(R.string.fabric_selectPattern);
             }
 
             return convertView;
