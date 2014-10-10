@@ -3,12 +3,13 @@ package com.geekeclectic.android.stashcache;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Checkable;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 /**
- * Created by sylk on 10/3/2014.
+ * Extension of RelativeLayout that implements the Checkable interface so it can be used as the
+ * root element of a custom listView for setSingleChoiceItems() in AlertDialog
  */
+
 public class CheckableRelativeLayout extends RelativeLayout implements Checkable {
 
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};

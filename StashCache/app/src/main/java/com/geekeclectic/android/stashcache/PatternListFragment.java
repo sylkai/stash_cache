@@ -1,9 +1,9 @@
 package com.geekeclectic.android.stashcache;
 
-import android.os.Build;
-import android.support.v4.app.ListFragment;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -15,17 +15,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.ArrayAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 /**
- * Created by sylk on 8/25/2014.
+ * Fragment to display list of patterns.  Long press allows user to select items to be deleted.
  */
+
 public class PatternListFragment extends ListFragment {
 
     private static final String TAG = "PatternListFragment";
@@ -53,6 +53,7 @@ public class PatternListFragment extends ListFragment {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             registerForContextMenu(listView);
         } else {
+            // set up for action mode on long press
             listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -71,11 +72,15 @@ public class PatternListFragment extends ListFragment {
                 }
 
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    // if the actionMenu applies to THIS LIST (necessary because of ViewPager)
                     if (item.getGroupId() == PATTERN_GROUP_ID) {
                         switch (item.getItemId()) {
                             case R.id.menu_item_delete_pattern:
                                 PatternAdapter adapter = (PatternAdapter)getListAdapter();
                                 StashData stash = StashData.get(getActivity());
+
+                                // iterate through the the items in the adapter - if the pattern is
+                                // checked, remove it from the stash
                                 for (int i = adapter.getCount() - 1; i >=0; i--) {
                                     if (getListView().isItemChecked(i)) {
                                         stash.deletePattern(adapter.getItem(i));
@@ -83,6 +88,8 @@ public class PatternListFragment extends ListFragment {
                                 }
 
                                 mode.finish();
+
+                                // notify the adapter to refresh the view
                                 adapter.notifyDataSetChanged();
                                 return true;
                             default:
@@ -106,11 +113,13 @@ public class PatternListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
+        // always check on load to see if data set needs updating
         ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // add menu for pattern addition
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_pattern_list, menu);
     }
@@ -119,8 +128,11 @@ public class PatternListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_new_pattern:
+                // create new pattern and add it to the stash
                 StashPattern pattern = new StashPattern();
                 StashData.get(getActivity()).addPattern(pattern);
+
+                // start pattern viewPager with the desired pattern fragment
                 Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
                 i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
                 startActivityForResult(i, 0);
@@ -138,6 +150,7 @@ public class PatternListFragment extends ListFragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getGroupId() == PATTERN_GROUP_ID) {
+            // if the requesting fragment was THIS ONE, get the info
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
             int position = info.position;
             PatternAdapter adapter = (PatternAdapter) getListAdapter();
@@ -145,6 +158,7 @@ public class PatternListFragment extends ListFragment {
 
             switch (item.getItemId()) {
                 case R.id.menu_item_delete_pattern:
+                    // delete the pattern and update the view
                     StashData.get(getActivity()).deletePattern(pattern);
                     adapter.notifyDataSetChanged();
                     return true;

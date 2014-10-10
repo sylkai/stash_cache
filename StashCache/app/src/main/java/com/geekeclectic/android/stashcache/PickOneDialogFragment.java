@@ -1,6 +1,5 @@
 package com.geekeclectic.android.stashcache;
 
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -9,7 +8,9 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
 /**
- * Created by sylk on 9/15/2014.
+ * Credit to Kirk at StackOverflow (http://stackoverflow.com/questions/5660887/android-dialog-single-choice-get-radio-selected)
+ * for his clear answer on how to handle radio buttons in dialogs and showing how to construct a
+ * reusable dialog where the user selects one option (passing in an array of strings).
  */
 public class PickOneDialogFragment extends DialogFragment implements OnClickListener {
 

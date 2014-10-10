@@ -1,7 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
-import android.app.Dialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -27,6 +27,7 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
     private FabricAdapter mAdapter;
     private static SelectFabricDialogListener mSelectFabricDialogCallback;
 
+    // to send selection back to the patternfragment for linking
     public interface SelectFabricDialogListener {
         public void onSelectedFabric(UUID fabricId);
     }
@@ -47,6 +48,7 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Builder builder = new Builder(this.getActivity());
 
+        // create adapter to provide custom listview for displaying fabric information
         mAdapter = new FabricAdapter(mFabrics);
 
         builder.setSingleChoiceItems(mAdapter, mSelectedIndex, this);
@@ -86,7 +88,8 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_select_fabric, null);
             }
 
-            // configure view for this fabric
+            // configure view for this fabric - KEEP IN MIND VIEW MAY BE RECYCLED AND ALL FIELDS
+            // MUST BE INITIALIZED AGAIN
             StashFabric fabric = StashData.get(getActivity()).getFabric(getItem(position));
 
             TextView fabricInfoTextView = (TextView) convertView.findViewById(R.id.fabric_select_list_item_infoTextView);

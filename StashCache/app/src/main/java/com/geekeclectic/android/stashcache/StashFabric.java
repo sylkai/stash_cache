@@ -5,9 +5,13 @@ import org.json.JSONObject;
 
 import java.util.UUID;
 
-/**
- * Created by sylk on 8/22/2014.
+/*
+ * Each instance of this class corresponds to a piece of fabric in the stash.  The fabric is
+ * assigned a unique ID.  Fields for fabric manufacturer, type, color, count, and size (width and
+ * height).  One method is included to determine whether the fabric could fit the pattern of a
+ * certain size, and a private method to keep the stitchable area up to date.
  */
+
 public class StashFabric {
 
     // fabric width and height both recorded in inches
@@ -35,17 +39,20 @@ public class StashFabric {
     private static final String JSON_ID = "fabric id";
 
     public StashFabric() {
+        // initialize with random ID
         mFabricId = UUID.randomUUID();
     }
 
     public StashFabric(JSONObject json) throws JSONException {
+        // load fabricId and necessary numbers
         mFabricCount = json.getInt(JSON_COUNT);
-        mFabricWidth = json.getInt(JSON_WIDTH);
-        mFabricHeight = json.getInt(JSON_HEIGHT);
+        mFabricWidth = json.getDouble(JSON_WIDTH);
+        mFabricHeight = json.getDouble(JSON_HEIGHT);
         mFabricId = UUID.fromString(json.getString(JSON_ID));
 
         updateStitchableArea();
 
+        // check to make sure value was assigned before loading remaining variables
         if (json.has(JSON_COLOR)) {
             mFabricColor = json.getString(JSON_COLOR);
         }
@@ -66,6 +73,7 @@ public class StashFabric {
         json.put(JSON_WIDTH, mFabricWidth);
         json.put(JSON_HEIGHT, mFabricHeight);
 
+        // store remaining variables only if value assigned
         if (mFabricColor != null) {
             json.put(JSON_COLOR, mFabricColor);
         }
@@ -106,6 +114,7 @@ public class StashFabric {
     }
 
     public void setUsedFor(StashPattern pattern) {
+        // allows linkage with a pattern for quick reference
         mFabricFor = pattern;
     }
 
@@ -114,6 +123,7 @@ public class StashFabric {
     }
 
     public void setCount(int count) {
+        // fabric count must be an integer, used to calculate stitchable area
         mFabricCount = count;
         updateStitchableArea();
     }
@@ -123,6 +133,7 @@ public class StashFabric {
     }
 
     public void setWidth(double width) {
+        // fabric width in inches, can be decimal - used to calculate stitchable area
         mFabricWidth = width;
         updateStitchableArea();
     }
@@ -132,6 +143,7 @@ public class StashFabric {
     }
 
     public void setHeight(double height) {
+        // fabric height in inches, can be decimal - used to calculate stitchable area
         mFabricHeight = height;
         updateStitchableArea();
     }
@@ -141,7 +153,9 @@ public class StashFabric {
     }
 
     public boolean willFit(int width, int height) {
-        return (mStitchWidth >= width && mStitchHeight >= height);
+        // given pattern size in stitches (width and height), returns true if fabric stitchable area
+        // can accommodate pattern and checks both orientations
+        return ((mStitchWidth >= width && mStitchHeight >= height) || (mStitchWidth >= height && mStitchHeight >= width));
     }
 
     public UUID getId() {
@@ -149,22 +163,28 @@ public class StashFabric {
     }
 
     public String getKey() {
+        // UUID.toString is used as key for map/JSON object
         return mFabricId.toString();
     }
 
     public String getInfo() {
+        // returns a formatted string giving the key fabric characteristics
         return mFabricType + " - " + mFabricCount + " count, " + mFabricColor;
     }
 
     public String getSize() {
+        // returns a formatted string giving the fabric size, as entered
         return mFabricWidth + " inches x " + mFabricHeight + " inches";
     }
 
     public boolean isAssigned() {
+        // if fabric has been assigned to a pattern, returns true
         return (mFabricFor != null);
     }
 
     private void updateStitchableArea() {
+        // calculates the available stitch count using the fabric size and count, minus surrounding
+        // edge buffer for framing, updated every time height/width/count is changed
         mStitchWidth = (mFabricWidth - EDGE_BUFFER * 2) * mFabricCount;
         mStitchHeight = (mFabricHeight - EDGE_BUFFER * 2) * mFabricCount;
     }

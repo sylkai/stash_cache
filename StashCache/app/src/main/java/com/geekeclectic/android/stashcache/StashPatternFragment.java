@@ -264,7 +264,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             // if fabric can fit the pattern, add to list for the adapter
             for (UUID fabricId : fabricStash) {
                 StashFabric fabric = StashData.get(getActivity()).getFabric(fabricId);
-                if (fabric.willFit(mPattern.getWidth(), mPattern.getHeight()) || fabric.willFit(mPattern.getHeight(), mPattern.getWidth())) {
+                if (fabric.willFit(mPattern.getWidth(), mPattern.getHeight())) {
                     possibleFabrics.add(fabricId);
                 }
             }
@@ -386,7 +386,10 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     @Override
     public void update(Observable observable, Object data) {
+        // refresh the fabric from the pattern data
         mFabric = mPattern.getFabric();
+
+        // update the display
         updateFabricInfo();
     }
 

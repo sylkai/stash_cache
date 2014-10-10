@@ -8,8 +8,12 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 /**
- * Created by sylk on 9/4/2014.
+ * Activity to host the viewPager managing the listView fragments displaying the lists of different
+ * stash components (patterns, fabrics, threads).  Scrolling tab bar above identifies which list
+ * is active.  EXTRA_FRAGMENT_ID indicates which item class is displayed when navigating up through
+ * hierarchy.
  */
+
 public class StashOverviewPagerActivity extends FragmentActivity {
 
     static final int ITEMS = 3;
@@ -23,11 +27,14 @@ public class StashOverviewPagerActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stash_overview);
 
+        // initialize viewPager and adapter
         mViewPager = (ViewPager)findViewById(R.id.stashViewPager);
         mAdapter = new StashOverviewPagerAdapter(getSupportFragmentManager());
 
         mViewPager.setAdapter(mAdapter);
 
+        // if this was created with an intent, check which list is supposed to be active and set
+        // it as the current item
         if (getIntent() != null) {
             int mFragmentId = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, 0);
             mViewPager.setCurrentItem(mFragmentId, false);
@@ -36,7 +43,6 @@ public class StashOverviewPagerActivity extends FragmentActivity {
     }
 
     public class StashOverviewPagerAdapter extends FragmentStatePagerAdapter {
-
 
         public StashOverviewPagerAdapter(FragmentManager fm) {
             super(fm);
