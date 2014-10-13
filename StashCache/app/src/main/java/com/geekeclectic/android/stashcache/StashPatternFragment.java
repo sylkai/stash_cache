@@ -156,7 +156,6 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mTitleField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 mPattern.setPatternName(c.toString());
-                getActivity().setTitle(mPattern.getPatternName());
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
