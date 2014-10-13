@@ -3,8 +3,8 @@ package com.geekeclectic.android.stashcache;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,8 +18,9 @@ import android.widget.TextView;
 import java.util.UUID;
 
 /**
- * Created by sylk on 8/27/2014.
+ * Fragment to display information for a fabric in the stash and allow the user to edit it.
  */
+
 public class StashFabricFragment extends Fragment {
 
     public static final String EXTRA_FABRIC_ID = "com.geekeclectic.android.stashcache.fabric_id";
@@ -45,6 +46,7 @@ public class StashFabricFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        // get the fabric id from the arguments bundle and use that to get the appropriate fabric
         UUID fabricId = (UUID)getArguments().getSerializable(EXTRA_FABRIC_ID);
         mFabric = StashData.get(getActivity()).getFabric(fabricId);
 
@@ -66,6 +68,7 @@ public class StashFabricFragment extends Fragment {
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
+                    // sets up navigation to go back to proper list fragment
                     Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
                     i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
                     NavUtils.navigateUpTo(getActivity(), i);

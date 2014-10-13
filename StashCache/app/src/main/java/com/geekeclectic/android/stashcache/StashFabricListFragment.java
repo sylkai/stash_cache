@@ -1,9 +1,9 @@
 package com.geekeclectic.android.stashcache;
 
-import android.os.Build;
-import android.support.v4.app.ListFragment;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -15,8 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.ArrayAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,11 +25,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 8/27/2014.
+ * Fragment to display list of fabrics.  Long press allows user to select items to be deleted.
  */
-public class FabricListFragment extends ListFragment {
+public class StashFabricListFragment extends ListFragment {
 
-    //private ArrayList<StashFabric> mFabrics;
     FabricAdapter adapter;
     ArrayList<UUID> mFabrics;
 
@@ -41,8 +40,10 @@ public class FabricListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        // get the current list of fabrics to display
         mFabrics = StashData.get(getActivity()).getFabricList();
 
+        // create and set list adapter using fabrics list
         adapter = new FabricAdapter(mFabrics);
         setListAdapter(adapter);
     }
@@ -56,6 +57,7 @@ public class FabricListFragment extends ListFragment {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             registerForContextMenu(listView);
         } else {
+            // set up list behavior on long-press (for deletion)
             listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -74,6 +76,7 @@ public class FabricListFragment extends ListFragment {
                 }
 
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    // if the action menu is the one associated with this list (because fragments)
                     if (item.getGroupId() == FABRIC_GROUP_ID) {
                         switch (item.getItemId()) {
                             case R.id.menu_item_delete_fabric:
@@ -81,12 +84,15 @@ public class FabricListFragment extends ListFragment {
                                 StashData stash = StashData.get(getActivity());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
+                                        // if the item is checked, remove the item from the stash
                                         StashFabric fabric = stash.getFabric(adapter.getItem(i));
                                         stash.deleteFabric(fabric);
                                     }
                                 }
 
                                 mode.finish();
+
+                                // notify the adapter that the backing list has changed and refresh
                                 adapter.notifyDataSetChanged();
                                 return true;
                             default:
@@ -123,8 +129,11 @@ public class FabricListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_new_fabric:
+                // create a new fabric and add it to the stash
                 StashFabric fabric = new StashFabric();
                 StashData.get(getActivity()).addFabric(fabric);
+
+                // start StashFabricFragment with the new fabric
                 Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
                 i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabric.getId());
                 startActivityForResult(i, 0);
@@ -142,6 +151,7 @@ public class FabricListFragment extends ListFragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getGroupId() == FABRIC_GROUP_ID) {
+            // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
             int position = info.position;
             FabricAdapter adapter = (FabricAdapter) getListAdapter();
@@ -149,6 +159,7 @@ public class FabricListFragment extends ListFragment {
 
             switch (item.getItemId()) {
                 case R.id.menu_item_delete_fabric:
+                    // delete fabric and notify adapter of data change
                     StashData.get(getActivity()).deleteFabric(fabric);
                     adapter.notifyDataSetChanged();
                     return true;

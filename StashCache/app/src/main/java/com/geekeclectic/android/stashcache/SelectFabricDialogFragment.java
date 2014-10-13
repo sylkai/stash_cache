@@ -18,6 +18,7 @@ import java.util.UUID;
  * static at this time in order to allow the dialog to be recreated if necessary.  This may change
  * in a future iteration.
  */
+
 public class SelectFabricDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     static final String TAG = "SelectFabricDialog";

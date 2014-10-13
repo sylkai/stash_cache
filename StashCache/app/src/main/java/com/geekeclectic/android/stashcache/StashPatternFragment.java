@@ -26,7 +26,12 @@ import java.util.Observer;
 import java.util.UUID;
 
 /**
- * Display fragment for pattern detail.
+ * Fragment to display information for a pattern in the stash and allow the user to edit it.
+ * ChangedFragmentListener interface is required to notify the host activity that changes in this
+ * fragment may impact other StashPatternFragments and their displayed information should be
+ * refreshed.  Implements listeners for dialog callbacks for selecting fabric and threads to
+ * associate with the pattern.  The Observer implementation allows the host activity to refresh the
+ * display of the fragment in case the underlying information for the Pattern has been updated.
  */
 
 public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener, Observer {

@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 9/4/2014.
+ * Host activity for a viewpager to display StashFabric fragments to the user, in order to allow
+ * swiping between fragments on the list.  Uses a FragmentStatePagerAdapter to reduce memory load.
  */
+
 public class StashFabricPagerActivity extends FragmentActivity {
 
     private ViewPager mViewPager;
@@ -22,12 +24,15 @@ public class StashFabricPagerActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // create and set ViewPager
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.fabricViewPager);
         setContentView(mViewPager);
 
+        // get list of fabrics for viewPager
         mFabrics = StashData.get(this).getFabricList();
 
+        // set fragment manager to display fragments
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
             @Override
@@ -37,11 +42,11 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
             @Override
             public Fragment getItem(int pos) {
-                StashFabric fabric = StashData.get(getParent()).getFabric(mFabrics.get(pos));
-                return StashFabricFragment.newInstance(fabric.getId());
+                return StashFabricFragment.newInstance(mFabrics.get(pos));
             }
         });
 
+        // get UUID for the fabric to be displayed and set the appropriate fragment
         UUID fabricId = (UUID)getIntent().getSerializableExtra(StashFabricFragment.EXTRA_FABRIC_ID);
         for (int i = 0; i < mFabrics.size(); i++) {
             if (mFabrics.get(i).equals(fabricId)) {

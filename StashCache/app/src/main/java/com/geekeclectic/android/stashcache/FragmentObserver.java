@@ -7,6 +7,7 @@ import java.util.Observable;
  * changes.  Credit to alexfu for initial design (https://gist.github.com/alexfu/5797429), modified
  * to account for use of FragmentStatePagerAdapter instead of FragmentPagerAdapter.
  */
+
 public class FragmentObserver extends Observable {
 
     @Override

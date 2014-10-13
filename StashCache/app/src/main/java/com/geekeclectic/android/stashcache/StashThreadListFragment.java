@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 8/27/2014.
+ * Fragment to display list of threads.  Long press allows user to select items to be deleted.
  */
-public class ThreadListFragment extends ListFragment {
+public class StashThreadListFragment extends ListFragment {
 
     private ArrayList<UUID> mThreads;
 
@@ -39,8 +39,10 @@ public class ThreadListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        // get the current list of threads to display
         mThreads = StashData.get(getActivity()).getThreadList();
 
+        // create and set adapter using thread list
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
         setListAdapter(adapter);
     }
@@ -54,6 +56,7 @@ public class ThreadListFragment extends ListFragment {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             registerForContextMenu(listView);
         } else {
+            // set up list behavior on long-press for deletion
             listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
@@ -73,18 +76,22 @@ public class ThreadListFragment extends ListFragment {
 
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                     if (item.getGroupId() == THREAD_GROUP_ID) {
+                        // if called by this fragment
                         switch (item.getItemId()) {
                             case R.id.menu_item_delete_thread:
                                 ThreadAdapter adapter = (ThreadAdapter)getListAdapter();
                                 StashData stash = StashData.get(getActivity());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
+                                        // if item has been selected, delete it from the stash
                                         StashThread thread = stash.getThread(adapter.getItem(i));
                                         stash.deleteThread(thread);
                                     }
                                 }
 
                                 mode.finish();
+
+                                // refresh the list
                                 adapter.notifyDataSetChanged();
                                 return true;
                             default:
@@ -120,8 +127,11 @@ public class ThreadListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_new_thread:
+                // create a new thread
                 StashThread thread = new StashThread();
                 StashData.get(getActivity()).addThread(thread);
+
+                // start StashThreadFragment with the new thread
                 Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
                 i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
                 startActivityForResult(i, 0);
@@ -139,6 +149,7 @@ public class ThreadListFragment extends ListFragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getGroupId() == THREAD_GROUP_ID) {
+            // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
             int position = info.position;
             ThreadAdapter adapter = (ThreadAdapter) getListAdapter();
@@ -146,8 +157,8 @@ public class ThreadListFragment extends ListFragment {
 
             switch (item.getItemId()) {
                 case R.id.menu_item_delete_thread:
+                    // delete the thread from the stash
                     StashData.get(getActivity()).deleteThread(thread);
-                    mThreads = StashData.get(getActivity()).getThreadList();
                     adapter.notifyDataSetChanged();
                     return true;
             }

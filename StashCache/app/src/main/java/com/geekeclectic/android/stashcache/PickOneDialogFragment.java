@@ -12,6 +12,7 @@ import android.support.v4.app.DialogFragment;
  * for his clear answer on how to handle radio buttons in dialogs and showing how to construct a
  * reusable dialog where the user selects one option (passing in an array of strings).
  */
+
 public class PickOneDialogFragment extends DialogFragment implements OnClickListener {
 
     static final String TAG = "PickOneDialog";

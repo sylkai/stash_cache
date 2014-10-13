@@ -18,7 +18,7 @@ public class StashFabric {
 
     private static int EDGE_BUFFER = 2;
 
-    private UUID mFabricId;
+    private UUID mId;
     private int mFabricCount;
     private double mFabricWidth;
     private double mFabricHeight;
@@ -40,7 +40,7 @@ public class StashFabric {
 
     public StashFabric() {
         // initialize with random ID
-        mFabricId = UUID.randomUUID();
+        mId = UUID.randomUUID();
     }
 
     public StashFabric(JSONObject json) throws JSONException {
@@ -48,7 +48,7 @@ public class StashFabric {
         mFabricCount = json.getInt(JSON_COUNT);
         mFabricWidth = json.getDouble(JSON_WIDTH);
         mFabricHeight = json.getDouble(JSON_HEIGHT);
-        mFabricId = UUID.fromString(json.getString(JSON_ID));
+        mId = UUID.fromString(json.getString(JSON_ID));
 
         updateStitchableArea();
 
@@ -68,7 +68,7 @@ public class StashFabric {
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_ID, mFabricId.toString());
+        json.put(JSON_ID, mId.toString());
         json.put(JSON_COUNT, mFabricCount);
         json.put(JSON_WIDTH, mFabricWidth);
         json.put(JSON_HEIGHT, mFabricHeight);
@@ -159,12 +159,12 @@ public class StashFabric {
     }
 
     public UUID getId() {
-        return mFabricId;
+        return mId;
     }
 
     public String getKey() {
         // UUID.toString is used as key for map/JSON object
-        return mFabricId.toString();
+        return mId.toString();
     }
 
     public String getInfo() {

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class StashPattern {
 
-    private UUID mPatternId;
+    private UUID mId;
     private ArrayList<UUID> mThreads;
     private int mPatternHeight;
     private int mPatternWidth;
@@ -34,14 +34,14 @@ public class StashPattern {
 
     public StashPattern() {
         // generate random id
-        mPatternId = UUID.randomUUID();
+        mId = UUID.randomUUID();
 
         // initialize threadList
         mThreads = new ArrayList<UUID>();
     }
 
     public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap) throws JSONException {
-        mPatternId = UUID.fromString(json.getString(JSON_PATTERN));
+        mId = UUID.fromString(json.getString(JSON_PATTERN));
 
         // because values are only stored if they exist, we need to check for the tag before
         // getting the value
@@ -88,7 +88,7 @@ public class StashPattern {
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_PATTERN, mPatternId.toString());
+        json.put(JSON_PATTERN, mId.toString());
 
         // values are only stored if they exist - nothing is stored if no value has been entered
         if (mPatternName != null) {
@@ -178,7 +178,7 @@ public class StashPattern {
     }
 
     public UUID getId() {
-        return mPatternId;
+        return mId;
     }
 
     @Override

@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 9/4/2014.
+ * Host activity for a viewpager to display StashThread fragments to the user, in order to allow
+ * swiping between fragments on the list.  Uses a FragmentStatePagerAdapter to reduce memory load.
  */
 public class StashThreadPagerActivity extends FragmentActivity {
 
@@ -22,12 +23,15 @@ public class StashThreadPagerActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // create viewPager
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.threadViewPager);
         setContentView(mViewPager);
 
+        // get list of threads
         mThreads = StashData.get(this).getThreadList();
 
+        // create and set fragment manager to return appropriate fragments
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
             @Override
@@ -37,11 +41,11 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
             @Override
             public Fragment getItem(int pos) {
-                StashThread thread = StashData.get(getParent()).getThread(mThreads.get(pos));
-                return StashThreadFragment.newInstance(thread.getId());
+                return StashThreadFragment.newInstance(mThreads.get(pos));
             }
         });
 
+        // get the id for the desired thread and set the appropriate fragment as current
         UUID threadId = (UUID)getIntent().getSerializableExtra(StashThreadFragment.EXTRA_THREAD_ID);
         for (int i = 0; i < mThreads.size(); i++) {
             if (mThreads.get(i).equals(threadId)) {

@@ -57,11 +57,11 @@ public class StashOverviewPagerActivity extends FragmentActivity {
         public Fragment getItem(int i) {
             switch (i) {
                 case 1: // fabric list
-                    return new FabricListFragment();
+                    return new StashFabricListFragment();
                 case 2: // thread list
-                    return new ThreadListFragment();
+                    return new StashThreadListFragment();
                 default: // pattern list
-                    return new PatternListFragment();
+                    return new StashPatternListFragment();
             }
         }
 

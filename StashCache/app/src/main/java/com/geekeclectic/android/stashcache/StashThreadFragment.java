@@ -3,8 +3,8 @@ package com.geekeclectic.android.stashcache;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,8 +19,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 8/27/2014.
+ * Fragment to display information for a thread in the stash and allow the user to edit it.
  */
+
 public class StashThreadFragment extends Fragment {
 
     public static final String EXTRA_THREAD_ID = "com.geekeclectic.android.stashcache.thread_id";
@@ -44,6 +45,7 @@ public class StashThreadFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        // get id for thread and pull up the appropriate thread from the stash
         UUID threadId = (UUID)getArguments().getSerializable(EXTRA_THREAD_ID);
         mThread = StashData.get(getActivity()).getThread(threadId);
     }
@@ -52,6 +54,7 @@ public class StashThreadFragment extends Fragment {
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_THREAD_ID, threadId);
 
+        // set arguments (threadId) and attach to the fragment
         StashThreadFragment fragment = new StashThreadFragment();
         fragment.setArguments(args);
 
@@ -63,6 +66,7 @@ public class StashThreadFragment extends Fragment {
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
+                    // navigate up to stash overview and sets thread fragment as current
                     Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
                     i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
                     NavUtils.navigateUpTo(getActivity(), i);

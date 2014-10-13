@@ -1,13 +1,15 @@
 package com.geekeclectic.android.stashcache;
 
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
 /**
- * Created by sylk on 7/31/2014.
+ * Superclass for a activity that hosts only one fragment.  From the Big Nerd Ranch Guide to Android
+ * Programming.
  */
+
 public abstract class SingleFragmentActivity extends FragmentActivity {
 
     protected abstract Fragment createFragment();

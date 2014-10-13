@@ -1,8 +1,8 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.app.AlertDialog.Builder;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
@@ -10,8 +10,12 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 10/6/2014.
+ * Fragment for an AlertDialog to create a multi-choice list showing the threads in the stash and
+ * allowing the user to select which threads are used in the pattern.  Once the user selects the
+ * "OK" button, the interface calls back to the pattern fragment and updates the list of threads
+ * associated with the pattern.
  */
+
 public class SelectThreadDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     private static ArrayList<UUID> mThreads;

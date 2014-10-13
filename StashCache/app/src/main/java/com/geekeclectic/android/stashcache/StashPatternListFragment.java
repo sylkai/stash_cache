@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * Fragment to display list of patterns.  Long press allows user to select items to be deleted.
  */
 
-public class PatternListFragment extends ListFragment {
+public class StashPatternListFragment extends ListFragment {
 
     private static final String TAG = "PatternListFragment";
     private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
