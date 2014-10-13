@@ -17,30 +17,33 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 /**
- * Created by sylk on 8/25/2014.
+ * Fragment to display list of threads.  Long press allows user to select items to be deleted.
  */
-public class PatternListFragment extends ListFragment {
+public class StashThreadListFragment extends ListFragment {
 
-    private static final String TAG = "PatternListFragment";
-    private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
+    private ArrayList<UUID> mThreads;
 
-    private ArrayList<StashPattern> mPatterns;
+    private static final String TAG = "ThreadListFragment";
+    private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mPatterns = StashData.get(getActivity()).getPatternData();
+        // get the current list of threads to display
+        mThreads = StashData.get(getActivity()).getThreadList();
 
-        PatternAdapter adapter = new PatternAdapter(mPatterns);
+        // create and set adapter using thread list
+        ThreadAdapter adapter = new ThreadAdapter(mThreads);
         setListAdapter(adapter);
     }
 
@@ -50,39 +53,45 @@ public class PatternListFragment extends ListFragment {
 
         ListView listView = (ListView)v.findViewById(android.R.id.list);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             registerForContextMenu(listView);
         } else {
+            // set up list behavior on long-press for deletion
             listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             listView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                    // required but not used here
+                    // required but not used in this implementation
                 }
 
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     MenuInflater inflater = mode.getMenuInflater();
-                    inflater.inflate(R.menu.pattern_list_item_context, menu);
+                    inflater.inflate(R.menu.thread_list_item_context, menu);
                     return true;
                 }
 
                 public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                    // required but not used here
                     return false;
+                    // required but not used in this implementation
                 }
 
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    if (item.getGroupId() == PATTERN_GROUP_ID) {
+                    if (item.getGroupId() == THREAD_GROUP_ID) {
+                        // if called by this fragment
                         switch (item.getItemId()) {
-                            case R.id.menu_item_delete_pattern:
-                                PatternAdapter adapter = (PatternAdapter)getListAdapter();
+                            case R.id.menu_item_delete_thread:
+                                ThreadAdapter adapter = (ThreadAdapter)getListAdapter();
                                 StashData stash = StashData.get(getActivity());
-                                for (int i = adapter.getCount() - 1; i >=0; i--) {
+                                for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
-                                        stash.deletePattern(adapter.getItem(i));
+                                        // if item has been selected, delete it from the stash
+                                        StashThread thread = stash.getThread(adapter.getItem(i));
+                                        stash.deleteThread(thread);
                                     }
                                 }
 
                                 mode.finish();
+
+                                // refresh the list
                                 adapter.notifyDataSetChanged();
                                 return true;
                             default:
@@ -94,11 +103,10 @@ public class PatternListFragment extends ListFragment {
                 }
 
                 public void onDestroyActionMode(ActionMode mode) {
-                    // required but not used here
+                    // required but not used in this implementation
                 }
             });
         }
-
 
         return v;
     }
@@ -106,23 +114,26 @@ public class PatternListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
+        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_pattern_list, menu);
+        inflater.inflate(R.menu.fragment_thread_list, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_new_pattern:
-                StashPattern pattern = new StashPattern();
-                StashData.get(getActivity()).addPattern(pattern);
-                Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
-                i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
+            case R.id.menu_item_new_thread:
+                // create a new thread
+                StashThread thread = new StashThread();
+                StashData.get(getActivity()).addThread(thread);
+
+                // start StashThreadFragment with the new thread
+                Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
+                i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
                 startActivityForResult(i, 0);
                 return true;
             default:
@@ -132,20 +143,22 @@ public class PatternListFragment extends ListFragment {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        getActivity().getMenuInflater().inflate(R.menu.pattern_list_item_context, menu);
+        getActivity().getMenuInflater().inflate(R.menu.thread_list_item_context, menu);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getGroupId() == PATTERN_GROUP_ID) {
+        if (item.getGroupId() == THREAD_GROUP_ID) {
+            // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
             int position = info.position;
-            PatternAdapter adapter = (PatternAdapter) getListAdapter();
-            StashPattern pattern = adapter.getItem(position);
+            ThreadAdapter adapter = (ThreadAdapter) getListAdapter();
+            StashThread thread = StashData.get(getActivity()).getThread(adapter.getItem(position));
 
             switch (item.getItemId()) {
-                case R.id.menu_item_delete_pattern:
-                    StashData.get(getActivity()).deletePattern(pattern);
+                case R.id.menu_item_delete_thread:
+                    // delete the thread from the stash
+                    StashData.get(getActivity()).deleteThread(thread);
                     adapter.notifyDataSetChanged();
                     return true;
             }
@@ -156,41 +169,41 @@ public class PatternListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        // get StashPattern from the adapter
-        StashPattern pattern = ((PatternAdapter)getListAdapter()).getItem(position);
-        Log.d(TAG, pattern.getPatternName() + "wasClicked");
+        // get StashThread from adapter
+        UUID threadId = ((ThreadAdapter)getListAdapter()).getItem(position);
+        Log.d(TAG, threadId.toString() + " was clicked.");
 
-        // start StashPatternPagerActivity
-        Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
-        i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
+        // start StashThreadPagerActivity
+        Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
+        i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, threadId);
         startActivity(i);
     }
 
-    private class PatternAdapter extends ArrayAdapter<StashPattern> {
+    private class ThreadAdapter extends ArrayAdapter<UUID> {
 
-        public PatternAdapter(ArrayList<StashPattern> patterns) {
-            super(getActivity(), 0, patterns);
+        public ThreadAdapter(ArrayList<UUID> threads) {
+            super(getActivity(), 0, threads);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // if no view given, inflate one
+            // if we weren't given a view, inflate one
             if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_pattern, null);
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_thread, null);
             }
 
-            // configure the view for this pattern
-            StashPattern pattern = getItem(position);
+            // configure the view for this thread
+            StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
 
-            TextView patternNameTextView = (TextView)convertView.findViewById(R.id.pattern_list_item_nameTextView);
-            patternNameTextView.setText(pattern.getPatternName());
+            TextView threadTextView = (TextView)convertView.findViewById(R.id.thread_list_item_flossIdTextView);
+            threadTextView.setText(thread.toString());
 
-            TextView patternSourceTextView = (TextView)convertView.findViewById(R.id.pattern_list_item_sourceTextView);
-            patternSourceTextView.setText(pattern.getPatternSource());
+            CheckBox ownedCheckBox = (CheckBox)convertView.findViewById(R.id.thread_list_item_ownedCheckBox);
+            ownedCheckBox.setChecked(thread.isOwned());
 
             return convertView;
         }
+
     }
 
 }
-

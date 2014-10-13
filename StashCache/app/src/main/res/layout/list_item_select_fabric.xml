@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.geekeclectic.android.stashcache.CheckableRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_activated">
+
+    <ImageView
+        android:src="?android:listChoiceIndicatorSingle"
+        android:id="@+id/fabric_select_list_item_radioButton"
+        android:duplicateParentState="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:enabled="false"
+        android:padding="4dp"
+        android:focusable="false" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:layout_toLeftOf="@id/fabric_select_list_item_radioButton">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fabric_select_list_item_infoTextView"
+            android:paddingBottom="4dp"
+            android:text="Fabric Info"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fabric_select_list_item_sizeTextView"
+            android:paddingBottom="4dp"
+            android:text="Fabric Size" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fabric_select_list_item_patternTextView"
+            android:text="@string/fabric_selectPattern" />
+
+    </LinearLayout>
+
+</com.geekeclectic.android.stashcache.CheckableRelativeLayout>

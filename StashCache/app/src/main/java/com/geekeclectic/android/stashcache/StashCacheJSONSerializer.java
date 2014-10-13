@@ -18,7 +18,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by sylk on 8/22/2014.
+ * Provided a stash, this will either read in (load, done when application is not in memory) or
+ * write stash to disk (done frequently for backup) as a series of JSON objects/arrays.  Creation
+ * of an object from its JSON representation or writing an object toJSON associated with
+ * each class; this deals with the overall stash.
+ *
+ * Pattern data must be read in last in order to create links between Pattern and Fabric (if any)
+ * and Pattern and Threads (if any).  Relies on having access to threadMap and fabricMap to build
+ * connections.
  */
 public class StashCacheJSONSerializer {
 
@@ -26,6 +33,7 @@ public class StashCacheJSONSerializer {
     private String mFilename;
 
     public StashCacheJSONSerializer(Context c, String f) {
+        // appContext and filename provided by StashData
         mContext = c;
         mFilename = f;
     }
@@ -83,6 +91,7 @@ public class StashCacheJSONSerializer {
     private HashMap<String, StashThread> fillThreadData(JSONArray array) throws JSONException {
         HashMap<String, StashThread> threadMap = new HashMap<String, StashThread>();
 
+        // create thread object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
             StashThread thread = new StashThread(array.getJSONObject(i));
             threadMap.put(thread.getKey(), thread);
@@ -94,6 +103,7 @@ public class StashCacheJSONSerializer {
     private HashMap<String, StashFabric> fillFabricData(JSONArray array) throws JSONException {
         HashMap<String, StashFabric> fabricMap = new HashMap<String, StashFabric>();
 
+        // create fabric object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
             StashFabric fabric = new StashFabric(array.getJSONObject(i));
             fabricMap.put(fabric.getKey(), fabric);
@@ -105,6 +115,8 @@ public class StashCacheJSONSerializer {
     private ArrayList<StashPattern> fillPatternData(JSONArray array, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap) throws JSONException {
         ArrayList<StashPattern> patternList = new ArrayList<StashPattern>();
 
+        // create pattern object from each JSON object in the array (using threadMap and fabricMap
+        // to create linkages) and add it to the list
         for (int i = 0; i < array.length(); i++) {
             StashPattern pattern = new StashPattern(array.getJSONObject(i), threadMap, fabricMap);
             patternList.add(pattern);
@@ -116,6 +128,7 @@ public class StashCacheJSONSerializer {
     private JSONArray writeThreadData(HashMap<String, StashThread> threadMap) throws JSONException {
         JSONArray array = new JSONArray();
 
+        // iterate through the threadMap values, convert each to JSON object and add to the array
         for (StashThread thread : threadMap.values()) {
             array.put(thread.toJSON());
         }
@@ -126,6 +139,7 @@ public class StashCacheJSONSerializer {
     private JSONArray writeFabricData(HashMap<String, StashFabric> fabricMap) throws JSONException {
         JSONArray array = new JSONArray();
 
+        // iterate through the fabricMap values, convert each to JSON object and add to the array
         for (StashFabric fabric: fabricMap.values()) {
             array.put(fabric.toJSON());
         }
@@ -136,6 +150,7 @@ public class StashCacheJSONSerializer {
     private JSONArray writePatternData(ArrayList<StashPattern> patternList) throws JSONException {
         JSONArray array = new JSONArray();
 
+        // iterate through the patternList, convert each to JSON object and add to the array
         for (StashPattern pattern : patternList) {
             array.put(pattern.toJSON());
         }

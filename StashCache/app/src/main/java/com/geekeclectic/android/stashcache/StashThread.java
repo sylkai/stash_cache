@@ -6,9 +6,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.UUID;
 
-/**
- * Created by sylk on 8/22/2014.
+/*
+ * Each instance of this class corresponds to a type of thread in the stash.  The thread is
+ * assigned a unique ID.  Fields for thread manufacturer, type, color code, number owned, and a
+ * list of patterns it is used.
  */
+
 public class StashThread {
 
     private UUID mId;
@@ -25,12 +28,16 @@ public class StashThread {
     private static final String JSON_ID = "program id";
 
     public StashThread() {
+        // initialize variables
+        mId = UUID.randomUUID();
         mSkeinsOwned = 0;
         mUsedIn = new ArrayList<StashPattern>();
-        mId = UUID.randomUUID();
     }
 
     public StashThread(JSONObject json) throws JSONException {
+        // initialize arraylist for patterns if creating from JSON object
+        mUsedIn = new ArrayList<StashPattern>();
+
         mSource = json.getString(JSON_SOURCE);
         mCode = json.getString(JSON_CODE);
         mSkeinsOwned = json.getInt(JSON_OWNED);
@@ -57,14 +64,14 @@ public class StashThread {
     }
 
     public void usedInPattern(StashPattern pattern) {
+        // add link to pattern object where thread is used to the list
         mUsedIn.add(pattern);
     }
 
     public void removePattern(StashPattern pattern) {
-        int index = mUsedIn.indexOf(pattern);
-
-        if (index != -1) {
-            mUsedIn.remove(index);
+        // if pattern is on the list, remove it
+        if (mUsedIn.contains(pattern)) {
+            mUsedIn.remove(pattern);
         }
     }
 
@@ -97,6 +104,7 @@ public class StashThread {
     }
 
     public String getKey() {
+        // UUID.toString() is used as hashmap key/JSON Object
         return mId.toString();
     }
 
@@ -114,6 +122,7 @@ public class StashThread {
 
     @Override
     public String toString() {
+        // returns formatted string for display on list
         if (mType != null) {
             return mSource + " " + mCode + " - " + mType;
         } else {
