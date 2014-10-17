@@ -27,12 +27,12 @@ import java.util.HashMap;
  * and Pattern and Threads (if any).  Relies on having access to threadMap and fabricMap to build
  * connections.
  */
-public class StashCacheJSONSerializer {
+public class StashDataJSONSerializer {
 
     private Context mContext;
     private String mFilename;
 
-    public StashCacheJSONSerializer(Context c, String f) {
+    public StashDataJSONSerializer(Context c, String f) {
         // appContext and filename provided by StashData
         mContext = c;
         mFilename = f;

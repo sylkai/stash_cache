@@ -23,7 +23,7 @@ public class StashData {
     private static StashData sStash;
     private Context mAppContext;
 
-    private StashCacheJSONSerializer mSerializer;
+    private StashDataJSONSerializer mSerializer;
 
     private ArrayList<StashPattern> mPatternsData;
     private HashMap<String, StashThread> mThreadsData;
@@ -34,7 +34,7 @@ public class StashData {
     private StashData(Context appContext) {
         // set variables
         mAppContext = appContext;
-        mSerializer = new StashCacheJSONSerializer(mAppContext, FILENAME);
+        mSerializer = new StashDataJSONSerializer(mAppContext, FILENAME);
         mThreadsData = new HashMap<String, StashThread>();
         mThreadsList = new ArrayList<UUID>();
         mFabricData = new HashMap<String, StashFabric>();
@@ -50,7 +50,7 @@ public class StashData {
             Log.e(TAG, "error loading stash: ", e);
         }
 
-        // create initial thread/fabric lists for use with list adapters
+        // create initial thread/fabric lists from maps for use with list adapters
         setThreadsList();
         setFabricList();
     }

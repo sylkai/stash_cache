@@ -14,14 +14,12 @@ import java.util.UUID;
  * and associated threads.
  */
 
-public class StashPattern {
+public class StashPattern extends StashObject {
 
-    private UUID mId;
     private ArrayList<UUID> mThreads;
     private int mPatternHeight;
     private int mPatternWidth;
     private String mPatternName;
-    private String mPatternSource;
     private StashFabric mPatternFabric;
 
     private static final String JSON_NAME = "name";
@@ -33,15 +31,14 @@ public class StashPattern {
     private static final String JSON_PATTERN = "pattern id";
 
     public StashPattern() {
-        // generate random id
-        mId = UUID.randomUUID();
+        // random ID generated in parent class
 
         // initialize threadList
         mThreads = new ArrayList<UUID>();
     }
 
     public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap) throws JSONException {
-        mId = UUID.fromString(json.getString(JSON_PATTERN));
+        setId(UUID.fromString(json.getString(JSON_PATTERN)));
 
         // because values are only stored if they exist, we need to check for the tag before
         // getting the value
@@ -58,7 +55,7 @@ public class StashPattern {
         }
 
         if (json.has(JSON_SOURCE)) {
-            mPatternSource = json.getString(JSON_SOURCE);
+            setSource(json.getString(JSON_SOURCE));
         }
 
         if (json.has(JSON_FABRIC)) {
@@ -88,7 +85,7 @@ public class StashPattern {
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_PATTERN, mId.toString());
+        json.put(JSON_PATTERN, getKey());
 
         // values are only stored if they exist - nothing is stored if no value has been entered
         if (mPatternName != null) {
@@ -103,8 +100,8 @@ public class StashPattern {
             json.put(JSON_WIDTH, mPatternWidth);
         }
 
-        if (mPatternSource != null) {
-            json.put(JSON_SOURCE, mPatternSource);
+        if (getSource() != null) {
+            json.put(JSON_SOURCE, getSource());
         }
 
         if (mPatternFabric != null) {
@@ -131,14 +128,6 @@ public class StashPattern {
 
     public String getPatternName() {
         return mPatternName;
-    }
-
-    public void setPatternSource(String source) {
-        mPatternSource = source;
-    }
-
-    public String getPatternSource() {
-        return mPatternSource;
     }
 
     public void setHeight(int height) {
@@ -175,10 +164,6 @@ public class StashPattern {
 
     public ArrayList<UUID> getThreadList() {
         return mThreads;
-    }
-
-    public UUID getId() {
-        return mId;
     }
 
     @Override

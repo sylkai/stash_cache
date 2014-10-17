@@ -200,7 +200,7 @@ public class StashPatternListFragment extends ListFragment {
             patternNameTextView.setText(pattern.getPatternName());
 
             TextView patternSourceTextView = (TextView)convertView.findViewById(R.id.pattern_list_item_sourceTextView);
-            patternSourceTextView.setText(pattern.getPatternSource());
+            patternSourceTextView.setText(pattern.getSource());
 
             return convertView;
         }

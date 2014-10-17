@@ -97,10 +97,10 @@ public class StashThreadFragment extends Fragment {
         }
 
         mThreadSource = (EditText)v.findViewById(R.id.thread_source);
-        mThreadSource.setText(mThread.getCompany());
+        mThreadSource.setText(mThread.getSource());
         mThreadSource.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mThread.setCompany(c.toString());
+                mThread.setSource(c.toString());
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

@@ -12,19 +12,18 @@ import java.util.UUID;
  * certain size, and a private method to keep the stitchable area up to date.
  */
 
-public class StashFabric {
+public class StashFabric extends StashObject {
 
     // fabric width and height both recorded in inches
 
-    private static int EDGE_BUFFER = 2;
+    protected static int EDGE_BUFFER = 2;
+    protected static int OVER_COUNT = 2;
 
-    private UUID mId;
     private int mFabricCount;
     private double mFabricWidth;
     private double mFabricHeight;
     private String mFabricColor;
     private String mFabricType;
-    private String mFabricSource;
     private StashPattern mFabricFor;
 
     private double mStitchWidth;
@@ -39,8 +38,7 @@ public class StashFabric {
     private static final String JSON_ID = "fabric id";
 
     public StashFabric() {
-        // initialize with random ID
-        mId = UUID.randomUUID();
+        // random UUID generated in parent class
     }
 
     public StashFabric(JSONObject json) throws JSONException {
@@ -48,7 +46,7 @@ public class StashFabric {
         mFabricCount = json.getInt(JSON_COUNT);
         mFabricWidth = json.getDouble(JSON_WIDTH);
         mFabricHeight = json.getDouble(JSON_HEIGHT);
-        mId = UUID.fromString(json.getString(JSON_ID));
+        setId(UUID.fromString(json.getString(JSON_ID)));
 
         updateStitchableArea();
 
@@ -62,13 +60,13 @@ public class StashFabric {
         }
 
         if (json.has(JSON_SOURCE)) {
-            mFabricSource = json.getString(JSON_SOURCE);
+            setSource(json.getString(JSON_SOURCE));
         }
     }
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_ID, mId.toString());
+        json.put(JSON_ID, getId().toString());
         json.put(JSON_COUNT, mFabricCount);
         json.put(JSON_WIDTH, mFabricWidth);
         json.put(JSON_HEIGHT, mFabricHeight);
@@ -82,19 +80,11 @@ public class StashFabric {
             json.put(JSON_TYPE, mFabricType);
         }
 
-        if (mFabricSource != null) {
-            json.put(JSON_SOURCE, mFabricSource);
+        if (getSource() != null) {
+            json.put(JSON_SOURCE, getSource());
         }
 
         return json;
-    }
-
-    public void setSource(String source) {
-        mFabricSource = source;
-    }
-
-    public String getSource() {
-        return mFabricSource;
     }
 
     public void setColor(String color) {
@@ -158,15 +148,6 @@ public class StashFabric {
         return ((mStitchWidth >= width && mStitchHeight >= height) || (mStitchWidth >= height && mStitchHeight >= width));
     }
 
-    public UUID getId() {
-        return mId;
-    }
-
-    public String getKey() {
-        // UUID.toString is used as key for map/JSON object
-        return mId.toString();
-    }
-
     public String getInfo() {
         // returns a formatted string giving the key fabric characteristics
         return mFabricType + " - " + mFabricCount + " count, " + mFabricColor;
@@ -185,8 +166,8 @@ public class StashFabric {
     private void updateStitchableArea() {
         // calculates the available stitch count using the fabric size and count, minus surrounding
         // edge buffer for framing, updated every time height/width/count is changed
-        mStitchWidth = (mFabricWidth - EDGE_BUFFER * 2) * mFabricCount;
-        mStitchHeight = (mFabricHeight - EDGE_BUFFER * 2) * mFabricCount;
+        mStitchWidth = (mFabricWidth - EDGE_BUFFER * 2) * mFabricCount / OVER_COUNT;
+        mStitchHeight = (mFabricHeight - EDGE_BUFFER * 2) * mFabricCount / OVER_COUNT;
     }
 
 }

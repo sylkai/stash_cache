@@ -169,10 +169,10 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         // editText for the designer name
         mSourceField = (EditText)v.findViewById(R.id.designer_name);
-        mSourceField.setText(mPattern.getPatternSource());
+        mSourceField.setText(mPattern.getSource());
         mSourceField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mPattern.setPatternSource(c.toString());
+                mPattern.setSource(c.toString());
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

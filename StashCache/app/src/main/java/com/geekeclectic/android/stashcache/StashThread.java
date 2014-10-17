@@ -12,10 +12,8 @@ import java.util.UUID;
  * list of patterns it is used.
  */
 
-public class StashThread {
+public class StashThread extends StashObject {
 
-    private UUID mId;
-    private String mSource;
     private String mCode;
     private String mType;
     private int mSkeinsOwned;
@@ -28,8 +26,7 @@ public class StashThread {
     private static final String JSON_ID = "program id";
 
     public StashThread() {
-        // initialize variables
-        mId = UUID.randomUUID();
+        // initialize variables, random id is set in parent class
         mSkeinsOwned = 0;
         mUsedIn = new ArrayList<StashPattern>();
     }
@@ -38,10 +35,10 @@ public class StashThread {
         // initialize arraylist for patterns if creating from JSON object
         mUsedIn = new ArrayList<StashPattern>();
 
-        mSource = json.getString(JSON_SOURCE);
+        setSource(json.getString(JSON_SOURCE));
         mCode = json.getString(JSON_CODE);
         mSkeinsOwned = json.getInt(JSON_OWNED);
-        mId = UUID.fromString(json.getString(JSON_ID));
+        setId(UUID.fromString(json.getString(JSON_ID)));
 
         if (json.has(JSON_TYPE)) {
             mType = json.getString(JSON_TYPE);
@@ -51,10 +48,10 @@ public class StashThread {
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
 
-        json.put(JSON_SOURCE, mSource);
+        json.put(JSON_SOURCE, getSource());
         json.put(JSON_CODE, mCode);
         json.put(JSON_OWNED, mSkeinsOwned);
-        json.put(JSON_ID, mId.toString());
+        json.put(JSON_ID, getKey());
 
         if (mType != null) {
             json.put(JSON_TYPE, mType);
@@ -75,14 +72,6 @@ public class StashThread {
         }
     }
 
-    public void setCompany(String source) {
-        mSource = source;
-    }
-
-    public String getCompany() {
-        return mSource;
-    }
-
     public void setCode(String idCode) {
         mCode = idCode;
     }
@@ -91,21 +80,12 @@ public class StashThread {
         return mCode;
     }
 
-    public UUID getId() {
-        return mId;
-    }
-
     public void setType(String type) {
         mType = type;
     }
 
     public String getType() {
         return mType;
-    }
-
-    public String getKey() {
-        // UUID.toString() is used as hashmap key/JSON Object
-        return mId.toString();
     }
 
     public void setSkeinsOwned(int number) {
@@ -124,9 +104,9 @@ public class StashThread {
     public String toString() {
         // returns formatted string for display on list
         if (mType != null) {
-            return mSource + " " + mCode + " - " + mType;
+            return getSource() + " " + mCode + " - " + mType;
         } else {
-            return mSource + " " + mCode;
+            return getSource() + " " + mCode;
         }
     }
 
