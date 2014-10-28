@@ -3,8 +3,12 @@ package com.geekeclectic.android.stashcache;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
@@ -17,10 +21,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
@@ -38,7 +46,8 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
     public static final String TAG = "StashPatternFragment";
-    private static final int PICK_NEW_FABRIC_REQUEST = 0;
+    private static final int REQUEST_PICK_NEW_FABRIC = 0;
+    private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int RESULT_OK = 0;
 
     private static final String DIALOG_FABRIC = "fabric";
@@ -54,11 +63,15 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private EditText mSourceField;
     private EditText mWidthField;
     private EditText mHeightField;
-    private ImageButton mEditFabric;
-    private ImageButton mEditThread;
+    private ImageView mViewPhoto;
+    private ImageView mEditPhoto;
+    private ImageView mEditFabric;
+    private ImageView mEditThread;
     private TextView mFabricInfo;
     private TextView mThreadInfo;
     private ChangedFragmentListener mCallback;
+
+    private String mPhotoPath;
 
     public interface ChangedFragmentListener {
         public void updateFragments();
@@ -125,6 +138,18 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        showPhoto();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        StashPhotoUtils.cleanImageView(mViewPhoto);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         StashData.get(getActivity()).saveStash();
@@ -149,6 +174,30 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
+
+        mViewPhoto = (ImageView)v.findViewById(R.id.pattern_photo_detail);
+
+        mEditPhoto = (ImageView)v.findViewById(R.id.pattern_photoButton);
+        mEditPhoto.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        Log.e(TAG, "error creating photo file");
+                    }
+
+                    if (photoFile != null) {
+                        mPhotoPath = Uri.fromFile(photoFile).getPath();
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                        startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                    }
+                }
+            }
+        });
 
         // editText for pattern name
         mTitleField = (EditText)v.findViewById(R.id.pattern_name);
@@ -223,7 +272,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         });
 
         // button to allow selection of fabric linked to pattern
-        mEditFabric = (ImageButton)v.findViewById(R.id.pattern_fabric_edit);
+        mEditFabric = (ImageView)v.findViewById(R.id.pattern_fabric_edit);
         mEditFabric.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -237,7 +286,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         updateFabricInfo();
 
         // button to allow selection of threads used in pattern
-        mEditThread = (ImageButton)v.findViewById(R.id.pattern_thread_edit);
+        mEditThread = (ImageView)v.findViewById(R.id.pattern_thread_edit);
         mEditThread.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -313,7 +362,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             // start activity for user to enter information about fabric
             Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
             i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, mFabric.getId());
-            startActivityForResult(i, PICK_NEW_FABRIC_REQUEST);
+            startActivityForResult(i, REQUEST_PICK_NEW_FABRIC);
         }
     }
 
@@ -381,10 +430,16 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_NEW_FABRIC_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                updateFabricInfo();
-            }
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == REQUEST_PICK_NEW_FABRIC) {
+            updateFabricInfo();
+        } else if (requestCode == REQUEST_TAKE_PHOTO) {
+            StashPhoto photo = new StashPhoto(mPhotoPath);
+            mPattern.setPhoto(new StashPhoto(mPhotoPath));
+            showPhoto();
         }
     }
 
@@ -417,6 +472,28 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         } else {
             mThreadInfo.setText(R.string.pattern_no_thread);
         }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        return image;
+    }
+
+    private void showPhoto() {
+        StashPhoto photo = mPattern.getPhoto();
+        BitmapDrawable b = null;
+
+        if (photo != null) {
+            String path = photo.getFilename();
+            b = StashPhotoUtils.getScaledDrawable(getActivity(), path);
+        }
+
+        mViewPhoto.setImageDrawable(b);
     }
 
 }

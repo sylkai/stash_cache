@@ -3,8 +3,9 @@ package com.geekeclectic.android.stashcache;
 import java.util.UUID;
 
 /**
- * Created by sylk on 10/13/2014.
+ * Parent class for all objects included in the stash.  Contains id and manufacturer info.
  */
+
 public class StashObject {
 
     private UUID mId;
