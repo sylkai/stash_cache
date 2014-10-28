@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -140,7 +141,6 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     @Override
     public void onStart() {
         super.onStart();
-        showPhoto();
     }
 
     @Override
@@ -176,6 +176,19 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         }
 
         mViewPhoto = (ImageView)v.findViewById(R.id.pattern_photo_detail);
+        // set listener to trigger when layout is fully drawn to pass on proper values to showPhoto
+        // per http://stackoverflow.com/questions/3591784/getwidth-returns-0?lq=1
+        mViewPhoto.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            @Deprecated
+            public void onGlobalLayout() {
+                // remove so it is called only once
+                mViewPhoto.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+                // scale the photo for display
+                showPhoto();
+            }
+        });
 
         mEditPhoto = (ImageView)v.findViewById(R.id.pattern_photoButton);
         mEditPhoto.setOnClickListener(new OnClickListener() {
@@ -184,14 +197,19 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
                 if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     File photoFile = null;
+
                     try {
-                        photoFile = createImageFile();
+                        photoFile = StashPhotoUtils.createImageFile();
                     } catch (IOException ex) {
                         Log.e(TAG, "error creating photo file");
                     }
 
                     if (photoFile != null) {
                         mPhotoPath = Uri.fromFile(photoFile).getPath();
+
+                        StashPhoto photo = new StashPhoto(mPhotoPath);
+                        mPattern.setPhoto(photo);
+
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                         startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                     }
@@ -437,8 +455,6 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         if (requestCode == REQUEST_PICK_NEW_FABRIC) {
             updateFabricInfo();
         } else if (requestCode == REQUEST_TAKE_PHOTO) {
-            StashPhoto photo = new StashPhoto(mPhotoPath);
-            mPattern.setPhoto(new StashPhoto(mPhotoPath));
             showPhoto();
         }
     }
@@ -474,23 +490,13 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         }
     }
 
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-
-        return image;
-    }
-
     private void showPhoto() {
         StashPhoto photo = mPattern.getPhoto();
         BitmapDrawable b = null;
 
         if (photo != null) {
             String path = photo.getFilename();
-            b = StashPhotoUtils.getScaledDrawable(getActivity(), path);
+            b = StashPhotoUtils.getScaledDrawable(getActivity(), path, mViewPhoto.getMeasuredWidth(), mViewPhoto.getMeasuredHeight());
         }
 
         mViewPhoto.setImageDrawable(b);

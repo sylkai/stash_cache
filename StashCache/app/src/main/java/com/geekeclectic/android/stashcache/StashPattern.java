@@ -21,7 +21,6 @@ public class StashPattern extends StashObject {
     private int mPatternWidth;
     private String mPatternName;
     private StashFabric mPatternFabric;
-    private StashPhoto mPhoto;
 
     private static final String JSON_NAME = "name";
     private static final String JSON_HEIGHT = "height";
@@ -61,7 +60,7 @@ public class StashPattern extends StashObject {
         }
 
         if (json.has(JSON_PHOTO)) {
-            mPhoto = new StashPhoto(json.getJSONObject(JSON_PHOTO));
+            setPhoto(new StashPhoto(json.getJSONObject(JSON_PHOTO)));
         }
 
         if (json.has(JSON_FABRIC)) {
@@ -110,8 +109,8 @@ public class StashPattern extends StashObject {
             json.put(JSON_SOURCE, getSource());
         }
 
-        if (mPhoto != null) {
-            json.put(JSON_PHOTO, mPhoto.toJSON());
+        if (hasPhoto()) {
+            json.put(JSON_PHOTO, getPhoto().toJSON());
         }
 
         if (mPatternFabric != null) {
@@ -179,18 +178,6 @@ public class StashPattern extends StashObject {
     @Override
     public String toString() {
         return mPatternName;
-    }
-
-    public StashPhoto getPhoto() {
-        return mPhoto;
-    }
-
-    public void setPhoto(StashPhoto p) {
-        mPhoto = p;
-    }
-
-    public boolean hasPhoto() {
-        return (mPhoto != null);
     }
 
 }

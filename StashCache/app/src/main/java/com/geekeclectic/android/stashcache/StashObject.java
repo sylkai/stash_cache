@@ -10,6 +10,7 @@ public class StashObject {
 
     private UUID mId;
     private String mSource;
+    private StashPhoto mPhoto;
 
     public StashObject() {
         mId = UUID.randomUUID();
@@ -34,6 +35,18 @@ public class StashObject {
 
     public String getSource() {
         return mSource;
+    }
+
+    public StashPhoto getPhoto() {
+        return mPhoto;
+    }
+
+    public void setPhoto(StashPhoto p) {
+        mPhoto = p;
+    }
+
+    public boolean hasPhoto() {
+        return (mPhoto != null);
     }
 
 }
