@@ -502,14 +502,12 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     private void showPhoto() {
         StashPhoto photo = mPattern.getPhoto();
-        BitmapDrawable b = null;
 
         if (photo != null) {
             String path = photo.getFilename();
-            b = StashPhotoUtils.getScaledDrawable(getActivity(), path, mViewPhoto.getWidth(), mViewPhoto.getHeight());
+            StashPhotoTask task = new StashPhotoTask(getActivity(), mViewPhoto, path);
+            task.execute(mViewPhoto.getId());
         }
-
-        mViewPhoto.setImageDrawable(b);
     }
 
 }

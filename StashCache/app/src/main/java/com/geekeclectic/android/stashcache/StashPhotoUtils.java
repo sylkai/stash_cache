@@ -19,7 +19,7 @@ import java.util.Date;
  */
 public class StashPhotoUtils {
 
-    public static BitmapDrawable getScaledDrawable(Activity a, String path) {
+    /*public static BitmapDrawable getScaledDrawable(Activity a, String path) {
         Display display = a.getWindowManager().getDefaultDisplay();
         Point displaySize = new Point();
         display.getSize(displaySize);
@@ -48,34 +48,7 @@ public class StashPhotoUtils {
         Bitmap bitmap = BitmapFactory.decodeFile(path, options);
 
         return new BitmapDrawable(a.getResources(), bitmap);
-    }
-
-    public static BitmapDrawable getScaledDrawable(Activity a, String path, int width, int height) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, options);
-
-        int srcWidth = options.outWidth;
-        int srcHeight = options.outHeight;
-
-        int inSampleSize = 1;
-        if (srcHeight > height || srcWidth > width) {
-            if (srcWidth > srcHeight) {
-                inSampleSize = Math.round((float)srcHeight / height);
-            } else {
-                inSampleSize = Math.round((float)srcWidth / width);
-            }
-        }
-
-        options = new BitmapFactory.Options();
-        options.inSampleSize = inSampleSize;
-        options.inPurgeable = true;
-        options.inJustDecodeBounds = false;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(path, options);
-
-        return new BitmapDrawable(a.getResources(), bitmap);
-    }
+    }*/
 
     public static void cleanImageView(ImageView imageView) {
         if (!(imageView.getDrawable() instanceof BitmapDrawable)) {
