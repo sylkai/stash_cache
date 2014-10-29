@@ -1,12 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
-import android.view.Display;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -15,8 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by sylk on 10/27/2014.
+ * Class to hold utility methods relating to the StashPhoto object and photo cleanup.
  */
+
 public class StashPhotoUtils {
 
     /*public static BitmapDrawable getScaledDrawable(Activity a, String path) {
@@ -50,6 +46,7 @@ public class StashPhotoUtils {
         return new BitmapDrawable(a.getResources(), bitmap);
     }*/
 
+    // recycles bitmaps when no longer displayed to clean memory
     public static void cleanImageView(ImageView imageView) {
         if (!(imageView.getDrawable() instanceof BitmapDrawable)) {
             return;
@@ -64,6 +61,7 @@ public class StashPhotoUtils {
         imageView.setImageDrawable(null);
     }
 
+    // create a temporary file to transfer to the user's chosen camera app for the photo
     public static File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
