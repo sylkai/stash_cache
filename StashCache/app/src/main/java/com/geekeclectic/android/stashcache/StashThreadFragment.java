@@ -145,11 +145,16 @@ public class StashThreadFragment extends Fragment {
         });
 
         mSkeinsOwned = (EditText)v.findViewById(R.id.skeins_owned);
-        mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
+        if (mThread.getSkeinsOwned() > 0) {
+            mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
+        }
         mSkeinsOwned.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
                     mThread.setSkeinsOwned(Integer.parseInt(c.toString()));
+                } else {
+                    // user removed skeins owned information
+                    mThread.setSkeinsOwned(0);
                 }
             }
 

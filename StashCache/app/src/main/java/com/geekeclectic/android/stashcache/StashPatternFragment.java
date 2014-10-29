@@ -253,11 +253,16 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         // editText for pattern width in stitches
         mWidthField = (EditText)v.findViewById(R.id.pattern_width);
-        mWidthField.setText(Integer.toString(mPattern.getWidth()));
+        if (mPattern.getWidth() > 0) {
+            mWidthField.setText(Integer.toString(mPattern.getWidth()));
+        }
         mWidthField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
                     mPattern.setWidth(Integer.parseInt(c.toString()));
+                } else {
+                    // user removed width information
+                    mPattern.setWidth(0);
                 }
             }
 
@@ -272,11 +277,16 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         // editText for pattern height in stitches
         mHeightField = (EditText)v.findViewById(R.id.pattern_height);
-        mHeightField.setText(Integer.toString(mPattern.getHeight()));
+        if (mPattern.getHeight() > 0) {
+            mHeightField.setText(Integer.toString(mPattern.getHeight()));
+        }
         mHeightField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
                     mPattern.setHeight(Integer.parseInt(c.toString()));
+                } else {
+                    // user removed height information
+                    mPattern.setHeight(0);
                 }
             }
 
@@ -496,7 +506,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         if (photo != null) {
             String path = photo.getFilename();
-            b = StashPhotoUtils.getScaledDrawable(getActivity(), path, mViewPhoto.getMeasuredWidth(), mViewPhoto.getMeasuredHeight());
+            b = StashPhotoUtils.getScaledDrawable(getActivity(), path, mViewPhoto.getWidth(), mViewPhoto.getHeight());
         }
 
         mViewPhoto.setImageDrawable(b);

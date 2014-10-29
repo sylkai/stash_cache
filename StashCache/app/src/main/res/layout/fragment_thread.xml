@@ -23,18 +23,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/thread_source"
+            android:inputType="textCapWords"
             android:hint="@string/thread_source_hint" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/thread_type"
+            android:inputType="textCapWords"
             android:hint="@string/thread_type_hint" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/thread_id"
+            android:inputType="textCapWords"
             android:hint="@string/thread_id_hint" />
 
         <TextView
@@ -55,6 +58,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:id="@+id/skeins_owned"
+                android:gravity="right"
+                android:hint="@string/zero"
                 android:layout_weight="1" />
 
             <TextView

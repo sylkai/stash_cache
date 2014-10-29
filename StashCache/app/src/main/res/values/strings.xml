@@ -4,6 +4,9 @@
     <string name="app_name">Stash Cache</string>
     <string name="action_settings">Action Settings</string>
 
+    <string name="zero">0</string>
+    <string name="zero_point">0.0</string>
+
     <string name="pattern_info">Pattern Info</string>
     <string name="pattern_name_hint">Pattern Name</string>
     <string name="designer_hint">Source</string>

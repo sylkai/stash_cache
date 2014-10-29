@@ -51,13 +51,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/pattern_name_hint"
-                android:id="@+id/pattern_name" />
+                android:id="@+id/pattern_name"
+                android:inputType="textCapWords" />
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/designer_hint"
-                android:id="@+id/designer_name" />
+                android:id="@+id/designer_name"
+                android:inputType="textCapWords"/>
 
         </LinearLayout>
 
@@ -79,7 +81,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:id="@+id/pattern_width"
-                android:layout_weight="1" />
+                android:gravity="right"
+                android:layout_weight="1"
+                android:hint="@string/zero" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -93,7 +97,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:id="@+id/pattern_height"
-                android:layout_weight="1" />
+                android:gravity="right"
+                android:layout_weight="1"
+                android:hint="@string/zero"/>
 
             <TextView
                 android:layout_width="match_parent"
