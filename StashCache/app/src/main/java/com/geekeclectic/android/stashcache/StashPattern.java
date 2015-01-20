@@ -17,6 +17,7 @@ import java.util.UUID;
 public class StashPattern extends StashObject {
 
     private ArrayList<UUID> mThreads;
+    private ArrayList<UUID> mEmbellishments;
     private int mPatternHeight;
     private int mPatternWidth;
     private String mPatternName;
@@ -28,6 +29,7 @@ public class StashPattern extends StashObject {
     private static final String JSON_SOURCE = "source";
     private static final String JSON_FABRIC = "fabric id";
     private static final String JSON_THREADS = "threads";
+    private static final String JSON_EMBELLISHMENTS = "embellishments";
     private static final String JSON_PATTERN = "pattern id";
     private static final String JSON_PHOTO = "photo";
 
@@ -36,9 +38,10 @@ public class StashPattern extends StashObject {
 
         // initialize threadList
         mThreads = new ArrayList<UUID>();
+        mEmbellishments = new ArrayList<UUID>();
     }
 
-    public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap) throws JSONException {
+    public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap, HashMap<String, StashEmbellishment> embellishmentMap) throws JSONException {
         setId(UUID.fromString(json.getString(JSON_PATTERN)));
 
         // because values are only stored if they exist, we need to check for the tag before
@@ -86,6 +89,21 @@ public class StashPattern extends StashObject {
             }
         }
 
+        mEmbellishments = new ArrayList<UUID>();
+        if (json.has(JSON_EMBELLISHMENTS)) {
+            JSONArray array = json.getJSONArray(JSON_EMBELLISHMENTS);
+            for (int i = 0; i < array.length(); i++) {
+                // look up embellishmentId in embellishmentMap to get appropriate object
+                StashEmbellishment embellishment = embellishmentMap.get(array.getString(i));
+
+                // set link in embellishment object to the pattern
+                embellishment.usedInPattern(this);
+
+                // add embellishmentId to list
+                mEmbellishments.add(embellishment.getId());
+            }
+        }
+
     }
 
     public JSONObject toJSON() throws JSONException {
@@ -126,6 +144,16 @@ public class StashPattern extends StashObject {
                 array.put(threadId.toString());
             }
             json.put(JSON_THREADS, array);
+        }
+
+        if (!mEmbellishments.isEmpty()) {
+            // store embellishments as an array to group the list together and indicate when done
+            JSONArray array = new JSONArray();
+            for (UUID embellishmentId : mEmbellishments) {
+                // store the threadId as a string for lookup when loading
+                array.put(embellishmentId.toString());
+            }
+            json.put(JSON_EMBELLISHMENTS, array);
         }
 
         return json;

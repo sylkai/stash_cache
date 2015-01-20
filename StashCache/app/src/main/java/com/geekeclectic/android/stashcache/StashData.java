@@ -30,6 +30,8 @@ public class StashData {
     private ArrayList<UUID> mThreadsList;
     private HashMap<String, StashFabric> mFabricData;
     private ArrayList<UUID> mFabricList;
+    private HashMap<String, StashEmbellishment> mEmbellishmentData;
+    private ArrayList<UUID> mEmbellishmentList;
 
     private StashData(Context appContext) {
         // set variables
@@ -39,6 +41,8 @@ public class StashData {
         mThreadsList = new ArrayList<UUID>();
         mFabricData = new HashMap<String, StashFabric>();
         mFabricList = new ArrayList<UUID>();
+        mEmbellishmentData = new HashMap<String, StashEmbellishment>();
+        mEmbellishmentList = new ArrayList<UUID>();
         mPatternsData = new ArrayList<StashPattern>();
 
         sStash = this;
@@ -53,6 +57,7 @@ public class StashData {
         // create initial thread/fabric lists from maps for use with list adapters
         setThreadsList();
         setFabricList();
+        setEmbellishmentList();
     }
 
     public static StashData get(Context c) {
@@ -93,6 +98,37 @@ public class StashData {
     public StashThread getThread(UUID key) {
         // given a UUID key, look up the toString() and return thread object
         return mThreadsData.get(key.toString());
+    }
+
+    public void setEmbellishmentData(HashMap<String, StashEmbellishment> embellishmentMap) {
+        // set the loaded embellishmentmap from JSON
+        mEmbellishmentData = embellishmentMap;
+    }
+
+    public HashMap<String, StashEmbellishment> getEmbellishmentData() {
+        // pass embellishmentmap for saving stash/building links
+        return mEmbellishmentData;
+    }
+
+    public ArrayList<UUID> getEmbellishmentList() {
+        // pass embellishmentlist for list adapters
+        return mEmbellishmentList;
+    }
+
+    public void setEmbellishmentList() {
+        // to set the initial embellishmentlist for adapters, iterate through map to add all threads
+        // to the list
+        if (mEmbellishmentData.size() > 0) {
+            for (Map.Entry<String, StashEmbellishment> entry : mEmbellishmentData.entrySet()) {
+                StashEmbellishment embellishment = entry.getValue();
+                mEmbellishmentList.add(embellishment.getId());
+            }
+        }
+    }
+
+    public StashEmbellishment getEmbellishment(UUID key) {
+        // given a UUID key, look up the toString() and return embellishment object
+        return mEmbellishmentData.get(key.toString());
     }
 
     public void setFabricData(HashMap<String, StashFabric> fabricMap) {
