@@ -85,11 +85,11 @@ public class StashEmbellishment extends StashObject {
         return mType;
     }
 
-    public void setSkeinsOwned(int number) {
+    public void setNumberOwned(int number) {
         mNumberOwned = number;
     }
 
-    public int getSkeinsOwned() {
+    public int getNumberOwned() {
         return mNumberOwned;
     }
 

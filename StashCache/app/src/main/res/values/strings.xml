@@ -28,6 +28,15 @@
     <string name="thread_pattern_info">Used In</string>
     <string name="thread_pattern_detail">Not used in any patterns.</string>
 
+    <string name="embellishment_info">Embellishment Info</string>
+    <string name="embellishment_source_hint">Manufacturer</string>
+    <string name="embellishment_type_hint">Embellishment Type</string>
+    <string name="embellishment_id_hint">ID Code</string>
+    <string name="stash_info">In Stash</string>
+    <string name="number_owned_label">Number Owned</string>
+    <string name="embellishment_pattern_info">Used In</string>
+    <string name="embellishment_pattern_detail">Not used in any patterns.</string>
+
     <string name="fabric_info">Fabric Info</string>
     <string name="fabric_source_hint">Company</string>
     <string name="fabric_type_hint">Fabric Type</string>
