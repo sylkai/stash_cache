@@ -196,7 +196,7 @@ public class StashData {
 
     public void addThread(StashThread thread) {
         // adds a thread to the hashmap and to the list of IDs powering the adapter
-        mThreadsData.put(thread.getId().toString(), thread);
+        mThreadsData.put(thread.getKey(), thread);
         mThreadsList.add(thread.getId());
     }
 
@@ -208,7 +208,7 @@ public class StashData {
 
     public void addFabric(StashFabric fabric) {
         // adds fabric to the hashmap and to the list of IDs powering the adapter
-        mFabricData.put(fabric.getId().toString(), fabric);
+        mFabricData.put(fabric.getKey(), fabric);
         mFabricList.add(fabric.getId());
     }
 
@@ -216,6 +216,18 @@ public class StashData {
         // removes fabric from the hashmap and the list powering the adapter
         mFabricData.remove(fabric.getKey());
         mFabricList.remove(fabric.getId());
+    }
+
+    public void addEmbellishment(StashEmbellishment embellishment) {
+        // adds an embellishment to the hashmap and to the list of IDs powering the adapter
+        mEmbellishmentData.put(embellishment.getKey(), embellishment);
+        mEmbellishmentList.add(embellishment.getId());
+    }
+
+    public void deleteEmbellishment(StashEmbellishment embellishment) {
+        // removes embellishment from the hashmap and the list powering the adapter
+        mEmbellishmentData.remove(embellishment.getKey());
+        mEmbellishmentList.remove(embellishment.getId());
     }
 
     public boolean saveStash() {

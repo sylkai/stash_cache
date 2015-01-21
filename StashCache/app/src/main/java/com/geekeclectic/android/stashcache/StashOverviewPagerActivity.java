@@ -16,7 +16,7 @@ import android.support.v4.view.ViewPager;
 
 public class StashOverviewPagerActivity extends FragmentActivity {
 
-    static final int ITEMS = 3;
+    static final int ITEMS = 4;
     public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
 
     private ViewPager mViewPager;
@@ -60,6 +60,8 @@ public class StashOverviewPagerActivity extends FragmentActivity {
                     return new StashFabricListFragment();
                 case 2: // thread list
                     return new StashThreadListFragment();
+                case 3: // embellishment list
+                    return new StashEmbellishmentListFragment();
                 default: // pattern list
                     return new StashPatternListFragment();
             }
@@ -72,6 +74,8 @@ public class StashOverviewPagerActivity extends FragmentActivity {
                     return getString(R.string.fabric_list_title).toUpperCase();
                 case 2: // thread list
                     return getString(R.string.thread_list_title).toUpperCase();
+                case 3: // embellishment list
+                    return getString(R.string.embellishment_list_title).toUpperCase();
                 default: // pattern list
                     return getString(R.string.pattern_list_title).toUpperCase();
             }
