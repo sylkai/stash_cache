@@ -6,6 +6,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import java.io.IOException;
 
 /**
  * Activity to host the viewPager managing the listView fragments displaying the lists of different
@@ -17,6 +23,7 @@ import android.support.v4.view.ViewPager;
 public class StashOverviewPagerActivity extends FragmentActivity {
 
     static final int ITEMS = 4;
+    static final String TAG = "StashOverview";
     public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
 
     private ViewPager mViewPager;
@@ -40,6 +47,31 @@ public class StashOverviewPagerActivity extends FragmentActivity {
             mViewPager.setCurrentItem(mFragmentId, false);
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.stash_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handling item selection
+        switch (item.getItemId()) {
+            case R.id.menu_item_import_stash:
+                Log.d(TAG, "User chose to input stash.");
+
+                StashImporter importer = new StashImporter();
+                try {
+                    importer.importStash(getApplicationContext());
+                } catch (IOException e) {
+                    //
+                }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public class StashOverviewPagerAdapter extends FragmentStatePagerAdapter {
