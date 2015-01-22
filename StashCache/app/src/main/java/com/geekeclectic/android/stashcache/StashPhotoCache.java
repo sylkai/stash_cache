@@ -1,3 +1,4 @@
+/*
 package com.geekeclectic.android.stashcache;
 
 import android.support.v4.app.Fragment;
@@ -7,9 +8,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
 
 
+*/
 /**
  * Created by sylk on 10/31/2014.
- */
+ *//*
+
 public class StashPhotoCache {
     private LruCache<String, Bitmap> mMemorycache;
 
@@ -39,3 +42,4 @@ public class StashPhotoCache {
         }
     }
 }
+*/

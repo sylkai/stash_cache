@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Fragment to display list of threads.  Long press allows user to select items to be deleted.
+ * Fragment to display list of embellishments.  Long press allows user to select items to be deleted.
  */
 public class StashEmbellishmentListFragment extends ListFragment {
 

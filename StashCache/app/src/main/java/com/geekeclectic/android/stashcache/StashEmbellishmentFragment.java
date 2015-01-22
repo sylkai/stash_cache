@@ -41,7 +41,7 @@ public class StashEmbellishmentFragment extends Fragment{
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        // get id for thread and pull up the appropriate embellishment from the stash
+        // get id for embellishment and pull up the appropriate embellishment from the stash
         UUID embellishmentId = (UUID)getArguments().getSerializable(EXTRA_EMBELLISHMENT_ID);
         mEmbellishment = StashData.get(getActivity()).getEmbellishment(embellishmentId);
     }
@@ -62,7 +62,7 @@ public class StashEmbellishmentFragment extends Fragment{
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
-                    // navigate up to stash overview and sets thread fragment as current
+                    // navigate up to stash overview and sets embellishment fragment as current
                     Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
                     i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
                     NavUtils.navigateUpTo(getActivity(), i);
@@ -84,7 +84,7 @@ public class StashEmbellishmentFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_thread, container, false);
+        View v = inflater.inflate(R.layout.fragment_embellishment, container, false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (NavUtils.getParentActivityName(getActivity()) != null) {

@@ -101,7 +101,7 @@ public class StashEmbellishment extends StashObject {
     public String toString() {
         // returns formatted string for display on list
         if (mType != null) {
-            return getSource() + " " + mCode + " - " + mType;
+            return getSource() + " " + mType + " - " + mCode;
         } else {
             return getSource() + " " + mCode;
         }
