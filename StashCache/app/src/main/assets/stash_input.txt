@@ -19,18 +19,29 @@ Lakeside Linens
 linen
 white
 36
-17x27
-***
-Venetian Opulence
-Mirabilia
-140x347
--
+17
+27
+---
 Lakeside Linens
 linen
 Light Exemplar
 32
-17x27
--
+17
+27
+***
+***
+Venetian Opulence
+Mirabilia
+140
+347
+*
+Lakeside Linens
+linen
+Light Exemplar
+32
+17
+27
+*
 DMC
 6 ply cotton
 white
@@ -72,11 +83,11 @@ white
 3808
 3809
 3849
-*
+-
 Kreinik Metallic Thread
 Very Fine (#4) Braid
 002C
-*
+-
 Rainbow Gallery
 Wisper
 W88
@@ -96,14 +107,16 @@ Treasure
 ---
 Shakespeare's Fairies
 Mirabilia
-307x136
--
+307
+136
+*
 Lakeside Linens
 linen
 charcoal
 32
-27x17
--
+27
+17
+*
 DMC
 6 ply cotton
 white
@@ -140,7 +153,7 @@ white
 3802
 3840
 3855
-*
+-
 Kreinik Metallic Thread
 Very Fine (#4) Braid
 024HL
@@ -149,7 +162,7 @@ Very Fine (#4) Braid
 152V
 221
 9300
--
+*
 Mill Hill
 Beads
 00148
@@ -157,7 +170,7 @@ Beads
 02010
 02033
 03055
-*
+-
 Mill Hill
 Treasures
 12144

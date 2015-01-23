@@ -242,4 +242,19 @@ public class StashData {
         }
     }
 
+    public void deleteStash() {
+        mEmbellishmentData.clear();
+        mEmbellishmentList.clear();
+
+        mFabricData.clear();
+        mFabricList.clear();
+
+        mThreadsData.clear();
+        mThreadsList.clear();
+
+        mPatternsData.clear();
+
+        saveStash();
+    }
+
 }

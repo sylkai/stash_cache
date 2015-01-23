@@ -69,6 +69,11 @@ public class StashOverviewPagerActivity extends FragmentActivity {
                 } catch (IOException e) {
                     //
                 }
+                StashData.get(getApplicationContext()).saveStash();
+                return super.onOptionsItemSelected(item);
+            case R.id.menu_item_delete_stash:
+                StashData.get(getApplicationContext()).deleteStash();
+                return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
         }
