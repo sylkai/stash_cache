@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONTokener;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,16 +40,20 @@ public class StashImporter {
 
             String line = "";
 
-            while (!(line = reader.readLine()).equals("***")) {
+            // read in thread data; end of thread block is marked by *** and will break loop
+            while ((line = reader.readLine()) != null && !line.equals("***")) {
+                // store source and type information
                 String source = line;
                 String type = reader.readLine();
-                while (!(line = reader.readLine()).equals("---")) {
-                    if (line.equals("***")) {
+
+                // iterate through to the end of the source/type block and create a new thread for each id
+                while ((line = reader.readLine()) != null) {
+                    if (line.equals("***") || line.equals("---")) {
                         break;
                     }
 
                     String id = line;
-                    createNewThread(source, type, id, stash);
+                    createNewThread(source, type, id, stash, true);
                 }
 
                 if (line.equals("***")) {
@@ -60,10 +61,13 @@ public class StashImporter {
                 }
             }
 
-            while (!(line = reader.readLine()).equals("***")) {
-                    if (line.equals("---")) {
-                        line = reader.readLine();
-                    }
+            // read in fabric data; end of the block is marked by *** and will break loop
+            while ((line = reader.readLine()) != null && !line.equals("***")) {
+                // skip a line if the current line marks the fabric delimiter ---
+                if (line.equals("---")) {
+                    line = reader.readLine();
+                }
+
                 String source = line;
                 String type = reader.readLine();
                 String color = reader.readLine();
@@ -74,16 +78,20 @@ public class StashImporter {
                 createNewFabric(source, type, color, count, height, width, stash);
             }
 
-            while (!(line = reader.readLine()).equals("***")) {
+            // read in embellishment data; end of the block is marked by *** and will break loop
+            while ((line = reader.readLine()) != null && !line.equals("***")) {
+                // store source and type information
                 String source = line;
                 String type = reader.readLine();
-                while (!(line = reader.readLine()).equals("---")) {
-                    if (line.equals("***")) {
+
+                // iterate through to the end of the source/type block and create a new embellishment for each id
+                while ((line = reader.readLine()) != null) {
+                    if (line.equals("***") || line.equals("---")) {
                         break;
                     }
 
                     String id = line;
-                    createNewEmbellishment(source, type, id, stash);
+                    createNewEmbellishment(source, type, id, stash, true);
                 }
 
                 if (line.equals("***")) {
@@ -91,12 +99,17 @@ public class StashImporter {
                 }
             }
 
+            // read in pattern data; each pattern is separated by ---
+            // if fabric provided in pattern (under pattern info, separated by *), create new fabric
+            // check for existing threads/embellishments and create new if missing
             while ((line = reader.readLine()) != null) {
+                // read in pattern information
                 String title = line;
                 String source = reader.readLine();
                 int width = Integer.parseInt(reader.readLine());
                 int height = Integer.parseInt(reader.readLine());
 
+                // create pattern
                 StashPattern pattern = new StashPattern();
                 pattern.setPatternName(title);
                 pattern.setSource(source);
@@ -104,8 +117,10 @@ public class StashImporter {
                 pattern.setWidth(width);
                 stash.addPattern(pattern);
 
+                // move forward one line to skip the first *
                 reader.readLine();
 
+                // if fabric is entered, create a new fabric
                 if (!(line = reader.readLine()).equals("*")) {
                     source = line;
                     String type = reader.readLine();
@@ -118,15 +133,15 @@ public class StashImporter {
 
                     pattern.setFabric(fabric);
                     fabric.setUsedFor(pattern);
+                    reader.readLine();
                 }
 
-                reader.readLine();
-
-                while (!(line = reader.readLine()).equals("*")) {
+                // if thread information is entered, check for thread in stash already and add it if not present
+                while ((line = reader.readLine()) != null) {
                     source = line;
                     String type = reader.readLine();
-                    while ((line = reader.readLine()) != null && !line.equals("-")) {
-                        if (line.equals("*")) {
+                    while ((line = reader.readLine()) != null) {
+                        if (line.equals("*") || line.equals("-")) {
                             break;
                         }
 
@@ -137,12 +152,13 @@ public class StashImporter {
                         pattern.addThread(thread);
                     }
 
-                    if (line.equals("*")) {
+                    if (line == null || line.equals("*")) {
                         break;
                     }
                 }
 
-                while (!(line = reader.readLine()).equals("---")) {
+                // if embellishment information is entered, check for embellishment in stash already and add it if not present
+                while ((line = reader.readLine()) != null) {
                     source = line;
                     String type = reader.readLine();
                     while ((line = reader.readLine()) != null && !line.equals("-")) {
@@ -154,7 +170,7 @@ public class StashImporter {
                         StashEmbellishment embellishment = findOrAddEmbellishment(source, type, id, stash);
 
                         embellishment.usedInPattern(pattern);
-                        //pattern.addThread(thread);
+                        //pattern.addEmbellishment(embellishment);
                     }
 
                     if (line == null || line.equals("---")) {
@@ -173,15 +189,19 @@ public class StashImporter {
         }
     }
 
-    private void createNewThread(String source, String type, String id, StashData stash) {
+    private StashThread createNewThread(String source, String type, String id, StashData stash, boolean inStash) {
         StashThread thread = new StashThread();
 
         thread.setSource(source);
         thread.setType(type);
         thread.setCode(id);
-        thread.setSkeinsOwned(DEFAULT);
+        if (inStash) {
+            thread.setSkeinsOwned(DEFAULT);
+        }
 
         stash.addThread(thread);
+
+        return thread;
     }
 
     private StashFabric createNewFabric(String source, String type, String color, int count, Double height, Double width, StashData stash) {
@@ -199,15 +219,19 @@ public class StashImporter {
         return fabric;
     }
 
-    private void createNewEmbellishment(String source, String type, String id, StashData stash) {
+    private StashEmbellishment createNewEmbellishment(String source, String type, String id, StashData stash, boolean inStash) {
         StashEmbellishment embellishment = new StashEmbellishment();
 
         embellishment.setSource(source);
         embellishment.setType(type);
         embellishment.setCode(id);
-        embellishment.setNumberOwned(DEFAULT);
+        if (inStash) {
+            embellishment.setNumberOwned(DEFAULT);
+        }
 
         stash.addEmbellishment(embellishment);
+
+        return embellishment;
     }
 
     private StashThread findOrAddThread(String source, String type, String id, StashData stash) {
@@ -221,13 +245,7 @@ public class StashImporter {
             }
         }
 
-        thread = new StashThread();
-
-        thread.setSource(source);
-        thread.setType(type);
-        thread.setCode(id);
-
-        stash.addThread(thread);
+        thread = createNewThread(source, type, id, stash, false);
 
         return thread;
     }
@@ -243,13 +261,7 @@ public class StashImporter {
             }
         }
 
-        embellishment = new StashEmbellishment();
-
-        embellishment.setSource(source);
-        embellishment.setType(type);
-        embellishment.setCode(id);
-
-        stash.addEmbellishment(embellishment);
+        embellishment = createNewEmbellishment(source, type, id, stash, false);
 
         return embellishment;
     }
