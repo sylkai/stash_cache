@@ -14,17 +14,20 @@ public class StashEmbellishment extends StashObject {
     private String mCode;
     private String mType;
     private int mNumberOwned;
+    private int mNumberNeeded;
     private ArrayList<StashPattern> mUsedIn;
 
     private static final String JSON_SOURCE = "source";
     private static final String JSON_TYPE = "embellishment type";
     private static final String JSON_CODE = "code";
     private static final String JSON_OWNED = "number owned";
+    private static final String JSON_NEEDED = "number needed";
     private static final String JSON_ID = "program ID";
 
     public StashEmbellishment() {
         // initialize variables, random ID is set in parent class
         mNumberOwned = 0;
+        mNumberNeeded = 0;
         mUsedIn = new ArrayList<StashPattern>();
     }
 
@@ -35,6 +38,7 @@ public class StashEmbellishment extends StashObject {
         setSource(json.getString(JSON_SOURCE));
         mCode = json.getString(JSON_CODE);
         mNumberOwned = json.getInt(JSON_OWNED);
+        mNumberNeeded = json.getInt(JSON_NEEDED);
         setId(UUID.fromString(json.getString(JSON_ID)));
 
         if (json.has(JSON_TYPE)) {
@@ -48,6 +52,7 @@ public class StashEmbellishment extends StashObject {
         json.put(JSON_SOURCE, getSource());
         json.put(JSON_CODE, mCode);
         json.put(JSON_OWNED, mNumberOwned);
+        json.put(JSON_NEEDED, mNumberNeeded);
         json.put(JSON_ID, getKey());
 
         if (mType != null) {
@@ -95,6 +100,26 @@ public class StashEmbellishment extends StashObject {
 
     public boolean isOwned() {
         return (mNumberOwned != 0);
+    }
+
+    public void resetNeeded() {
+        mNumberNeeded = 0;
+    }
+
+    public void addNeeded(int increment) {
+        mNumberNeeded = mNumberNeeded + increment;
+    }
+
+    public void removeNeeded(int increment) {
+        mNumberNeeded = mNumberNeeded - increment;
+    }
+
+    public int getSkeinsNeeded() {
+        return mNumberNeeded;
+    }
+
+    public boolean needToBuy() {
+        return mNumberNeeded > mNumberOwned;
     }
 
     @Override

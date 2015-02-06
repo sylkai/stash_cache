@@ -232,16 +232,28 @@ public class StashPattern extends StashObject {
         mThreads.remove(thread.getId());
     }
 
+    public void addEmbellishment(StashEmbellishment embellishment) {
+        mEmbellishments.add(embellishment.getId());
+    }
+
+    public void removeEmbellishment(StashEmbellishment embellishment) {
+        mEmbellishments.remove(embellishment.getId());
+    }
+
     public void updateQuantity(StashThread thread, int number) {
         mQuantities.put(thread.getId(), number);
     }
 
-    public int getQuantity(StashThread thread) {
-        return mQuantities.get(thread.getId());
+    public int getQuantity(StashObject object) {
+        return mQuantities.get(object.getId());
     }
 
     public ArrayList<UUID> getThreadList() {
         return mThreads;
+    }
+
+    public ArrayList<UUID> getEmbellishmentList() {
+        return mEmbellishments;
     }
 
     public void setKitted(boolean isKitted) {
