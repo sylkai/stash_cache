@@ -105,16 +105,26 @@ public class StashThread extends StashObject {
         return (mSkeinsOwned != 0);
     }
 
+    public void resetNeeded() {
+        mSkeinsNeeded = 0;
+    }
+
     public void addNeeded(int increment) {
-        mSkeinsNeeded = mSkeinsNeeded + increment;
+        // last skein required treated as a partial and subtracted (assuming everything rounded up)
+        mSkeinsNeeded = mSkeinsNeeded + (increment - 1);
     }
 
     public void removeNeeded(int increment) {
-        mSkeinsNeeded = mSkeinsNeeded - increment;
+        // last skein required treated as a partial and subtracted (assuming everything rounded up)
+        mSkeinsNeeded = mSkeinsNeeded - (increment - 1);
     }
 
     public int getSkeinsNeeded() {
         return mSkeinsNeeded;
+    }
+
+    public boolean needToBuy() {
+        return mSkeinsNeeded > mSkeinsOwned;
     }
 
     @Override

@@ -18,10 +18,12 @@ public class StashPattern extends StashObject {
 
     private ArrayList<UUID> mThreads;
     private ArrayList<UUID> mEmbellishments;
+    private HashMap<UUID, Integer> mQuantities;
     private int mPatternHeight;
     private int mPatternWidth;
     private String mPatternName;
     private StashFabric mPatternFabric;
+    private boolean mIsKitted;
 
     private static final String JSON_NAME = "name";
     private static final String JSON_HEIGHT = "height";
@@ -32,6 +34,10 @@ public class StashPattern extends StashObject {
     private static final String JSON_EMBELLISHMENTS = "embellishments";
     private static final String JSON_PATTERN = "pattern id";
     private static final String JSON_PHOTO = "photo";
+    private static final String JSON_QUANTITIES = "required quantities";
+    private static final String JSON_QUANTITY_ID = "id code";
+    private static final String JSON_QUANTITY_ENTRY = "number";
+    private static final String JSON_KITTED = "kitted";
 
     public StashPattern() {
         // random ID generated in parent class
@@ -39,10 +45,13 @@ public class StashPattern extends StashObject {
         // initialize threadList
         mThreads = new ArrayList<UUID>();
         mEmbellishments = new ArrayList<UUID>();
+        mQuantities = new HashMap<UUID, Integer>();
+        mIsKitted = false;
     }
 
     public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap, HashMap<String, StashEmbellishment> embellishmentMap) throws JSONException {
         setId(UUID.fromString(json.getString(JSON_PATTERN)));
+        mIsKitted = json.getBoolean(JSON_KITTED);
 
         // because values are only stored if they exist, we need to check for the tag before
         // getting the value
@@ -104,11 +113,24 @@ public class StashPattern extends StashObject {
             }
         }
 
+        mQuantities = new HashMap<UUID, Integer>();
+        if (json.has(JSON_QUANTITIES)) {
+            JSONArray array = json.getJSONArray(JSON_QUANTITIES);
+            for (int i = 0; i < array.length(); i++) {
+                // read the UUID/quantity pairs from the JSONObject
+                JSONObject entry = array.getJSONObject(i);
+                UUID id = UUID.fromString(entry.getString(JSON_QUANTITY_ID));
+                int number = entry.getInt(JSON_QUANTITY_ENTRY);
+
+                mQuantities.put(id, number);
+            }
+        }
     }
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
         json.put(JSON_PATTERN, getKey());
+        json.put(JSON_KITTED, mIsKitted);
 
         // values are only stored if they exist - nothing is stored if no value has been entered
         if (mPatternName != null) {
@@ -150,10 +172,21 @@ public class StashPattern extends StashObject {
             // store embellishments as an array to group the list together and indicate when done
             JSONArray array = new JSONArray();
             for (UUID embellishmentId : mEmbellishments) {
-                // store the threadId as a string for lookup when loading
+                // store the embellishmentId as a string for lookup when loading
                 array.put(embellishmentId.toString());
             }
             json.put(JSON_EMBELLISHMENTS, array);
+        }
+
+        if (!mQuantities.isEmpty()) {
+            // store the UUID/quantity pairs in objects in an array for later retrieval
+            JSONArray array = new JSONArray();
+            for(UUID id : mQuantities.keySet()) {
+                JSONObject entry = new JSONObject();
+                entry.put(JSON_QUANTITY_ID, id.toString());
+                entry.put(JSON_QUANTITY_ENTRY, mQuantities.get(id));
+                array.put(entry);
+            }
         }
 
         return json;
@@ -199,8 +232,24 @@ public class StashPattern extends StashObject {
         mThreads.remove(thread.getId());
     }
 
+    public void updateQuantity(StashThread thread, int number) {
+        mQuantities.put(thread.getId(), number);
+    }
+
+    public int getQuantity(StashThread thread) {
+        return mQuantities.get(thread.getId());
+    }
+
     public ArrayList<UUID> getThreadList() {
         return mThreads;
+    }
+
+    public void setKitted(boolean isKitted) {
+        mIsKitted = isKitted;
+    }
+
+    public boolean getKitted() {
+        return mIsKitted;
     }
 
     @Override
