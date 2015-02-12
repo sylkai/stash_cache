@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -64,6 +65,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private EditText mSourceField;
     private EditText mWidthField;
     private EditText mHeightField;
+    private CheckBox mIsKitted;
     private ImageView mViewPhoto;
     private ImageView mEditPhoto;
     private ImageView mEditFabric;
@@ -250,6 +252,10 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 // intentionally left blank
             }
         });
+
+        // checkbox to indicate whether a pattern is to be kitted or not
+        mIsKitted = (CheckBox)v.findViewById(R.id.pattern_kitted);
+        mIsKitted.setChecked(mPattern.getKitted());
 
         // editText for pattern width in stitches
         mWidthField = (EditText)v.findViewById(R.id.pattern_width);
@@ -508,6 +514,13 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             StashPhotoTask task = new StashPhotoTask(getActivity(), mViewPhoto, path);
             task.execute(mViewPhoto.getId());
         }
+    }
+
+    public void onKittedClicked(View view) {
+        // called through "onClick" property in layout xml
+        boolean checked = ((CheckBox) view).isChecked();
+
+        mPattern.setKitted(checked);
     }
 
 }

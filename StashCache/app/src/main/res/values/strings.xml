@@ -21,6 +21,7 @@
     <string name="pattern_fabric_title">Fabric</string>
     <string name="pattern_no_fabric">No fabric selected.</string>
     <string name="pattern_no_thread">No threads selected.</string>
+    <string name="is_kitted">Kitted?</string>
 
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>

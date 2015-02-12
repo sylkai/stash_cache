@@ -18,7 +18,7 @@ public class StashShoppingList {
 
     public void updateShoppingList(StashData stash) {
         ArrayList<StashPattern> patternList = stash.getPatternData();
-        
+
         resetNeededTotals(stash);
         mShoppingList.clear();
         mFabricNeeded.clear();
