@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -201,6 +202,19 @@ public class StashPatternListFragment extends ListFragment {
 
             TextView patternSourceTextView = (TextView)convertView.findViewById(R.id.pattern_list_item_sourceTextView);
             patternSourceTextView.setText(pattern.getSource());
+
+            CheckBox patternKittedCheck = (CheckBox)convertView.findViewById(R.id.pattern_kitted_checkbox);
+            patternKittedCheck.setTag(pattern);
+            patternKittedCheck.setChecked(pattern.getKitted());
+
+            patternKittedCheck.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CheckBox checkBox = (CheckBox) view;
+                    StashPattern pattern = (StashPattern) checkBox.getTag();
+                    pattern.setKitted(checkBox.isChecked());
+                }
+            });
 
             return convertView;
         }

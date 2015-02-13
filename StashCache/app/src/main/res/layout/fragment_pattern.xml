@@ -74,8 +74,7 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/pattern_kitted"
-                    android:onClick="onKittedClicked" />
+                    android:id="@+id/pattern_kitted" />
 
             </LinearLayout>
 

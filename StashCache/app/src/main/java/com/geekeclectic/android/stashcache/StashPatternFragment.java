@@ -256,6 +256,13 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         // checkbox to indicate whether a pattern is to be kitted or not
         mIsKitted = (CheckBox)v.findViewById(R.id.pattern_kitted);
         mIsKitted.setChecked(mPattern.getKitted());
+        mIsKitted.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean checked = ((CheckBox) v).isChecked();
+                mPattern.setKitted(checked);
+            }
+        });
 
         // editText for pattern width in stitches
         mWidthField = (EditText)v.findViewById(R.id.pattern_width);
@@ -514,13 +521,6 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             StashPhotoTask task = new StashPhotoTask(getActivity(), mViewPhoto, path);
             task.execute(mViewPhoto.getId());
         }
-    }
-
-    public void onKittedClicked(View view) {
-        // called through "onClick" property in layout xml
-        boolean checked = ((CheckBox) view).isChecked();
-
-        mPattern.setKitted(checked);
     }
 
 }
