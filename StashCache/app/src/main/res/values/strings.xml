@@ -72,6 +72,12 @@
         <item>Remove assigned fabric</item>
     </string-array>
 
+    <string-array name="drop_down_list">
+        <item>Master List</item>
+        <item>Stash</item>
+        <item>Shopping List</item>
+    </string-array>
+
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
 

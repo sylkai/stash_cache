@@ -156,6 +156,12 @@ public class StashThreadFragment extends Fragment {
                     // user removed skeins owned information
                     mThread.setSkeinsOwned(0);
                 }
+
+                if (mThread.isOwned()) {
+                    StashData.get(getActivity()).addThreadToStash(mThread.getId());
+                } else {
+                    StashData.get(getActivity()).removeThreadFromStash(mThread.getId());
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

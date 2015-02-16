@@ -149,8 +149,14 @@ public class StashEmbellishmentFragment extends Fragment{
                 if (c.length() > 0) {
                     mEmbellishment.setNumberOwned(Integer.parseInt(c.toString()));
                 } else {
-                    // user removed skeins owned information
+                    // user removed amount owned information
                     mEmbellishment.setNumberOwned(0);
+                }
+
+                if (mEmbellishment.isOwned()) {
+                    StashData.get(getActivity()).addEmbellishmentToStash(mEmbellishment.getId());
+                } else {
+                    StashData.get(getActivity()).removeEmbellishmentFromStash(mEmbellishment.getId());
                 }
             }
 

@@ -27,23 +27,36 @@ public class StashData {
 
     private ArrayList<StashPattern> mPatternsData;
     private HashMap<String, StashThread> mThreadsData;
-    private ArrayList<UUID> mThreadsList;
     private HashMap<String, StashFabric> mFabricData;
-    private ArrayList<UUID> mFabricList;
     private HashMap<String, StashEmbellishment> mEmbellishmentData;
+
+    private ArrayList<UUID> mFabricList;
+    private ArrayList<UUID> mFabricForList;
+    private ArrayList<UUID> mThreadsList;
+    private ArrayList<UUID> mStashThreadsList;
+    private ArrayList<UUID> mShoppingThreadsList;
     private ArrayList<UUID> mEmbellishmentList;
+    private ArrayList<UUID> mStashEmbellishmentList;
+    private ArrayList<UUID> mShoppingEmbellishmentList;
 
     private StashData(Context appContext) {
         // set variables
         mAppContext = appContext;
         mSerializer = new StashDataJSONSerializer(mAppContext, FILENAME);
+
         mThreadsData = new HashMap<String, StashThread>();
-        mThreadsList = new ArrayList<UUID>();
         mFabricData = new HashMap<String, StashFabric>();
-        mFabricList = new ArrayList<UUID>();
         mEmbellishmentData = new HashMap<String, StashEmbellishment>();
-        mEmbellishmentList = new ArrayList<UUID>();
         mPatternsData = new ArrayList<StashPattern>();
+
+        mThreadsList = new ArrayList<UUID>();
+        mStashThreadsList = new ArrayList<UUID>();
+        mShoppingThreadsList = new ArrayList<UUID>();
+        mFabricList = new ArrayList<UUID>();
+        mFabricForList = new ArrayList<UUID>();
+        mEmbellishmentList = new ArrayList<UUID>();
+        mStashEmbellishmentList = new ArrayList<UUID>();
+        mShoppingEmbellishmentList = new ArrayList<UUID>();
 
         sStash = this;
 
@@ -74,14 +87,28 @@ public class StashData {
         mThreadsData = threadMap;
     }
 
+    public void setThreadShoppingList(ArrayList<UUID> shoppingList) {
+        mShoppingThreadsList = shoppingList;
+    }
+
     public HashMap<String, StashThread> getThreadData() {
         // pass threadmap for saving stash/building links
         return mThreadsData;
     }
 
     public ArrayList<UUID> getThreadList() {
-        // pass threadlist for list adapters
+        // pass master threadlist for list adapters
         return mThreadsList;
+    }
+
+    public ArrayList<UUID> getThreadStashList() {
+        // pass the stash-only threadlist for list adapters
+        return mStashThreadsList;
+    }
+
+    public ArrayList<UUID> getThreadShoppingList() {
+        // pass the shopping threadlist for list adapters
+        return mShoppingThreadsList;
     }
 
     public void setThreadsList() {
@@ -91,7 +118,26 @@ public class StashData {
             for (Map.Entry<String, StashThread> entry : mThreadsData.entrySet()) {
                 StashThread thread = entry.getValue();
                 mThreadsList.add(thread.getId());
+
+                if (thread.isOwned()) {
+                    mStashThreadsList.add(thread.getId());
+                }
             }
+        }
+    }
+
+    public void addThreadToStash(UUID threadId) {
+        // needed to update the list as the user edits the quantities of thread owned
+        // only one entry per thread on the list
+        if (!mStashThreadsList.contains(threadId)) {
+            mStashThreadsList.add(threadId);
+        }
+    }
+
+    public void removeThreadFromStash(UUID threadId) {
+        // needed to update the list as the user edits the quantities of thread owned
+        if (mStashThreadsList.contains(threadId)) {
+            mStashThreadsList.remove(threadId);
         }
     }
 
@@ -105,6 +151,11 @@ public class StashData {
         mEmbellishmentData = embellishmentMap;
     }
 
+    public void setEmbellishmentShoppingList(ArrayList<UUID> shoppingList) {
+        // set the embellishment shopping list (provided by the shopping list class)
+        mShoppingEmbellishmentList = shoppingList;
+    }
+
     public HashMap<String, StashEmbellishment> getEmbellishmentData() {
         // pass embellishmentmap for saving stash/building links
         return mEmbellishmentData;
@@ -115,6 +166,31 @@ public class StashData {
         return mEmbellishmentList;
     }
 
+    public ArrayList<UUID> getEmbellishmentStashList() {
+        // pass the stash embellishmentlist for list adapters
+        return mStashEmbellishmentList;
+    }
+
+    public ArrayList<UUID> getEmbellishmentShoppingList() {
+        // pass the embellishment shopping list for list adapters
+        return mShoppingEmbellishmentList;
+    }
+
+    public void addEmbellishmentToStash(UUID embellishmentId) {
+        // needed to update the list as the user edits the quantities of embellishments owned
+        // only one entry per embellishment on the list
+        if (!mStashEmbellishmentList.contains(embellishmentId)) {
+            mStashEmbellishmentList.add(embellishmentId);
+        }
+    }
+
+    public void removeEmbellishmentFromStash(UUID embellishmentId) {
+        // needed to update the list as the user edits the quantities of embellishments owned
+        if (mStashEmbellishmentList.contains(embellishmentId)) {
+            mStashEmbellishmentList.remove(embellishmentId);
+        }
+    }
+
     public void setEmbellishmentList() {
         // to set the initial embellishmentlist for adapters, iterate through map to add all threads
         // to the list
@@ -122,6 +198,10 @@ public class StashData {
             for (Map.Entry<String, StashEmbellishment> entry : mEmbellishmentData.entrySet()) {
                 StashEmbellishment embellishment = entry.getValue();
                 mEmbellishmentList.add(embellishment.getId());
+
+                if (embellishment.isOwned()) {
+                    mStashEmbellishmentList.add(embellishment.getId());
+                }
             }
         }
     }
@@ -136,6 +216,10 @@ public class StashData {
         mFabricData = fabricMap;
     }
 
+    public void setFabricForList(ArrayList<UUID> patternList) {
+        mFabricForList = patternList;
+    }
+
     public HashMap<String, StashFabric> getFabricData() {
         // pass fabricmap for saving stash/building links
         return mFabricData;
@@ -144,6 +228,10 @@ public class StashData {
     public ArrayList<UUID> getFabricList() {
         // pass fabriclist for list adapters
         return mFabricList;
+    }
+
+    public ArrayList<UUID> getFabricForList() {
+        return mFabricForList;
     }
 
     public void setFabricList() {
