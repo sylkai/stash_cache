@@ -14,20 +14,16 @@ import android.view.MenuItem;
 import java.io.IOException;
 
 /**
- * Activity to host the viewPager managing the listView fragments displaying the lists of different
- * stash components (patterns, fabrics, threads).  Scrolling tab bar above identifies which list
- * is active.  EXTRA_FRAGMENT_ID indicates which item class is displayed when navigating up through
- * hierarchy.
+ * Created by sylk on 2/17/2015.
  */
-
-public class StashOverviewPagerActivity extends FragmentActivity {
+public class MasterOverviewPagerActivity extends FragmentActivity {
 
     static final int ITEMS = 4;
-    static final String TAG = "StashOverview";
+    static final String TAG = "MasterOverview";
     public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
 
     private ViewPager mViewPager;
-    private StashOverviewPagerAdapter mAdapter;
+    private MasterOverviewPagerAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +32,7 @@ public class StashOverviewPagerActivity extends FragmentActivity {
 
         // initialize viewPager and adapter
         mViewPager = (ViewPager)findViewById(R.id.stashViewPager);
-        mAdapter = new StashOverviewPagerAdapter(getSupportFragmentManager());
+        mAdapter = new MasterOverviewPagerAdapter(getSupportFragmentManager());
 
         mViewPager.setAdapter(mAdapter);
 
@@ -79,9 +75,9 @@ public class StashOverviewPagerActivity extends FragmentActivity {
         }
     }
 
-    public class StashOverviewPagerAdapter extends FragmentStatePagerAdapter {
+    public class MasterOverviewPagerAdapter extends FragmentStatePagerAdapter {
 
-        public StashOverviewPagerAdapter(FragmentManager fm) {
+        public MasterOverviewPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -94,13 +90,13 @@ public class StashOverviewPagerActivity extends FragmentActivity {
         public Fragment getItem(int i) {
             switch (i) {
                 case 1: // fabric list
-                    return StashFabricListFragment.newInstance("stash");
+                    return StashFabricListFragment.newInstance("master");
                 case 2: // thread list
-                    return StashThreadListFragment.newInstance("stash");
+                    return StashThreadListFragment.newInstance("master");
                 case 3: // embellishment list
-                    return StashEmbellishmentListFragment.newInstance("stash");
+                    return StashEmbellishmentListFragment.newInstance("master");
                 default: // pattern list
-                    return StashPatternListFragment.newInstance("stash");
+                    return StashPatternListFragment.newInstance("master");
             }
         }
 

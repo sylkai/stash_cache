@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * Fragment to display list of patterns.  Long press allows user to select items to be deleted.
@@ -31,18 +32,34 @@ public class StashPatternListFragment extends ListFragment {
 
     private static final String TAG = "PatternListFragment";
     private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
+    private static final String PATTERN_VIEW_ID = "com.geekeclectic.android.stashcache.pattern_view_id";
 
     private ArrayList<StashPattern> mPatterns;
+
+    public StashPatternListFragment() {
+        // required empty public constructor
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mPatterns = StashData.get(getActivity()).getPatternData();
+        String viewCode = getArguments().getString(PATTERN_VIEW_ID);
+        mPatterns = getListFromStash(viewCode);
 
         PatternAdapter adapter = new PatternAdapter(mPatterns);
         setListAdapter(adapter);
+    }
+
+    public static StashPatternListFragment newInstance(String viewCode) {
+        Bundle args = new Bundle();
+        args.putString(PATTERN_VIEW_ID, viewCode);
+
+        StashPatternListFragment fragment = new StashPatternListFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
@@ -179,6 +196,14 @@ public class StashPatternListFragment extends ListFragment {
         Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
         i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
         startActivity(i);
+    }
+
+    private ArrayList<StashPattern> getListFromStash(String viewCode) {
+        if (viewCode.equals("shopping")) {
+            return StashData.get(getActivity()).getFabricForList();
+        } else {
+            return StashData.get(getActivity()).getPatternData();
+        }
     }
 
     private class PatternAdapter extends ArrayAdapter<StashPattern> {

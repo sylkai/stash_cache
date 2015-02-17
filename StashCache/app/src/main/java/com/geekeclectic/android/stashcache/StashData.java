@@ -31,7 +31,7 @@ public class StashData {
     private HashMap<String, StashEmbellishment> mEmbellishmentData;
 
     private ArrayList<UUID> mFabricList;
-    private ArrayList<UUID> mFabricForList;
+    private ArrayList<StashPattern> mFabricForList;
     private ArrayList<UUID> mThreadsList;
     private ArrayList<UUID> mStashThreadsList;
     private ArrayList<UUID> mShoppingThreadsList;
@@ -53,7 +53,7 @@ public class StashData {
         mStashThreadsList = new ArrayList<UUID>();
         mShoppingThreadsList = new ArrayList<UUID>();
         mFabricList = new ArrayList<UUID>();
-        mFabricForList = new ArrayList<UUID>();
+        mFabricForList = new ArrayList<StashPattern>();
         mEmbellishmentList = new ArrayList<UUID>();
         mStashEmbellishmentList = new ArrayList<UUID>();
         mShoppingEmbellishmentList = new ArrayList<UUID>();
@@ -216,7 +216,7 @@ public class StashData {
         mFabricData = fabricMap;
     }
 
-    public void setFabricForList(ArrayList<UUID> patternList) {
+    public void setFabricForList(ArrayList<StashPattern> patternList) {
         mFabricForList = patternList;
     }
 
@@ -230,7 +230,7 @@ public class StashData {
         return mFabricList;
     }
 
-    public ArrayList<UUID> getFabricForList() {
+    public ArrayList<StashPattern> getFabricForList() {
         return mFabricForList;
     }
 

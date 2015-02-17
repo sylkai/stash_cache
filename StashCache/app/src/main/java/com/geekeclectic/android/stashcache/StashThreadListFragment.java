@@ -33,6 +33,11 @@ public class StashThreadListFragment extends ListFragment {
 
     private static final String TAG = "ThreadListFragment";
     private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
+    private static final String THREAD_VIEW_ID = "com.geekeclectic.android.stashcache.thread_view_id";
+
+    public StashThreadListFragment() {
+        // required empty public constructor
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,11 +45,22 @@ public class StashThreadListFragment extends ListFragment {
         setHasOptionsMenu(true);
 
         // get the current list of threads to display
-        mThreads = StashData.get(getActivity()).getThreadList();
+        String viewCode = getArguments().getString(THREAD_VIEW_ID);
+        mThreads = getListFromStash(viewCode);
 
         // create and set adapter using thread list
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
         setListAdapter(adapter);
+    }
+
+    public static StashThreadListFragment newInstance(String viewCode) {
+        Bundle args = new Bundle();
+        args.putString(THREAD_VIEW_ID, viewCode);
+
+        StashThreadListFragment fragment = new StashThreadListFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
@@ -177,6 +193,16 @@ public class StashThreadListFragment extends ListFragment {
         Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
         i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, threadId);
         startActivity(i);
+    }
+
+    private ArrayList<UUID> getListFromStash(String viewCode) {
+        if (viewCode.equals("master")) {
+            return StashData.get(getActivity()).getThreadList();
+        } else if (viewCode.equals("stash")) {
+            return StashData.get(getActivity()).getThreadStashList();
+        } else {
+            return StashData.get(getActivity()).getThreadShoppingList();
+        }
     }
 
     private class ThreadAdapter extends ArrayAdapter<UUID> {

@@ -6,13 +6,15 @@ import java.util.UUID;
 /**
  * Created by sylk on 2/5/2015.
  */
-public class StashShoppingList {
+public class StashCreateShoppingList {
 
-    private ArrayList<UUID> mShoppingList;
+    private ArrayList<UUID> mThreadShoppingList;
+    private ArrayList<UUID> mEmbellishmentShoppingList;
     private ArrayList<StashPattern> mFabricNeeded;
 
-    public StashShoppingList() {
-        mShoppingList = new ArrayList<UUID>();
+    public StashCreateShoppingList() {
+        mThreadShoppingList = new ArrayList<UUID>();
+        mEmbellishmentShoppingList = new ArrayList<UUID>();
         mFabricNeeded = new ArrayList<StashPattern>();
     }
 
@@ -20,7 +22,8 @@ public class StashShoppingList {
         ArrayList<StashPattern> patternList = stash.getPatternData();
 
         resetNeededTotals(stash);
-        mShoppingList.clear();
+        mThreadShoppingList.clear();
+        mEmbellishmentShoppingList.clear();
         mFabricNeeded.clear();
 
         ArrayList<StashPattern> kittedPatterns = new ArrayList<StashPattern>();
@@ -42,8 +45,8 @@ public class StashShoppingList {
                     StashThread thread = stash.getThread(threadId);
                     thread.addNeeded(pattern.getQuantity(thread));
 
-                    if (thread.needToBuy() && !mShoppingList.contains(threadId)) {
-                        mShoppingList.add(threadId);
+                    if (thread.needToBuy() && !mThreadShoppingList.contains(threadId)) {
+                        mThreadShoppingList.add(threadId);
                     }
                 }
             }
@@ -54,20 +57,16 @@ public class StashShoppingList {
                     StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
                     embellishment.addNeeded(pattern.getQuantity(embellishment));
 
-                    if (embellishment.needToBuy() && !mShoppingList.contains(embellishmentId)) {
-                        mShoppingList.add(embellishmentId);
+                    if (embellishment.needToBuy() && !mEmbellishmentShoppingList.contains(embellishmentId)) {
+                        mEmbellishmentShoppingList.add(embellishmentId);
                     }
                 }
             }
         }
-    }
 
-    public ArrayList<UUID> getShoppingList() {
-        return mShoppingList;
-    }
-
-    public ArrayList<StashPattern> getPatternsNeedingFabric() {
-        return mFabricNeeded;
+        stash.setFabricForList(mFabricNeeded);
+        stash.setThreadShoppingList(mThreadShoppingList);
+        stash.setEmbellishmentShoppingList(mEmbellishmentShoppingList);
     }
 
     private void resetNeededTotals(StashData stash) {

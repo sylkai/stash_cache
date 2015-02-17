@@ -33,6 +33,11 @@ public class StashEmbellishmentListFragment extends ListFragment {
 
     private static final String TAG = "EmbellishmentListFragment";
     private static final int EMBELLISHMENT_GROUP_ID = R.id.embellishment_context_menu;
+    private static final String EMBELLISHMENT_VIEW_ID = "com.geekeclectic.android.stashcache.embellishment_view_id";
+
+    public StashEmbellishmentListFragment() {
+        // required empty public constructor
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,11 +45,23 @@ public class StashEmbellishmentListFragment extends ListFragment {
         setHasOptionsMenu(true);
 
         // get the current list of embellishments to display
+        String viewCode = getArguments().getString(EMBELLISHMENT_VIEW_ID);
+        mEmbellishments = getListFromStash(viewCode);
         mEmbellishments = StashData.get(getActivity()).getEmbellishmentList();
 
         // create and set adapter using embellishment list
         EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);
         setListAdapter(adapter);
+    }
+
+    public static StashEmbellishmentListFragment newInstance(String viewCode) {
+        Bundle args = new Bundle();
+        args.putString(EMBELLISHMENT_VIEW_ID, viewCode);
+
+        StashEmbellishmentListFragment fragment = new StashEmbellishmentListFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
@@ -177,6 +194,16 @@ public class StashEmbellishmentListFragment extends ListFragment {
         Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
         i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishmentId);
         startActivity(i);
+    }
+
+    private ArrayList<UUID> getListFromStash(String viewCode) {
+        if (viewCode.equals("master")) {
+            return StashData.get(getActivity()).getEmbellishmentList();
+        } else if (viewCode.equals("stash")) {
+            return StashData.get(getActivity()).getEmbellishmentStashList();
+        } else {
+            return StashData.get(getActivity()).getEmbellishmentShoppingList();
+        }
     }
 
     private class EmbellishmentAdapter extends ArrayAdapter<UUID> {

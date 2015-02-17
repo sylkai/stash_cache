@@ -34,6 +34,11 @@ public class StashFabricListFragment extends ListFragment {
 
     private static final String TAG = "FabricListFragment";
     private static final int FABRIC_GROUP_ID = R.id.fabric_context_menu;
+    private static final String FABRIC_VIEW_ID = "com.geekeclectic.android.stashcache.fabric_view_id";
+
+    public StashFabricListFragment() {
+        // required empty public constructor
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,11 +46,22 @@ public class StashFabricListFragment extends ListFragment {
         setHasOptionsMenu(true);
 
         // get the current list of fabrics to display
+        String viewCode = getArguments().getString(FABRIC_VIEW_ID);
         mFabrics = StashData.get(getActivity()).getFabricList();
 
         // create and set list adapter using fabrics list
         adapter = new FabricAdapter(mFabrics);
         setListAdapter(adapter);
+    }
+
+    public static StashFabricListFragment newInstance(String viewCode) {
+        Bundle args = new Bundle();
+        args.putString(FABRIC_VIEW_ID, viewCode);
+
+        StashFabricListFragment fragment = new StashFabricListFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
