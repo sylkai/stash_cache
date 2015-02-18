@@ -1,5 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -10,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.SpinnerAdapter;
 
 import java.io.IOException;
 
@@ -42,6 +46,36 @@ public class MasterOverviewPagerActivity extends FragmentActivity {
             int mFragmentId = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, 0);
             mViewPager.setCurrentItem(mFragmentId, false);
         }
+
+        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.drop_down_list, android.R.layout.simple_spinner_dropdown_item);
+
+        ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
+            // get the strings provided for the ArrayAdapter
+            String[] strings = getResources().getStringArray(R.array.drop_down_list);
+
+            @Override
+            public boolean onNavigationItemSelected(int position, long itemId) {
+                String selection = strings[position];
+
+                if (selection.equals("Stash")) {
+                    Intent i = new Intent(getApplicationContext(), StashOverviewPagerActivity.class);
+                    startActivity(i);
+                } else if (selection.equals("Shopping List")) {
+                    StashCreateShoppingList createList = new StashCreateShoppingList();
+                    createList.updateShoppingList(StashData.get(getParent()));
+
+                    // Intent i = new Intent(getParent(), ShoppingOverviewPagerActivity.class);
+                    // startActivity(i);
+                }
+
+                return true;
+            }
+        };
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setListNavigationCallbacks(mSpinnerAdapter, mOnNavigationListener);
+        actionBar.setSelectedNavigationItem(1);
 
     }
 

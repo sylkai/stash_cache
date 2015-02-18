@@ -67,7 +67,9 @@ public class StashThread extends StashObject {
 
     public void usedInPattern(StashPattern pattern) {
         // add link to pattern object where thread is used to the list
-        mUsedIn.add(pattern);
+        if (!mUsedIn.contains(pattern)) {
+            mUsedIn.add(pattern);
+        }
     }
 
     public void removePattern(StashPattern pattern) {

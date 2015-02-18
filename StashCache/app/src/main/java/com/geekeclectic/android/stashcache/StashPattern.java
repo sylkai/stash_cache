@@ -225,11 +225,18 @@ public class StashPattern extends StashObject {
     }
 
     public void addThread(StashThread thread) {
-        mThreads.add(thread.getId());
+        if (!mThreads.contains(thread.getId())) {
+            mThreads.add(thread.getId());
+            mQuantities.put(thread.getId(), 1);
+        } else {
+            int currentNumber = mQuantities.get(thread.getId());
+            mQuantities.put(thread.getId(), currentNumber + 1);
+        }
     }
 
     public void removeThread(StashThread thread) {
         mThreads.remove(thread.getId());
+        mQuantities.remove(thread.getId());
     }
 
     public void addEmbellishment(StashEmbellishment embellishment) {

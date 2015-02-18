@@ -73,8 +73,8 @@
     </string-array>
 
     <string-array name="drop_down_list">
-        <item>Master List</item>
         <item>Stash</item>
+        <item>Master List</item>
         <item>Shopping List</item>
     </string-array>
 

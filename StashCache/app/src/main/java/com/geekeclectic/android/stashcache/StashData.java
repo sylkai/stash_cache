@@ -333,14 +333,19 @@ public class StashData {
     public void deleteStash() {
         mEmbellishmentData.clear();
         mEmbellishmentList.clear();
+        mStashEmbellishmentList.clear();
+        mShoppingEmbellishmentList.clear();
 
         mFabricData.clear();
         mFabricList.clear();
 
         mThreadsData.clear();
         mThreadsList.clear();
+        mStashThreadsList.clear();
+        mShoppingThreadsList.clear();
 
         mPatternsData.clear();
+        mFabricForList.clear();
 
         saveStash();
     }
