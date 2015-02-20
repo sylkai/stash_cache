@@ -1,10 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
-import android.app.ActionBar;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -15,8 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.SpinnerAdapter;
 
 import java.io.IOException;
 
@@ -27,7 +22,7 @@ import java.io.IOException;
  * hierarchy.
  */
 
-public class StashOverviewPagerActivity extends FragmentActivity {
+public class StashOverviewPagerFragment extends Fragment {
 
     static final int ITEMS = 4;
     static final String TAG = "StashOverview";
@@ -37,59 +32,23 @@ public class StashOverviewPagerActivity extends FragmentActivity {
     private StashOverviewPagerAdapter mAdapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stash_overview);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_stash_overview, container, false);
 
-        // initialize viewPager and adapter
-        mViewPager = (ViewPager)findViewById(R.id.stashViewPager);
-        mAdapter = new StashOverviewPagerAdapter(getSupportFragmentManager());
+        mViewPager = (ViewPager) root.findViewById(R.id.stashViewPager);
+        mAdapter = new StashOverviewPagerAdapter(getChildFragmentManager());
 
         mViewPager.setAdapter(mAdapter);
 
-        // if this was created with an intent, check which list is supposed to be active and set
-        // it as the current item
-        if (getIntent() != null) {
-            int mFragmentId = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, 0);
-            mViewPager.setCurrentItem(mFragmentId, false);
-        }
+        // note I will need to check which fragment was active and set it somehow, figure this out later
 
-        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.drop_down_list, android.R.layout.simple_spinner_dropdown_item);
-
-       ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
-            // get the strings provided for the ArrayAdapter
-           String[] strings = getResources().getStringArray(R.array.drop_down_list);
-
-           @Override
-           public boolean onNavigationItemSelected(int position, long itemId) {
-               String selection = strings[position];
-
-               if (selection.equals("Master List")) {
-                   Intent i = new Intent(getApplicationContext(), MasterOverviewPagerActivity.class);
-                   startActivity(i);
-               } else if (selection.equals("Shopping List")) {
-                   StashCreateShoppingList createList = new StashCreateShoppingList();
-                   createList.updateShoppingList(StashData.get(getParent()));
-
-                   // Intent i = new Intent(getParent(), ShoppingOverviewPagerActivity.class);
-                   // startActivity(i);
-               }
-
-               return true;
-           }
-        };
-
-        ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        actionBar.setListNavigationCallbacks(mSpinnerAdapter, mOnNavigationListener);
-        actionBar.setSelectedNavigationItem(0);
+        return root;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.stash_menu, menu);
-        return true;
     }
 
     @Override
@@ -101,14 +60,14 @@ public class StashOverviewPagerActivity extends FragmentActivity {
 
                 StashImporter importer = new StashImporter();
                 try {
-                    importer.importStash(getApplicationContext());
+                    importer.importStash(getActivity());
                 } catch (IOException e) {
                     //
                 }
-                StashData.get(getApplicationContext()).saveStash();
+                StashData.get(getActivity()).saveStash();
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:
-                StashData.get(getApplicationContext()).deleteStash();
+                StashData.get(getActivity()).deleteStash();
                 return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);

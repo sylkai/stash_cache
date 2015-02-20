@@ -47,7 +47,6 @@ public class StashEmbellishmentListFragment extends ListFragment {
         // get the current list of embellishments to display
         String viewCode = getArguments().getString(EMBELLISHMENT_VIEW_ID);
         mEmbellishments = getListFromStash(viewCode);
-        mEmbellishments = StashData.get(getActivity()).getEmbellishmentList();
 
         // create and set adapter using embellishment list
         EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);

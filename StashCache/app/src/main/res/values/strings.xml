@@ -56,6 +56,7 @@
     <string name="thread_list_title">Threads</string>
     <string name="pattern_list_title">Patterns</string>
     <string name="embellishment_list_title">Embellishments</string>
+    <string name="shopping_pattern_list_title">Fabric For</string>
 
     <string name="new_pattern">New Pattern</string>
     <string name="new_thread">New Thread</string>
