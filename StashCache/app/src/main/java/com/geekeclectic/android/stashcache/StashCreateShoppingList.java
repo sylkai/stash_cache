@@ -54,12 +54,12 @@ public class StashCreateShoppingList {
             if (pattern.getEmbellishmentList() != null) {
                 ArrayList<UUID> embellishmentList = pattern.getEmbellishmentList();
                 for (UUID embellishmentId : embellishmentList) {
-                    // StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
-                    // embellishment.addNeeded(pattern.getQuantity(embellishment));
+                    StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
+                    embellishment.addNeeded(pattern.getQuantity(embellishment));
 
-                    // if (embellishment.needToBuy() && !mEmbellishmentShoppingList.contains(embellishmentId)) {
-                    //     mEmbellishmentShoppingList.add(embellishmentId);
-                    // }
+                    if (embellishment.needToBuy() && !mEmbellishmentShoppingList.contains(embellishmentId)) {
+                        mEmbellishmentShoppingList.add(embellishmentId);
+                    }
                 }
             }
         }

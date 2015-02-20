@@ -112,8 +112,13 @@ public class StashThread extends StashObject {
     }
 
     public void addNeeded(int increment) {
-        // last skein required treated as a partial and subtracted (assuming everything rounded up)
-        mSkeinsNeeded = mSkeinsNeeded + (increment - 1);
+        if (mSkeinsOwned == 0 && mSkeinsNeeded == 0 && increment == 1) {
+            // none owned, one called for, and has not already been added to the list
+            mSkeinsNeeded = increment;
+        } else {
+            // last skein required treated as a partial and subtracted (assuming everything rounded up)
+            mSkeinsNeeded = mSkeinsNeeded + (increment - 1);
+        }
     }
 
     public void removeNeeded(int increment) {

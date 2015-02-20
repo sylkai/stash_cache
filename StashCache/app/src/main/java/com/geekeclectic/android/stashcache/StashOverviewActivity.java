@@ -49,8 +49,8 @@ public class StashOverviewActivity extends SingleFragmentActivity {
                         ft.replace(R.id.fragmentContainer, fragment, selection);
                     }
                 } else if (selection.equals("Shopping List")) {
-                    // StashCreateShoppingList createList = new StashCreateShoppingList();
-                    // createList.updateShoppingList(StashData.get(getParent()));
+                    StashCreateShoppingList createList = new StashCreateShoppingList();
+                    createList.updateShoppingList(StashData.get(getParent()));
 
                     fragment = new ShoppingOverviewPagerFragment();
                     ft.replace(R.id.fragmentContainer, fragment, selection);

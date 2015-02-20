@@ -83,6 +83,7 @@ public class StashPattern extends StashObject {
             mPatternFabric.setUsedFor(this);
         }
 
+        mQuantities = new HashMap<UUID, Integer>();
         mThreads = new ArrayList<UUID>();
         if (json.has(JSON_THREADS)) {
             JSONArray array = json.getJSONArray(JSON_THREADS);
@@ -90,11 +91,18 @@ public class StashPattern extends StashObject {
                 // look up threadId in threadMap to get appropriate thread object
                 StashThread thread = threadMap.get(array.getString(i));
 
-                // set link in thread object to the pattern
-                thread.usedInPattern(this);
+                if (mThreads.contains(thread.getId())) {
+                    mQuantities.put(thread.getId(), mQuantities.get(thread.getId()) + 1);
+                } else {
+                    // set link in thread object to the pattern
+                    thread.usedInPattern(this);
 
-                // add threadId to list
-                mThreads.add(thread.getId());
+                    // add threadId to list
+                    mThreads.add(thread.getId());
+
+                    // add thread to quantities map
+                    mQuantities.put(thread.getId(), 1);
+                }
             }
         }
 
@@ -105,16 +113,23 @@ public class StashPattern extends StashObject {
                 // look up embellishmentId in embellishmentMap to get appropriate object
                 StashEmbellishment embellishment = embellishmentMap.get(array.getString(i));
 
-                // set link in embellishment object to the pattern
-                embellishment.usedInPattern(this);
+                if (mEmbellishments.contains(embellishment.getId())) {
+                    mQuantities.put(embellishment.getId(), mQuantities.get(embellishment.getId()) + 1);
+                } else {
+                    // set link in embellishment object to the pattern
+                    embellishment.usedInPattern(this);
 
-                // add embellishmentId to list
-                mEmbellishments.add(embellishment.getId());
+                    // add embellishmentId to list
+                    mEmbellishments.add(embellishment.getId());
+
+                    // add embellishment to quantities map
+                    mQuantities.put(embellishment.getId(), 1);
+                }
             }
         }
 
-        mQuantities = new HashMap<UUID, Integer>();
-        if (json.has(JSON_QUANTITIES)) {
+
+        /*if (json.has(JSON_QUANTITIES)) {
             JSONArray array = json.getJSONArray(JSON_QUANTITIES);
             for (int i = 0; i < array.length(); i++) {
                 // read the UUID/quantity pairs from the JSONObject
@@ -124,7 +139,7 @@ public class StashPattern extends StashObject {
 
                 mQuantities.put(id, number);
             }
-        }
+        }*/
     }
 
     public JSONObject toJSON() throws JSONException {
@@ -162,8 +177,13 @@ public class StashPattern extends StashObject {
             // store threads as an array to group the list together and indicate when done
             JSONArray array = new JSONArray();
             for (UUID threadId : mThreads) {
-                // store the threadId as a string for lookup when loading
-                array.put(threadId.toString());
+                int quantity = mQuantities.get(threadId);
+                for (int i = 0; i < quantity; i++) {
+                    // store the threadId as a string for lookup when loading
+                    // duplicate entries indicate multiples needed
+                    array.put(threadId.toString());
+                }
+
             }
             json.put(JSON_THREADS, array);
         }
@@ -172,13 +192,17 @@ public class StashPattern extends StashObject {
             // store embellishments as an array to group the list together and indicate when done
             JSONArray array = new JSONArray();
             for (UUID embellishmentId : mEmbellishments) {
-                // store the embellishmentId as a string for lookup when loading
-                array.put(embellishmentId.toString());
+                int quantity = mQuantities.get(embellishmentId);
+                for (int i = 0; i < quantity; i++) {
+                    // store the embellishmentId as a string for lookup when loading
+                    // duplicate entries indicate multiple needed
+                    array.put(embellishmentId.toString());
+                }
             }
             json.put(JSON_EMBELLISHMENTS, array);
         }
 
-        if (!mQuantities.isEmpty()) {
+        /*if (!mQuantities.isEmpty()) {
             // store the UUID/quantity pairs in objects in an array for later retrieval
             JSONArray array = new JSONArray();
             for(UUID id : mQuantities.keySet()) {
@@ -187,7 +211,7 @@ public class StashPattern extends StashObject {
                 entry.put(JSON_QUANTITY_ENTRY, mQuantities.get(id));
                 array.put(entry);
             }
-        }
+        }*/
 
         return json;
     }
@@ -229,8 +253,7 @@ public class StashPattern extends StashObject {
             mThreads.add(thread.getId());
             mQuantities.put(thread.getId(), 1);
         } else {
-            int currentNumber = mQuantities.get(thread.getId());
-            mQuantities.put(thread.getId(), currentNumber + 1);
+            mQuantities.put(thread.getId(), mQuantities.get(thread.getId()) + 1);
         }
     }
 
@@ -240,7 +263,13 @@ public class StashPattern extends StashObject {
     }
 
     public void addEmbellishment(StashEmbellishment embellishment) {
-        mEmbellishments.add(embellishment.getId());
+        if (!mEmbellishments.contains(embellishment.getId())) {
+            mEmbellishments.add(embellishment.getId());
+            mQuantities.put(embellishment.getId(), 1);
+        } else {
+            mQuantities.put(embellishment.getId(), mQuantities.get(embellishment.getId()) + 1);
+        }
+
     }
 
     public void removeEmbellishment(StashEmbellishment embellishment) {

@@ -170,7 +170,7 @@ public class StashImporter {
                         StashEmbellishment embellishment = findOrAddEmbellishment(source, type, id, stash);
 
                         embellishment.usedInPattern(pattern);
-                        //pattern.addEmbellishment(embellishment);
+                        pattern.addEmbellishment(embellishment);
                     }
 
                     if (line == null || line.equals("---")) {
