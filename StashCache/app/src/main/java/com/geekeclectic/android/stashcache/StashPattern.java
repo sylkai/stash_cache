@@ -245,6 +245,7 @@ public class StashPattern extends StashObject {
 
     public void removeEmbellishment(StashEmbellishment embellishment) {
         mEmbellishments.remove(embellishment.getId());
+        mQuantities.remove(embellishment.getId());
     }
 
     public void updateQuantity(StashThread thread, int number) {

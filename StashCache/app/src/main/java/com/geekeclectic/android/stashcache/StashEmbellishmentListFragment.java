@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -47,6 +48,7 @@ public class StashEmbellishmentListFragment extends ListFragment {
         // get the current list of embellishments to display
         String viewCode = getArguments().getString(EMBELLISHMENT_VIEW_ID);
         mEmbellishments = getListFromStash(viewCode);
+        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
 
         // create and set adapter using embellishment list
         EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);

@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 /**
@@ -47,6 +48,7 @@ public class StashPatternListFragment extends ListFragment {
 
         String viewCode = getArguments().getString(PATTERN_VIEW_ID);
         mPatterns = getListFromStash(viewCode);
+        Collections.sort(mPatterns, new StashPatternComparator());
 
         PatternAdapter adapter = new PatternAdapter(mPatterns);
         setListAdapter(adapter);

@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -47,6 +48,7 @@ public class StashThreadListFragment extends ListFragment {
         // get the current list of threads to display
         String viewCode = getArguments().getString(THREAD_VIEW_ID);
         mThreads = getListFromStash(viewCode);
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
 
         // create and set adapter using thread list
         ThreadAdapter adapter = new ThreadAdapter(mThreads);

@@ -280,6 +280,7 @@ public class StashData {
     public void deletePattern(StashPattern pattern) {
         // removes a pattern from the database
         mPatternsData.remove(pattern);
+        mFabricForList.remove(pattern);
     }
 
     public void addThread(StashThread thread) {
@@ -289,9 +290,11 @@ public class StashData {
     }
 
     public void deleteThread(StashThread thread) {
-        // removes a thread from the hashmap and the list powering the adapter
+        // removes a thread from the hashmap and the lists powering the adapters
         mThreadsData.remove(thread.getKey());
         mThreadsList.remove(thread.getId());
+        mStashThreadsList.remove(thread.getId());
+        mShoppingThreadsList.remove(thread.getId());
     }
 
     public void addFabric(StashFabric fabric) {
@@ -313,9 +316,11 @@ public class StashData {
     }
 
     public void deleteEmbellishment(StashEmbellishment embellishment) {
-        // removes embellishment from the hashmap and the list powering the adapter
+        // removes embellishment from the hashmap and the lists powering the adapters
         mEmbellishmentData.remove(embellishment.getKey());
         mEmbellishmentList.remove(embellishment.getId());
+        mStashEmbellishmentList.remove(embellishment.getId());
+        mShoppingEmbellishmentList.remove(embellishment.getId());
     }
 
     public boolean saveStash() {
