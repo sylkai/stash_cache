@@ -14,7 +14,13 @@ import android.widget.SpinnerAdapter;
 import java.io.IOException;
 
 /**
- * Created by sylk on 2/19/2015.
+ * Activity to host fragments (stash/master list/shopping list) each hosting a viewpager which
+ * displays lists for the various classes of items.  Nested fragments code based in part on project
+ * found here (https://github.com/marcoRS/nested-fragments) for guidance on how the layout
+ * notes in the docs apply.  More information here:
+ * http://stackoverflow.com/questions/13379194/how-to-add-a-fragment-inside-a-viewpager-using-nested-fragment-android-4-2?rq=1
+ * Thanks to StackOverflow for solving the issue of the dropdown menu theme-ing:
+ * http://stackoverflow.com/questions/15948026/cant-change-the-text-color-with-android-action-bar-drop-down-navigation
  */
 public class StashOverviewActivity extends SingleFragmentActivity {
 
@@ -27,7 +33,8 @@ public class StashOverviewActivity extends SingleFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.drop_down_list, android.R.layout.simple_spinner_dropdown_item);
+        // create spinner for the drop down menu
+        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(getActionBar().getThemedContext(), R.array.drop_down_list, android.R.layout.simple_spinner_dropdown_item);
 
         ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
             // get the strings provided for the ArrayAdapter
