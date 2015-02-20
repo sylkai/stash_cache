@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  * Activity to host the viewPager managing the listView fragments displaying the lists of different
  * stash components (patterns, fabrics, threads).  Scrolling tab bar above identifies which list
@@ -16,7 +19,7 @@ import android.view.ViewGroup;
  * hierarchy.
  */
 
-public class ShoppingOverviewPagerFragment extends Fragment {
+public class ShoppingOverviewPagerFragment extends UpdateFragment {
 
     static final int ITEMS = 3;
     static final String TAG = "ShoppingOverview";
@@ -39,7 +42,18 @@ public class ShoppingOverviewPagerFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void stashChanged() {
+        updateFragments();
+    }
+
+    private void updateFragments() {
+        mAdapter.updateFragments();
+    }
+
     public class StashOverviewPagerAdapter extends FragmentStatePagerAdapter {
+
+        private Observable mObservers = new FragmentObserver();
 
         public StashOverviewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -52,14 +66,23 @@ public class ShoppingOverviewPagerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int i) {
+            Fragment fragment;
             switch (i) {
                 case 1: // thread list
-                    return StashThreadListFragment.newInstance("shopping");
+                    fragment = StashThreadListFragment.newInstance("shopping");
+                    break;
                 case 2: // embellishment list
-                    return StashEmbellishmentListFragment.newInstance("shopping");
+                    fragment = StashEmbellishmentListFragment.newInstance("shopping");
+                    break;
                 default: // pattern list
-                    return StashPatternListFragment.newInstance("shopping");
+                    fragment = StashPatternListFragment.newInstance("shopping");
             }
+
+            if (fragment instanceof Observer) {
+                mObservers.addObserver((Observer) fragment);
+            }
+
+            return fragment;
         }
 
         @Override
@@ -72,6 +95,10 @@ public class ShoppingOverviewPagerFragment extends Fragment {
                 default: // pattern list
                     return getString(R.string.shopping_pattern_list_title).toUpperCase();
             }
+        }
+
+        public void updateFragments() {
+            mObservers.notifyObservers();
         }
     }
 

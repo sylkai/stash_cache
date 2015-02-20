@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Activity to host the viewPager managing the listView fragments displaying the lists of different
@@ -22,7 +24,7 @@ import java.io.IOException;
  * hierarchy.
  */
 
-public class MasterOverviewPagerFragment extends Fragment {
+public class MasterOverviewPagerFragment extends UpdateFragment {
 
     static final int ITEMS = 4;
     static final String TAG = "MasterOverview";
@@ -45,7 +47,18 @@ public class MasterOverviewPagerFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void stashChanged() {
+        updateFragments();
+    }
+
+    private void updateFragments() {
+        mAdapter.updateFragments();
+    }
+
     public class StashOverviewPagerAdapter extends FragmentStatePagerAdapter {
+
+        private Observable mObservers = new FragmentObserver();
 
         public StashOverviewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -58,16 +71,26 @@ public class MasterOverviewPagerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int i) {
+            Fragment fragment;
             switch (i) {
                 case 1: // fabric list
-                    return StashFabricListFragment.newInstance("master");
+                    fragment = StashFabricListFragment.newInstance("master");
+                    break;
                 case 2: // thread list
-                    return StashThreadListFragment.newInstance("master");
+                    fragment = StashThreadListFragment.newInstance("master");
+                    break;
                 case 3: // embellishment list
-                    return StashEmbellishmentListFragment.newInstance("master");
+                    fragment = StashEmbellishmentListFragment.newInstance("master");
+                    break;
                 default: // pattern list
-                    return StashPatternListFragment.newInstance("master");
+                    fragment = StashPatternListFragment.newInstance("master");
             }
+
+            if (fragment instanceof Observer) {
+                mObservers.addObserver((Observer) fragment);
+            }
+
+            return fragment;
         }
 
         @Override
@@ -82,6 +105,10 @@ public class MasterOverviewPagerFragment extends Fragment {
                 default: // pattern list
                     return getString(R.string.pattern_list_title).toUpperCase();
             }
+        }
+
+        public void updateFragments() {
+            mObservers.notifyObservers();
         }
     }
 

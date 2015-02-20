@@ -23,13 +23,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.regex.Pattern;
 
 /**
  * Fragment to display list of patterns.  Long press allows user to select items to be deleted.
  */
 
-public class StashPatternListFragment extends ListFragment {
+public class StashPatternListFragment extends ListFragment implements Observer {
 
     private static final String TAG = "PatternListFragment";
     private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
@@ -206,6 +208,11 @@ public class StashPatternListFragment extends ListFragment {
         } else {
             return StashData.get(getActivity()).getPatternData();
         }
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     private class PatternAdapter extends ArrayAdapter<StashPattern> {

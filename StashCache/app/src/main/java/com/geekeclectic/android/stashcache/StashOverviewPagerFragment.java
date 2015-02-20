@@ -5,15 +5,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Activity to host the viewPager managing the listView fragments displaying the lists of different
@@ -22,7 +19,7 @@ import java.io.IOException;
  * hierarchy.
  */
 
-public class StashOverviewPagerFragment extends Fragment {
+public class StashOverviewPagerFragment extends UpdateFragment {
 
     static final int ITEMS = 4;
     static final String TAG = "StashOverview";
@@ -46,35 +43,17 @@ public class StashOverviewPagerFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.stash_menu, menu);
+    public void stashChanged() {
+        updateFragments();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handling item selection
-        switch (item.getItemId()) {
-            case R.id.menu_item_import_stash:
-                Log.d(TAG, "User chose to input stash.");
-
-                StashImporter importer = new StashImporter();
-                try {
-                    importer.importStash(getActivity());
-                } catch (IOException e) {
-                    //
-                }
-                StashData.get(getActivity()).saveStash();
-                return super.onOptionsItemSelected(item);
-            case R.id.menu_item_delete_stash:
-                StashData.get(getActivity()).deleteStash();
-                return super.onOptionsItemSelected(item);
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    private void updateFragments() {
+        mAdapter.updateFragments();
     }
 
     public class StashOverviewPagerAdapter extends FragmentStatePagerAdapter {
+
+        private Observable mObservers = new FragmentObserver();
 
         public StashOverviewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -87,16 +66,26 @@ public class StashOverviewPagerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int i) {
+            Fragment fragment;
             switch (i) {
                 case 1: // fabric list
-                    return StashFabricListFragment.newInstance("stash");
+                    fragment = StashFabricListFragment.newInstance("stash");
+                    break;
                 case 2: // thread list
-                    return StashThreadListFragment.newInstance("stash");
+                    fragment = StashThreadListFragment.newInstance("stash");
+                    break;
                 case 3: // embellishment list
-                    return StashEmbellishmentListFragment.newInstance("stash");
+                    fragment = StashEmbellishmentListFragment.newInstance("stash");
+                    break;
                 default: // pattern list
-                    return StashPatternListFragment.newInstance("stash");
+                    fragment =  StashPatternListFragment.newInstance("stash");
             }
+
+            if (fragment instanceof Observer) {
+                mObservers.addObserver((Observer) fragment);
+            }
+
+            return fragment;
         }
 
         @Override
@@ -111,6 +100,10 @@ public class StashOverviewPagerFragment extends Fragment {
                 default: // pattern list
                     return getString(R.string.pattern_list_title).toUpperCase();
             }
+        }
+
+        public void updateFragments() {
+            mObservers.notifyObservers();
         }
     }
 

@@ -23,12 +23,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
 /**
  * Fragment to display list of threads.  Long press allows user to select items to be deleted.
  */
-public class StashThreadListFragment extends ListFragment {
+public class StashThreadListFragment extends ListFragment implements Observer {
 
     private ArrayList<UUID> mThreads;
 
@@ -205,6 +207,11 @@ public class StashThreadListFragment extends ListFragment {
         } else {
             return StashData.get(getActivity()).getThreadShoppingList();
         }
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     private class ThreadAdapter extends ArrayAdapter<UUID> {

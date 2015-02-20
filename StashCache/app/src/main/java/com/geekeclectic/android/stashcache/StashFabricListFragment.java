@@ -22,12 +22,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
 /**
  * Fragment to display list of fabrics.  Long press allows user to select items to be deleted.
  */
-public class StashFabricListFragment extends ListFragment {
+public class StashFabricListFragment extends ListFragment implements Observer {
 
     FabricAdapter adapter;
     ArrayList<UUID> mFabrics;
@@ -195,6 +197,11 @@ public class StashFabricListFragment extends ListFragment {
         Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
         i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabricId);
         startActivity(i);
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     private class FabricAdapter extends ArrayAdapter<UUID> {

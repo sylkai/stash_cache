@@ -136,9 +136,7 @@ public class StashData {
 
     public void removeThreadFromStash(UUID threadId) {
         // needed to update the list as the user edits the quantities of thread owned
-        if (mStashThreadsList.contains(threadId)) {
-            mStashThreadsList.remove(threadId);
-        }
+        mStashThreadsList.remove(threadId);
     }
 
     public StashThread getThread(UUID key) {
@@ -186,9 +184,8 @@ public class StashData {
 
     public void removeEmbellishmentFromStash(UUID embellishmentId) {
         // needed to update the list as the user edits the quantities of embellishments owned
-        if (mStashEmbellishmentList.contains(embellishmentId)) {
-            mStashEmbellishmentList.remove(embellishmentId);
-        }
+        mStashEmbellishmentList.remove(embellishmentId);
+
     }
 
     public void setEmbellishmentList() {
@@ -287,6 +284,9 @@ public class StashData {
         // adds a thread to the hashmap and to the list of IDs powering the adapter
         mThreadsData.put(thread.getKey(), thread);
         mThreadsList.add(thread.getId());
+        if (thread.isOwned()) {
+            mStashThreadsList.add(thread.getId());
+        }
     }
 
     public void deleteThread(StashThread thread) {
@@ -313,6 +313,9 @@ public class StashData {
         // adds an embellishment to the hashmap and to the list of IDs powering the adapter
         mEmbellishmentData.put(embellishment.getKey(), embellishment);
         mEmbellishmentList.add(embellishment.getId());
+        if (embellishment.isOwned()) {
+            mStashEmbellishmentList.add(embellishment.getId());
+        }
     }
 
     public void deleteEmbellishment(StashEmbellishment embellishment) {

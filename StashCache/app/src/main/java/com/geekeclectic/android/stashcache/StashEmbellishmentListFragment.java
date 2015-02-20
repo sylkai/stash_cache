@@ -23,12 +23,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
 /**
  * Fragment to display list of embellishments.  Long press allows user to select items to be deleted.
  */
-public class StashEmbellishmentListFragment extends ListFragment {
+public class StashEmbellishmentListFragment extends ListFragment implements Observer {
 
     private ArrayList<UUID> mEmbellishments;
 
@@ -205,6 +207,11 @@ public class StashEmbellishmentListFragment extends ListFragment {
         } else {
             return StashData.get(getActivity()).getEmbellishmentShoppingList();
         }
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        ((EmbellishmentAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     private class EmbellishmentAdapter extends ArrayAdapter<UUID> {

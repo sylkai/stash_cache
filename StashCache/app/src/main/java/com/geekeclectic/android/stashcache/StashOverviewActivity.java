@@ -85,6 +85,8 @@ public class StashOverviewActivity extends SingleFragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+
         // handling item selection
         switch (item.getItemId()) {
             case R.id.menu_item_import_stash:
@@ -95,9 +97,11 @@ public class StashOverviewActivity extends SingleFragmentActivity {
                     //
                 }
                 StashData.get(getApplicationContext()).saveStash();
+                fragment.stashChanged();
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:
                 StashData.get(getApplicationContext()).deleteStash();
+                fragment.stashChanged();
                 return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
