@@ -285,6 +285,10 @@ public class StashPattern extends StashObject {
         return mQuantities.get(object.getId());
     }
 
+    public HashMap<UUID, Integer> getQuantities() {
+        return mQuantities;
+    }
+
     public ArrayList<UUID> getThreadList() {
         return mThreads;
     }

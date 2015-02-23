@@ -144,7 +144,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     @Override
     public void onStop() {
         super.onStop();
-        StashPhotoUtils.cleanImageView(mViewPhoto);
+        // StashPhotoUtils.cleanImageView(mViewPhoto);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
         }
 
-        mViewPhoto = (ImageView)v.findViewById(R.id.pattern_photo_detail);
+        /*mViewPhoto = (ImageView)v.findViewById(R.id.pattern_photo_detail);
         // set listener to trigger when layout is fully drawn to pass on proper values to showPhoto
         // per http://stackoverflow.com/questions/3591784/getwidth-returns-0?lq=1
         mViewPhoto.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -213,7 +213,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                     }
                 }
             }
-        });
+        });*/
 
         // editText for pattern name
         mTitleField = (EditText)v.findViewById(R.id.pattern_name);

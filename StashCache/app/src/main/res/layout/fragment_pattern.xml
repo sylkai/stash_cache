@@ -12,7 +12,7 @@
         android:paddingLeft="16dp"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <!--<RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
@@ -33,7 +33,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true" />
 
-        </RelativeLayout>
+        </RelativeLayout>-->
 
         <LinearLayout
             android:layout_width="fill_parent"
