@@ -281,8 +281,36 @@ public class StashPattern extends StashObject {
         mQuantities.put(thread.getId(), number);
     }
 
+    public void decreaseQuantity(StashThread thread) {
+        // decrease quantity for thread in the quantitymap by one, remove it from map/thread list if
+        // quantity goes to 0
+        if (mQuantities.get(thread.getId()) == 1) {
+            mQuantities.remove(thread.getId());
+            mThreads.remove(thread.getId());
+            thread.removePattern(this);
+        } else {
+            mQuantities.put(thread.getId(), mQuantities.get(thread.getId()) - 1);
+        }
+    }
+
+    public void increaseQuantity(StashThread thread) {
+        // increase quantity for thread in the quantitymap by one, add it to map/thread list if the
+        // quantity had been 0
+        if (mQuantities.get(thread.getId()) == null) {
+            mQuantities.put(thread.getId(), 1);
+            mThreads.add(thread.getId());
+            thread.usedInPattern(this);
+        } else {
+            mQuantities.put(thread.getId(), mQuantities.get(thread.getId()) + 1);
+        }
+    }
+
     public int getQuantity(StashObject object) {
-        return mQuantities.get(object.getId());
+        if (mQuantities.get(object.getId()) != null) {
+            return mQuantities.get(object.getId());
+        } else {
+            return 0;
+        }
     }
 
     public HashMap<UUID, Integer> getQuantities() {

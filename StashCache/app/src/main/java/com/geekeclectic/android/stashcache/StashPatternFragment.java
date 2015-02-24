@@ -27,6 +27,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
@@ -40,7 +41,7 @@ import java.util.UUID;
  * display of the fragment in case the underlying information for the Pattern has been updated.
  */
 
-public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener, Observer {
+public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener, Observer, SelectThreadQuantityDialogFragment.SelectThreadQuantityDialogListener {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
     public static final String TAG = "StashPatternFragment";
@@ -329,8 +330,9 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 FragmentManager fm = getActivity().getSupportFragmentManager();
 
                 // create a copy of the thread list to avoid modification errors
-                SelectThreadDialogFragment dialog = SelectThreadDialogFragment.newInstance(StashData.get(getActivity()).getThreadList(), new ArrayList<UUID>(mThreadList));
-                dialog.setSelectThreadDialogListener(mFragment);
+                SelectThreadQuantityDialogFragment dialog = SelectThreadQuantityDialogFragment.newInstance(StashData.get(getActivity()).getThreadList(), mPattern, getActivity());
+                //dialog.setSelectThreadDialogListener(mFragment);
+                dialog.setSelectThreadQuantityDialogCallback(mFragment);
                 dialog.show(fm, DIALOG_THREAD);
             }
         });
@@ -465,6 +467,10 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         updateThreadInfo();
     }
 
+    public void onThreadQuantitiesUpdate() {
+        updateThreadInfo();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
@@ -498,6 +504,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     private void updateThreadInfo() {
         if (mThreadList.size() > 0) {
+            Collections.sort(mThreadList, new StashThreadComparator(getActivity()));
             mThreadInfo.setText("");
 
             for (UUID threadId : mThreadList) {
