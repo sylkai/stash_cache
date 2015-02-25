@@ -134,6 +134,13 @@ public class StashThreadListFragment extends ListFragment implements Observer {
     @Override
     public void onResume() {
         super.onResume();
+
+        // re-sort the list to make sure everything is where it should be
+        String viewCode = getArguments().getString(THREAD_VIEW_ID);
+        mThreads = getListFromStash(viewCode);
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
+        // remind the adapter to get the updated list
         ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
@@ -225,20 +232,37 @@ public class StashThreadListFragment extends ListFragment implements Observer {
             // if we weren't given a view, inflate one
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_thread, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.threadInfo = (TextView)convertView.findViewById(R.id.thread_list_item_flossIdTextView);
+                vh.threadType = (TextView)convertView.findViewById(R.id.thread_list_item_flossTypeTextView);
+                vh.quantity = (TextView)convertView.findViewById(R.id.thread_list_item_quantity);
+                convertView.setTag(vh);
             }
+
+            ViewHolder vh =  (ViewHolder)convertView.getTag();
 
             // configure the view for this thread
             StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
 
-            TextView threadTextView = (TextView)convertView.findViewById(R.id.thread_list_item_flossIdTextView);
-            threadTextView.setText(thread.toString());
+            vh.threadInfo.setText(thread.getDescriptor());
+            vh.threadType.setText(thread.getType());
 
-            CheckBox ownedCheckBox = (CheckBox)convertView.findViewById(R.id.thread_list_item_ownedCheckBox);
-            ownedCheckBox.setChecked(thread.isOwned());
+            if (getArguments().getString(THREAD_VIEW_ID).equals("shopping")) {
+                vh.quantity.setText(Integer.toString(thread.getSkeinsNeeded()));
+            } else {
+                vh.quantity.setText(Integer.toString(thread.getSkeinsOwned()));
+            }
 
             return convertView;
         }
 
+    }
+
+    static class ViewHolder {
+        TextView threadInfo;
+        TextView threadType;
+        TextView quantity;
     }
 
 }

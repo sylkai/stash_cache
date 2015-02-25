@@ -66,6 +66,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
         // create adapter to provide custom listview for displaying threads
         mAdapter = new QuantityAdapter(mThreads, mPattern);
 
+        builder.setTitle(R.string.thread_selectQuantity);
         builder.setAdapter(mAdapter, this);
         builder.setPositiveButton(R.string.ok, this);
         builder.setNegativeButton(R.string.cancel, this);

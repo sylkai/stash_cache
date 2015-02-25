@@ -31,6 +31,7 @@
     <string name="skeins_owned_label">Skeins Owned</string>
     <string name="thread_pattern_info">Used In</string>
     <string name="thread_pattern_detail">Not used in any patterns.</string>
+    <string name="thread_selectQuantity">Set threads used in pattern:</string>
 
     <string name="embellishment_info">Embellishment Info</string>
     <string name="embellishment_source_hint">Manufacturer</string>
