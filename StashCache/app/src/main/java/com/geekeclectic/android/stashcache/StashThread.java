@@ -112,8 +112,8 @@ public class StashThread extends StashObject {
     }
 
     public void addNeeded(int increment) {
-        if (mSkeinsOwned == 0 && mSkeinsNeeded == 0 && increment == 1) {
-            // none owned, one called for, and has not already been added to the list
+        if (mSkeinsOwned == 0 && mSkeinsNeeded == 0) {
+            // none owned and has not already been added to the list
             mSkeinsNeeded = increment;
         } else {
             // last skein required treated as a partial and subtracted (assuming everything rounded up)
@@ -131,7 +131,8 @@ public class StashThread extends StashObject {
     }
 
     public boolean needToBuy() {
-        return mSkeinsNeeded > mSkeinsOwned;
+        // need to take into account the partial skein assumptions when calculating mSkeinsNeeded
+        return mSkeinsNeeded > (mSkeinsOwned - 1);
     }
 
     @Override
@@ -142,6 +143,10 @@ public class StashThread extends StashObject {
         } else {
             return getSource() + " " + mCode;
         }
+    }
+
+    public String getDescriptor() {
+        return getSource() + " " + mCode;
     }
 
 }
