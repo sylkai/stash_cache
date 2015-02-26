@@ -114,7 +114,7 @@ public class StashEmbellishment extends StashObject {
         mNumberNeeded = mNumberNeeded - increment;
     }
 
-    public int getSkeinsNeeded() {
+    public int getNumberNeeded() {
         return mNumberNeeded;
     }
 

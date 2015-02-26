@@ -225,20 +225,33 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
             // if we weren't given a view, inflate one
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_embellishment, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.info = (TextView)convertView.findViewById(R.id.embellishment_list_item_idTextView);
+                vh.quantity = (TextView)convertView.findViewById(R.id.embellishment_list_item_quantity);
+                convertView.setTag(vh);
             }
 
+            ViewHolder vh = (ViewHolder)convertView.getTag();
             // configure the view for this embellishment
             StashEmbellishment embellishment = StashData.get(getActivity()).getEmbellishment(getItem(position));
 
-            TextView embellishmentTextView = (TextView)convertView.findViewById(R.id.embellishment_list_item_idTextView);
-            embellishmentTextView.setText(embellishment.toString());
+            vh.info.setText(embellishment.toString());
 
-            CheckBox ownedCheckBox = (CheckBox)convertView.findViewById(R.id.embellishment_list_item_ownedCheckBox);
-            ownedCheckBox.setChecked(embellishment.isOwned());
+            if (getArguments().getString(EMBELLISHMENT_VIEW_ID).equals("shopping")) {
+                vh.quantity.setText(Integer.toString(embellishment.getNumberNeeded()));
+            } else {
+                vh.quantity.setText(Integer.toString(embellishment.getNumberOwned()));
+            }
 
             return convertView;
         }
 
+    }
+
+    static class ViewHolder {
+        TextView info;
+        TextView quantity;
     }
 
 }

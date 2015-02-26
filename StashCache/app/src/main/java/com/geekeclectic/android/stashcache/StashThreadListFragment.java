@@ -240,7 +240,7 @@ public class StashThreadListFragment extends ListFragment implements Observer {
                 convertView.setTag(vh);
             }
 
-            ViewHolder vh =  (ViewHolder)convertView.getTag();
+            ViewHolder vh = (ViewHolder)convertView.getTag();
 
             // configure the view for this thread
             StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
