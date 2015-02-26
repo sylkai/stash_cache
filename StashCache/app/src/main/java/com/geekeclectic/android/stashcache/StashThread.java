@@ -26,12 +26,14 @@ public class StashThread extends StashObject {
     private static final String JSON_CODE = "id code";
     private static final String JSON_OWNED = "number owned";
     private static final String JSON_NEEDED = "number needed";
+    private static final String JSON_ADDITIONAL = "additional to buy";
     private static final String JSON_ID = "program id";
 
     public StashThread() {
         // initialize variables, random id is set in parent class
         mSkeinsOwned = 0;
         mSkeinsNeeded = 0;
+        mSkeinsAdditional = 0;
         mUsedIn = new ArrayList<StashPattern>();
     }
 
@@ -43,6 +45,7 @@ public class StashThread extends StashObject {
         mCode = json.getString(JSON_CODE);
         mSkeinsOwned = json.getInt(JSON_OWNED);
         mSkeinsNeeded = json.getInt(JSON_NEEDED);
+        mSkeinsAdditional = json.getInt(JSON_ADDITIONAL);
         setId(UUID.fromString(json.getString(JSON_ID)));
 
         if (json.has(JSON_TYPE)) {
@@ -57,6 +60,7 @@ public class StashThread extends StashObject {
         json.put(JSON_CODE, mCode);
         json.put(JSON_OWNED, mSkeinsOwned);
         json.put(JSON_NEEDED, mSkeinsNeeded);
+        json.put(JSON_ADDITIONAL, mSkeinsAdditional);
         json.put(JSON_ID, getKey());
 
         if (mType != null) {
