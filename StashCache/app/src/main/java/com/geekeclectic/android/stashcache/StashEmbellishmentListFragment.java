@@ -240,6 +240,8 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
 
             if (getArguments().getString(EMBELLISHMENT_VIEW_ID).equals("shopping")) {
                 vh.quantity.setText(Integer.toString(embellishment.getNumberNeeded()));
+            } else if (getArguments().getString(EMBELLISHMENT_VIEW_ID).equals("master")) {
+                vh.quantity.setText(Integer.toString(embellishment.getNumberOwned()) + " / " + Integer.toString(embellishment.getNumberNeeded()));
             } else {
                 vh.quantity.setText(Integer.toString(embellishment.getNumberOwned()));
             }

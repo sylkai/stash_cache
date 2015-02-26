@@ -250,6 +250,8 @@ public class StashThreadListFragment extends ListFragment implements Observer {
 
             if (getArguments().getString(THREAD_VIEW_ID).equals("shopping")) {
                 vh.quantity.setText(Integer.toString(thread.getSkeinsNeeded()));
+            } else if (getArguments().getString(THREAD_VIEW_ID).equals("master")) {
+                vh.quantity.setText(Integer.toString(thread.getSkeinsOwned()) + " / " + Integer.toString(thread.getSkeinsNeeded()));
             } else {
                 vh.quantity.setText(Integer.toString(thread.getSkeinsOwned()));
             }
