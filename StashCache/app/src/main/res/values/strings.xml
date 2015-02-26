@@ -17,6 +17,7 @@
     <string name="pattern_width_label">Width</string>
     <string name="pattern_height_label">Height</string>
     <string name="pattern_thread_info">Threads</string>
+    <string name="pattern_embellishment_info">Embellishments</string>
     <string name="pattern_thread_details"> </string>
     <string name="pattern_fabric_title">Fabric</string>
     <string name="pattern_no_fabric">No fabric selected.</string>

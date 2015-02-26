@@ -19,9 +19,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -57,6 +61,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private StashPatternFragment mFragment;
     private StashFabric mFabric;
     private ArrayList<UUID> mThreadList;
+    private ArrayList<UUID> mEmbellishmentList;
     private UUID mPatternId;
     private EditText mTitleField;
     private EditText mSourceField;
@@ -69,6 +74,9 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private ImageView mEditThread;
     private TextView mFabricInfo;
     private TextView mThreadInfo;
+    private ListView mThreadDisplayList;
+    private ListView mEmbellishmentDisplayList;
+
     private ChangedFragmentListener mCallback;
 
     private String mPhotoPath;
@@ -95,6 +103,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         mFabric = mPattern.getFabric();
         mThreadList = mPattern.getThreadList();
+        mEmbellishmentList = mPattern.getEmbellishmentList();
     }
 
     @Override
@@ -337,8 +346,19 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
         });
 
-        mThreadInfo = (TextView)v.findViewById(R.id.pattern_thread_display);
-        updateThreadInfo();
+        /*mThreadInfo = (TextView)v.findViewById(R.id.pattern_thread_display);
+        updateThreadInfo();*/
+
+        mThreadDisplayList = (ListView)v.findViewById(R.id.pattern_thread_list);
+        ThreadAdapter adapter = new ThreadAdapter(mThreadList);
+        mThreadDisplayList.setAdapter(adapter);
+
+        mEmbellishmentDisplayList = (ListView)v.findViewById(R.id.pattern_embellishment_list);
+        EmbellishmentAdapter adapter1 = new EmbellishmentAdapter(mEmbellishmentList);
+        mEmbellishmentDisplayList.setAdapter(adapter1);
+
+        setListViewHeightBasedOnChildren(mThreadDisplayList);
+        setListViewHeightBasedOnChildren(mEmbellishmentDisplayList);
 
         return v;
     }
@@ -505,12 +525,13 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private void updateThreadInfo() {
         if (mThreadList.size() > 0) {
             Collections.sort(mThreadList, new StashThreadComparator(getActivity()));
-            mThreadInfo.setText("");
+            /*mThreadInfo.setText("");
 
             for (UUID threadId : mThreadList) {
                 StashThread thread = StashData.get(getActivity()).getThread(threadId);
                 mThreadInfo.append(thread.toString() + "\n");
-            }
+            }*/
+            ((ThreadAdapter)mThreadDisplayList.getAdapter()).notifyDataSetChanged();
         } else {
             mThreadInfo.setText(R.string.pattern_no_thread);
         }
@@ -524,6 +545,105 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             StashPhotoTask task = new StashPhotoTask(getActivity(), mViewPhoto, path);
             task.execute(mViewPhoto.getId());
         }
+    }
+
+    private void setListViewHeightBasedOnChildren(ListView listView) {
+        // method modified from an answer here: http://stackoverflow.com/questions/3495890/how-can-i-put-a-listview-into-a-scrollview-without-it-collapsing/3495908#3495908
+        // to set the height based on a maximum number of items on the listView
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+
+        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+        if (listAdapter.getCount() > 4) {
+            for (int i = 0; i < 4; i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                if (listItem instanceof ViewGroup)
+                    listItem.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+        } else {
+            for (int i = 0; i < listAdapter.getCount(); i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                if (listItem instanceof ViewGroup)
+                    listItem.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+    }
+
+    private class ThreadAdapter extends ArrayAdapter<UUID> {
+
+        public ThreadAdapter(ArrayList<UUID> threads) {
+            super(getActivity(), 0, threads);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // if we weren't given a view, inflate one
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_pattern_thread, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.info = (TextView)convertView.findViewById(R.id.pattern_thread_item_description);
+                vh.quantity = (TextView)convertView.findViewById(R.id.pattern_thread_quantity);
+                convertView.setTag(vh);
+            }
+
+            ViewHolder vh =  (ViewHolder)convertView.getTag();
+
+            // configure the view for this thread
+            StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
+
+            vh.info.setText(thread.toString());
+            vh.quantity.setText(Integer.toString(mPattern.getQuantity(thread)));
+
+            return convertView;
+        }
+
+    }
+
+    private class EmbellishmentAdapter extends ArrayAdapter<UUID> {
+
+        public EmbellishmentAdapter(ArrayList<UUID> embellishments) {
+            super(getActivity(), 0, embellishments);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // if we weren't given a view, inflate one
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_pattern_thread, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.info = (TextView)convertView.findViewById(R.id.pattern_thread_item_description);
+                vh.quantity = (TextView)convertView.findViewById(R.id.pattern_thread_quantity);
+                convertView.setTag(vh);
+            }
+
+            ViewHolder vh =  (ViewHolder)convertView.getTag();
+
+            // configure the view for this thread
+            StashEmbellishment embellishment = StashData.get(getActivity()).getEmbellishment(getItem(position));
+
+            vh.info.setText(embellishment.toString());
+            vh.quantity.setText(Integer.toString(mPattern.getQuantity(embellishment)));
+
+            return convertView;
+        }
+
+    }
+
+    static class ViewHolder {
+        TextView info;
+        TextView quantity;
     }
 
 }
