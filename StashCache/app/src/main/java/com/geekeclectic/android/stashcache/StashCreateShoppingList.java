@@ -45,9 +45,9 @@ public class StashCreateShoppingList {
                     StashThread thread = stash.getThread(threadId);
                     thread.addNeeded(pattern.getQuantity(thread));
 
-                    if (thread.needToBuy() && !mThreadShoppingList.contains(threadId)) {
+                    /*if (thread.needToBuy() && !mThreadShoppingList.contains(threadId)) {
                         mThreadShoppingList.add(threadId);
-                    }
+                    }*/
                 }
             }
 
@@ -61,6 +61,14 @@ public class StashCreateShoppingList {
                         mEmbellishmentShoppingList.add(embellishmentId);
                     }
                 }
+            }
+        }
+
+        ArrayList<UUID> threadList = stash.getThreadList();
+        for (UUID threadId : threadList) {
+            StashThread thread = stash.getThread(threadId);
+            if (thread.needToBuy()) {
+                mThreadShoppingList.add(threadId);
             }
         }
 

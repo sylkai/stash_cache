@@ -30,6 +30,9 @@
     <string name="thread_id_hint">ID Code</string>
     <string name="skeins_info">In Stash</string>
     <string name="skeins_owned_label">Skeins Owned</string>
+    <string name="skeins_needed_label">Missing Skeins For Kitted Patterns</string>
+    <string name="skeins_toBuy_label">Additional Skeins To Buy</string>
+    <string name="skeins_toBuyTotal_label">Total Skeins To Buy</string>
     <string name="thread_pattern_info">Used In</string>
     <string name="thread_pattern_detail">Not used in any patterns.</string>
     <string name="thread_selectQuantity">Set threads used in pattern:</string>

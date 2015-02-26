@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -30,6 +31,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
         // get list of threads
         mThreads = StashData.get(this).getThreadList();
+        Collections.sort(mThreads, new StashThreadComparator(this));
 
         // create and set fragment manager to return appropriate fragments
         FragmentManager fm = getSupportFragmentManager();

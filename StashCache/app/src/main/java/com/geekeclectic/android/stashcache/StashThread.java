@@ -18,6 +18,7 @@ public class StashThread extends StashObject {
     private String mType;
     private int mSkeinsOwned;
     private int mSkeinsNeeded;
+    private int mSkeinsAdditional;
     private ArrayList<StashPattern> mUsedIn;
 
     private static final String JSON_SOURCE = "source";
@@ -99,6 +100,30 @@ public class StashThread extends StashObject {
         mSkeinsOwned = number;
     }
 
+    public void increaseOwnedQuantity() {
+        mSkeinsOwned = mSkeinsOwned + 1;
+    }
+
+    public void decreaseOwnedQuantity() {
+        if (mSkeinsOwned > 0) {
+            mSkeinsOwned = mSkeinsOwned - 1;
+        }
+    }
+
+    public void increaseAdditionalQuantity() {
+        mSkeinsAdditional = mSkeinsAdditional + 1;
+    }
+
+    public void decreaseAdditionalQuantity() {
+        if (mSkeinsAdditional > 0) {
+            mSkeinsAdditional = mSkeinsAdditional - 1;
+        }
+    }
+
+    public int getAdditionalSkeins() {
+        return mSkeinsAdditional;
+    }
+
     public int getSkeinsOwned() {
         return mSkeinsOwned;
     }
@@ -130,9 +155,17 @@ public class StashThread extends StashObject {
         return mSkeinsNeeded;
     }
 
+    public int getSkeinsToBuy() {
+        return mSkeinsNeeded + mSkeinsAdditional;
+    }
+
     public boolean needToBuy() {
         // need to take into account the partial skein assumptions when calculating mSkeinsNeeded
-        return mSkeinsNeeded > (mSkeinsOwned - 1);
+        return (mSkeinsNeeded > 0 && mSkeinsNeeded > (mSkeinsOwned - 1)) || mSkeinsAdditional > 0;
+    }
+
+    public ArrayList<StashPattern> getPatternsList() {
+        return mUsedIn;
     }
 
     @Override
