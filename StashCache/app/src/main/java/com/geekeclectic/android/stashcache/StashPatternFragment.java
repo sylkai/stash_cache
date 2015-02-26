@@ -45,7 +45,7 @@ import java.util.UUID;
  * display of the fragment in case the underlying information for the Pattern has been updated.
  */
 
-public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener, Observer, SelectThreadQuantityDialogFragment.SelectThreadQuantityDialogListener {
+public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener, Observer, SelectThreadQuantityDialogFragment.SelectThreadQuantityDialogListener, SelectEmbellishmentQuantityDialogFragment.SelectEmbellishmentQuantityDialogListener {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
     public static final String TAG = "StashPatternFragment";
@@ -72,6 +72,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private ImageView mEditPhoto;
     private ImageView mEditFabric;
     private ImageView mEditThread;
+    private ImageView mEditEmbellishment;
     private TextView mFabricInfo;
     private TextView mThreadInfo;
     private ListView mThreadDisplayList;
@@ -353,6 +354,20 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         ThreadAdapter adapter = new ThreadAdapter(mThreadList);
         mThreadDisplayList.setAdapter(adapter);
 
+        // button to allow selection of threads used in pattern
+        mEditEmbellishment = (ImageView)v.findViewById(R.id.pattern_embellishment_edit);
+        mEditEmbellishment.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+
+                // create a copy of the thread list to avoid modification errors
+                SelectEmbellishmentQuantityDialogFragment dialog = SelectEmbellishmentQuantityDialogFragment.newInstance(StashData.get(getActivity()).getEmbellishmentList(), mPattern, getActivity());
+                //dialog.setSelectThreadDialogListener(mFragment);
+                dialog.setSelectEmbellishmentQuantityDialogCallback(mFragment);
+                dialog.show(fm, DIALOG_THREAD);
+            }
+        });
+
         mEmbellishmentDisplayList = (ListView)v.findViewById(R.id.pattern_embellishment_list);
         EmbellishmentAdapter adapter1 = new EmbellishmentAdapter(mEmbellishmentList);
         mEmbellishmentDisplayList.setAdapter(adapter1);
@@ -491,6 +506,13 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         updateThreadInfo();
     }
 
+    public void onEmbellishmentQuantitiesUpdate() {
+        if (mEmbellishmentList.size() > 0) {
+            Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(getActivity()));
+            ((EmbellishmentAdapter) mEmbellishmentDisplayList.getAdapter()).notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
@@ -533,7 +555,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }*/
             ((ThreadAdapter)mThreadDisplayList.getAdapter()).notifyDataSetChanged();
         } else {
-            mThreadInfo.setText(R.string.pattern_no_thread);
+            // mThreadInfo.setText(R.string.pattern_no_thread);
         }
     }
 

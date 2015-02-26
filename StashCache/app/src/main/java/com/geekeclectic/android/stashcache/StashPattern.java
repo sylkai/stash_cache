@@ -305,6 +305,30 @@ public class StashPattern extends StashObject {
         }
     }
 
+    public void decreaseQuantity(StashEmbellishment embellishment) {
+        // decrease quantity for embellishment in the quantitymap by one, remove it from map/thread list if
+        // quantity goes to 0
+        if (mQuantities.get(embellishment.getId()) == 1) {
+            mQuantities.remove(embellishment.getId());
+            mEmbellishments.remove(embellishment.getId());
+            embellishment.removePattern(this);
+        } else {
+            mQuantities.put(embellishment.getId(), mQuantities.get(embellishment.getId()) - 1);
+        }
+    }
+
+    public void increaseQuantity(StashEmbellishment embellishment) {
+        // increase quantity for embellishment in the quantitymap by one, add it to map/thread list if the
+        // quantity had been 0
+        if (mQuantities.get(embellishment.getId()) == null) {
+            mQuantities.put(embellishment.getId(), 1);
+            mEmbellishments.add(embellishment.getId());
+            embellishment.usedInPattern(this);
+        } else {
+            mQuantities.put(embellishment.getId(), mQuantities.get(embellishment.getId()) + 1);
+        }
+    }
+
     public int getQuantity(StashObject object) {
         if (mQuantities.get(object.getId()) != null) {
             return mQuantities.get(object.getId());

@@ -42,6 +42,7 @@
     <string name="number_owned_label">Number Owned</string>
     <string name="embellishment_pattern_info">Used In</string>
     <string name="embellishment_pattern_detail">Not used in any patterns.</string>
+    <string name="embellishment_selectQuantity">Set embellishments used in pattern:</string>
 
     <string name="fabric_info">Fabric Info</string>
     <string name="fabric_source_hint">Company</string>
@@ -81,7 +82,7 @@
         <item>Shopping List</item>
     </string-array>
 
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
     <string name="fabric_selectPattern">Not assigned to any pattern.</string>

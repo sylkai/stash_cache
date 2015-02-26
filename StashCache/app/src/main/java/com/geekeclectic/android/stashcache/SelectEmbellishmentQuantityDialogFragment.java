@@ -21,27 +21,27 @@ import java.util.UUID;
  */
 public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private static ArrayList<UUID> mThreads;
+    private static ArrayList<UUID> mEmbellishments;
     private static StashPattern mPattern;
     private QuantityAdapter mAdapter;
-    private SelectThreadQuantityDialogListener mSelectThreadQuantityDialogCallback;
+    private SelectEmbellishmentQuantityDialogListener mSelectEmbellishmentQuantityDialogCallback;
 
-    public interface SelectThreadQuantityDialogListener {
-        public void onThreadQuantitiesUpdate();
+    public interface SelectEmbellishmentQuantityDialogListener {
+        public void onEmbellishmentQuantitiesUpdate();
     }
 
-    public static SelectEmbellishmentQuantityDialogFragment newInstance(ArrayList<UUID> threads, StashPattern pattern, Context context) {
+    public static SelectEmbellishmentQuantityDialogFragment newInstance(ArrayList<UUID> embellishments, StashPattern pattern, Context context) {
         final SelectEmbellishmentQuantityDialogFragment dialog = new SelectEmbellishmentQuantityDialogFragment();
 
-        mThreads = threads;
-        Collections.sort(mThreads, new StashThreadComparator(context));
+        mEmbellishments = embellishments;
+        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(context));
         mPattern = pattern;
 
         return dialog;
     }
 
-    public void setSelectThreadQuantityDialogCallback(SelectThreadQuantityDialogListener listener) {
-        mSelectThreadQuantityDialogCallback = listener;
+    public void setSelectEmbellishmentQuantityDialogCallback(SelectEmbellishmentQuantityDialogListener listener) {
+        mSelectEmbellishmentQuantityDialogCallback = listener;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                 break;
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();
-                mSelectThreadQuantityDialogCallback.onThreadQuantitiesUpdate();
+                mSelectEmbellishmentQuantityDialogCallback.onEmbellishmentQuantitiesUpdate();
                 break;
             default:  // user is selecting an option
                 break;
@@ -64,9 +64,9 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
         final Builder builder = new Builder(this.getActivity());
 
         // create adapter to provide custom listview for displaying threads
-        mAdapter = new QuantityAdapter(mThreads, mPattern);
+        mAdapter = new QuantityAdapter(mEmbellishments, mPattern);
 
-        builder.setTitle(R.string.thread_selectQuantity);
+        builder.setTitle(R.string.embellishment_selectQuantity);
         builder.setAdapter(mAdapter, this);
         builder.setPositiveButton(R.string.ok, this);
         builder.setNegativeButton(R.string.cancel, this);
@@ -78,8 +78,8 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
 
         final StashPattern mPattern;
 
-        public QuantityAdapter(ArrayList<UUID> threads, StashPattern pattern) {
-            super(getActivity(), 0, threads);
+        public QuantityAdapter(ArrayList<UUID> embellishments, StashPattern pattern) {
+            super(getActivity(), 0, embellishments);
 
             mPattern = pattern;
         }
@@ -91,7 +91,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_select_quantity, null);
 
                 ViewHolder vh = new ViewHolder();
-                vh.threadInfo = (TextView)convertView.findViewById(R.id.item_description);
+                vh.embellishmentInfo = (TextView)convertView.findViewById(R.id.item_description);
                 vh.quantity = (TextView)convertView.findViewById(R.id.quantity);
                 vh.decreaseButton = (Button)convertView.findViewById(R.id.decrease_button);
                 vh.increaseButton = (Button) convertView.findViewById(R.id.increase_button);
@@ -102,12 +102,12 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
             // configure view for this thread - keep in mind view may be recycled and all fields must
             // be initialized again
             ViewHolder vh = (ViewHolder)convertView.getTag();
-            StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
-            vh.threadRef = thread;
+            StashEmbellishment embellishment = StashData.get(getActivity()).getEmbellishment(getItem(position));
+            vh.embellishmentRef = embellishment;
 
-            vh.threadInfo.setText(thread.toString());
+            vh.embellishmentInfo.setText(embellishment.toString());
 
-            vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(thread)));
+            vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(embellishment)));
 
             vh.decreaseButton.setTag(vh);
             vh.decreaseButton.setOnClickListener(new View.OnClickListener() {
@@ -116,11 +116,11 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                     Button decreaseButton = (Button) v;
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
-                    if (vh.patternRef.getQuantity(vh.threadRef) != 0) {
-                        vh.patternRef.decreaseQuantity(vh.threadRef);
+                    if (vh.patternRef.getQuantity(vh.embellishmentRef) != 0) {
+                        vh.patternRef.decreaseQuantity(vh.embellishmentRef);
                     }
 
-                    vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.threadRef)));
+                    vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.embellishmentRef)));
                 }
             });
 
@@ -131,8 +131,8 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                     Button increaseButton = (Button)v;
                     ViewHolder vh = (ViewHolder)increaseButton.getTag();
 
-                    vh.patternRef.increaseQuantity(vh.threadRef);
-                    vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.threadRef)));
+                    vh.patternRef.increaseQuantity(vh.embellishmentRef);
+                    vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.embellishmentRef)));
                 }
             });
 
@@ -141,11 +141,11 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
     }
 
     static class ViewHolder {
-        TextView threadInfo;
+        TextView embellishmentInfo;
         TextView quantity;
         Button decreaseButton;
         Button increaseButton;
-        StashThread threadRef;
+        StashEmbellishment embellishmentRef;
         StashPattern patternRef;
     }
 
