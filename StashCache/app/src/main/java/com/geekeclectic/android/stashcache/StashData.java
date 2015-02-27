@@ -185,7 +185,6 @@ public class StashData {
     public void removeEmbellishmentFromStash(UUID embellishmentId) {
         // needed to update the list as the user edits the quantities of embellishments owned
         mStashEmbellishmentList.remove(embellishmentId);
-
     }
 
     public void setEmbellishmentList() {

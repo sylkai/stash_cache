@@ -171,6 +171,11 @@ public class StashThreadFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mThread.decreaseOwnedQuantity();
+
+                if (!mThread.isOwned()) {
+                    StashData.get(getActivity()).removeThreadFromStash(mThread.getId());
+                }
+
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
             }
         });
@@ -179,6 +184,10 @@ public class StashThreadFragment extends Fragment {
         mOwnedIncrease.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!mThread.isOwned()) {
+                    StashData.get(getActivity()).addThreadToStash(mThread.getId());
+                }
+
                 mThread.increaseOwnedQuantity();
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
             }

@@ -12,9 +12,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -30,7 +36,21 @@ public class StashEmbellishmentFragment extends Fragment{
     private EditText mEmbellishmentSource;
     private EditText mEmbellishmentType;
     private EditText mEmbellishmentId;
-    private EditText mNumberOwned;
+
+    private TextView mNumberOwned;
+    private Button mOwnedDecrease;
+    private Button mOwnedIncrease;
+
+    private TextView mNumberNeeded;
+
+    private TextView mNumberToBuy;
+    private Button mToBuyDecrease;
+    private Button mToBuyIncrease;
+
+    private TextView mTotalToBuy;
+
+    private ArrayList<StashPattern> mPatternList;
+    private ListView mPatternDisplayList;
 
     public StashEmbellishmentFragment() {
         // required empty public constructor
@@ -44,6 +64,7 @@ public class StashEmbellishmentFragment extends Fragment{
         // get id for embellishment and pull up the appropriate embellishment from the stash
         UUID embellishmentId = (UUID)getArguments().getSerializable(EXTRA_EMBELLISHMENT_ID);
         mEmbellishment = StashData.get(getActivity()).getEmbellishment(embellishmentId);
+        mPatternList = mEmbellishment.getPatternList();
     }
 
     public static StashEmbellishmentFragment newInstance(UUID embellishmentId) {
@@ -140,35 +161,140 @@ public class StashEmbellishmentFragment extends Fragment{
             }
         });
 
-        mNumberOwned = (EditText)v.findViewById(R.id.number_owned);
-        if (mEmbellishment.getNumberOwned() > 0) {
-            mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
-        }
-        mNumberOwned.addTextChangedListener(new TextWatcher() {
-            public void onTextChanged(CharSequence c, int start, int before, int count) {
-                if (c.length() > 0) {
-                    mEmbellishment.setNumberOwned(Integer.parseInt(c.toString()));
-                } else {
-                    // user removed amount owned information
-                    mEmbellishment.setNumberOwned(0);
-                }
+        mNumberOwned = (TextView)v.findViewById(R.id.embellishment_stash_quantity);
+        mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
 
-                if (mEmbellishment.isOwned()) {
-                    StashData.get(getActivity()).addEmbellishmentToStash(mEmbellishment.getId());
-                } else {
+        mOwnedDecrease = (Button)v.findViewById(R.id.embellishment_decrease_button_owned);
+        mOwnedDecrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mEmbellishment.decreaseOwned();
+
+                if (!mEmbellishment.isOwned()) {
                     StashData.get(getActivity()).removeEmbellishmentFromStash(mEmbellishment.getId());
                 }
-            }
 
-            public void beforeTextChanged(CharSequence c, int start, int count, int after) {
-                // intentionally left blank
-            }
-
-            public void afterTextChanged(Editable c) {
-                // intentionally left blank
+                mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
             }
         });
 
+        mOwnedIncrease = (Button)v.findViewById(R.id.embellishment_increase_button_owned);
+        mOwnedIncrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mEmbellishment.isOwned()) {
+                    StashData.get(getActivity()).addEmbellishmentToStash(mEmbellishment.getId());
+                }
+
+                mEmbellishment.increaseOwned();
+                mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
+            }
+        });
+
+        mNumberNeeded = (TextView)v.findViewById(R.id.embellishment_quantity_needed);
+        mNumberNeeded.setText(Integer.toString(mEmbellishment.getNumberNeeded()));
+
+        mTotalToBuy = (TextView)v.findViewById(R.id.embellishment_quantity_total);
+        mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
+
+        mNumberToBuy = (TextView)v.findViewById(R.id.embellishment_toBuy_quantity);
+        mNumberToBuy.setText(Integer.toString(mEmbellishment.getAdditionalNeeded()));
+
+        mToBuyDecrease = (Button)v.findViewById(R.id.embellishment_decrease_button_toBuy);
+        mToBuyDecrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mEmbellishment.decreaseAdditional();
+                mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
+                mNumberToBuy.setText(Integer.toString(mEmbellishment.getAdditionalNeeded()));
+            }
+        });
+
+        mToBuyIncrease = (Button)v.findViewById(R.id.embellishment_increase_button_toBuy);
+        mToBuyIncrease.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mEmbellishment.increaseAdditional();
+                mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
+                mNumberToBuy.setText(Integer.toString(mEmbellishment.getAdditionalNeeded()));
+            }
+        });
+
+        mPatternDisplayList = (ListView)v.findViewById(R.id.embellishment_pattern_list);
+        PatternAdapter adapter = new PatternAdapter(mPatternList);
+        mPatternDisplayList.setAdapter(adapter);
+        mPatternDisplayList.setEmptyView(v.findViewById(R.id.embellishment_pattern_display));
+
+        setListViewHeightBasedOnChildren(mPatternDisplayList);
+
         return v;
+    }
+
+    private void setListViewHeightBasedOnChildren(ListView listView) {
+        // method modified from an answer here: http://stackoverflow.com/questions/3495890/how-can-i-put-a-listview-into-a-scrollview-without-it-collapsing/3495908#3495908
+        // to set the height based on a maximum number of items on the listView
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+
+        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+        if (listAdapter.getCount() > 4) {
+            for (int i = 0; i < 4; i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                if (listItem instanceof ViewGroup)
+                    listItem.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+        } else {
+            for (int i = 0; i < listAdapter.getCount(); i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                if (listItem instanceof ViewGroup)
+                    listItem.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+    }
+
+    private class PatternAdapter extends ArrayAdapter<StashPattern> {
+
+        public PatternAdapter(ArrayList<StashPattern> patterns) {
+            super(getActivity(), 0, patterns);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // if we weren't given a view, inflate one
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_thread_pattern, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.info = (TextView)convertView.findViewById(R.id.thread_pattern_item_description);
+                vh.quantity = (TextView)convertView.findViewById(R.id.thread_pattern_quantity);
+                convertView.setTag(vh);
+            }
+
+            ViewHolder vh =  (ViewHolder)convertView.getTag();
+
+            // configure the view for this thread
+            StashPattern pattern = getItem(position);
+
+            vh.info.setText(pattern.toString());
+            vh.quantity.setText(Integer.toString(pattern.getQuantity(mEmbellishment)));
+
+            return convertView;
+        }
+
+    }
+
+    static class ViewHolder {
+        TextView info;
+        TextView quantity;
     }
 }

@@ -57,9 +57,9 @@ public class StashCreateShoppingList {
                     StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
                     embellishment.addNeeded(pattern.getQuantity(embellishment));
 
-                    if (embellishment.needToBuy() && !mEmbellishmentShoppingList.contains(embellishmentId)) {
+                    /*if (embellishment.needToBuy() && !mEmbellishmentShoppingList.contains(embellishmentId)) {
                         mEmbellishmentShoppingList.add(embellishmentId);
-                    }
+                    }*/
                 }
             }
         }
@@ -69,6 +69,14 @@ public class StashCreateShoppingList {
             StashThread thread = stash.getThread(threadId);
             if (thread.needToBuy()) {
                 mThreadShoppingList.add(threadId);
+            }
+        }
+
+        ArrayList<UUID> embellishmentList = stash.getEmbellishmentList();
+        for (UUID embellishmentId : embellishmentList) {
+            StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
+            if (embellishment.needToBuy()) {
+                mEmbellishmentShoppingList.add(embellishmentId);
             }
         }
 

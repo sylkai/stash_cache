@@ -43,6 +43,9 @@
     <string name="embellishment_id_hint">ID Code</string>
     <string name="stash_info">In Stash</string>
     <string name="number_owned_label">Number Owned</string>
+    <string name="number_needed_label">Needed For Kitted Patterns</string>
+    <string name="number_toBuy_label">Additional To Buy</string>
+    <string name="number_toBuyTotal_label">Total To Buy</string>
     <string name="embellishment_pattern_info">Used In</string>
     <string name="embellishment_pattern_detail">Not used in any patterns.</string>
     <string name="embellishment_selectQuantity">Set embellishments used in pattern:</string>

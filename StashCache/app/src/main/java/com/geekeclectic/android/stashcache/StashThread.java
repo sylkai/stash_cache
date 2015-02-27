@@ -156,11 +156,11 @@ public class StashThread extends StashObject {
     }
 
     public int getSkeinsNeeded() {
-        return mSkeinsNeeded;
+        return mSkeinsNeeded - (mSkeinsOwned - 1);
     }
 
     public int getSkeinsToBuy() {
-        return mSkeinsNeeded + mSkeinsAdditional;
+        return (mSkeinsNeeded - (mSkeinsOwned - 1)) + mSkeinsAdditional;
     }
 
     public boolean needToBuy() {
