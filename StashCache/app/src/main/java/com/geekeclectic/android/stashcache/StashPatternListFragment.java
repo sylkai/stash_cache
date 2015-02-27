@@ -133,6 +133,13 @@ public class StashPatternListFragment extends ListFragment implements Observer {
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        setAppropriateEmptyMessage(getArguments().getString(PATTERN_VIEW_ID));
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         // always check on load to see if data set needs updating
@@ -213,6 +220,16 @@ public class StashPatternListFragment extends ListFragment implements Observer {
     @Override
     public void update(Observable observable, Object data) {
         ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    private void setAppropriateEmptyMessage(String viewCode) {
+        if (viewCode.equals("master")) {
+            setEmptyText("You have not entered any patterns.");
+        } else if (viewCode.equals("stash")) {
+            setEmptyText("There are no patterns in your stash.");
+        } else {
+            setEmptyText("You don't need fabric for any patterns in your stash.");
+        }
     }
 
     private class PatternAdapter extends ArrayAdapter<StashPattern> {

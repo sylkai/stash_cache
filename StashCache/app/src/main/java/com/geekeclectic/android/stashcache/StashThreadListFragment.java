@@ -132,6 +132,13 @@ public class StashThreadListFragment extends ListFragment implements Observer {
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        setAppropriateEmptyMessage(getArguments().getString(THREAD_VIEW_ID));
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -213,6 +220,16 @@ public class StashThreadListFragment extends ListFragment implements Observer {
             return StashData.get(getActivity()).getThreadStashList();
         } else {
             return StashData.get(getActivity()).getThreadShoppingList();
+        }
+    }
+
+    private void setAppropriateEmptyMessage(String viewCode) {
+        if (viewCode.equals("master")) {
+            setEmptyText("You have not entered any threads.");
+        } else if (viewCode.equals("stash")) {
+            setEmptyText("There are no threads in your stash.");
+        } else {
+            setEmptyText("There are no threads on your shopping list.");
         }
     }
 

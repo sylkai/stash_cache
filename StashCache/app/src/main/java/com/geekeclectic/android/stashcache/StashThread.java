@@ -1,5 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
+import android.widget.TextView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

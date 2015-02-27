@@ -132,6 +132,13 @@ public class StashFabricListFragment extends ListFragment implements Observer {
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        setAppropriateEmptyMessage(getArguments().getString(FABRIC_VIEW_ID));
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
@@ -202,6 +209,14 @@ public class StashFabricListFragment extends ListFragment implements Observer {
     @Override
     public void update(Observable observable, Object data) {
         ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    private void setAppropriateEmptyMessage(String viewCode) {
+        if (viewCode.equals("master")) {
+            setEmptyText("You have not entered any fabric.");
+        } else {
+            setEmptyText("There is no fabric in your stash.");
+        }
     }
 
     private class FabricAdapter extends ArrayAdapter<UUID> {

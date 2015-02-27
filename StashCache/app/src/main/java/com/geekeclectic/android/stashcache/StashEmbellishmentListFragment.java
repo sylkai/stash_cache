@@ -73,6 +73,7 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
 
         ListView listView = (ListView)v.findViewById(android.R.id.list);
 
+
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             registerForContextMenu(listView);
         } else {
@@ -129,6 +130,13 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
         }
 
         return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        setAppropriateEmptyMessage(getArguments().getString(EMBELLISHMENT_VIEW_ID));
     }
 
     @Override
@@ -206,6 +214,16 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
             return StashData.get(getActivity()).getEmbellishmentStashList();
         } else {
             return StashData.get(getActivity()).getEmbellishmentShoppingList();
+        }
+    }
+
+    private void setAppropriateEmptyMessage(String viewCode) {
+        if (viewCode.equals("master")) {
+            setEmptyText("You have not entered any embellishments.");
+        } else if (viewCode.equals("stash")) {
+            setEmptyText("There are no embellishments in your stash.");
+        } else {
+            setEmptyText("There are no embellishments on your shopping list.");
         }
     }
 
