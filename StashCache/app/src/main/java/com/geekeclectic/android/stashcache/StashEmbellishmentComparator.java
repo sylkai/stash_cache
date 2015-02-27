@@ -27,18 +27,37 @@ public class StashEmbellishmentComparator implements Comparator<UUID> {
         StashEmbellishment embellishment1 = stash.getEmbellishment(embellishmentId1);
         StashEmbellishment embellishment2 = stash.getEmbellishment(embellishmentId2);
 
-        if (embellishment1.getSource().equals(embellishment2.getSource())) {
-            if (embellishment1.getType().equals(embellishment2.getType())) {
-                if (embellishment1.getCode().matches("[0-9]+") && embellishment2.getCode().matches("[0-9]+")) {
+        if (embellishment1.getSource() != null && embellishment2.getSource() != null && embellishment1.getSource().equals(embellishment2.getSource())) {
+            if (embellishment1.getType() != null && embellishment2.getType() != null && embellishment1.getType().equals(embellishment2.getType())) {
+                if (embellishment1.getCode() != null && embellishment2.getCode() != null && embellishment1.getCode().matches("[0-9]+") && embellishment2.getCode().matches("[0-9]+")) {
                     return Integer.parseInt(embellishment1.getCode()) - Integer.parseInt(embellishment2.getCode());
-                } else {
+                } else if (embellishment1.getCode() != null && embellishment2.getCode() != null) {
                     return embellishment1.getCode().compareTo(embellishment2.getCode());
+                } else if (embellishment1.getCode() == null && embellishment2.getCode() == null) {
+                    return 0;
+                } else if (embellishment1.getCode() == null) {
+                    return 1;
+                } else {
+                    return -1;
                 }
-            } else {
+            } else if (embellishment1.getType() != null && embellishment2.getType() != null) {
                 return embellishment1.getType().compareTo(embellishment2.getType());
+            } else if (embellishment1.getType() == null && embellishment2.getType() == null) {
+                return 0;
+            } else if (embellishment1.getType() == null) {
+                return 1;
+            } else {
+                return -1;
             }
+        } else if (embellishment1.getSource() != null && embellishment2.getSource() != null) {
+            return embellishment1.getSource().compareTo(embellishment2.getSource());
+        } else if (embellishment1.getSource() == null && embellishment2.getSource() == null) {
+            return 0;
+        } else if (embellishment1.getSource() == null) {
+            return 1;
+        } else {
+            return -1;
         }
-        return embellishment1.getSource().compareTo(embellishment2.getSource());
     }
 
 }
