@@ -143,8 +143,8 @@ public class StashThread extends StashObject {
     }
 
     public void addNeeded(int increment) {
-        if (mSkeinsOwned == 0 && mSkeinsNeeded == 0) {
-            // none owned and has not already been added to the list
+        if (mSkeinsNeeded == 0) {
+            // has not already been added to the list
             mSkeinsNeeded = increment;
         } else {
             // last skein required treated as a partial and subtracted (assuming everything rounded up)
@@ -158,24 +158,25 @@ public class StashThread extends StashObject {
     }
 
     public int getSkeinsNeeded() {
-        if (mSkeinsOwned == 0) {
-            return mSkeinsNeeded;
+        if (mSkeinsNeeded > mSkeinsOwned) {
+            return mSkeinsNeeded - mSkeinsOwned;
         } else {
-            return mSkeinsNeeded - (mSkeinsOwned - 1);
+            return 0;
         }
     }
 
     public int getSkeinsToBuy() {
-        if (mSkeinsOwned == 0) {
-            return mSkeinsNeeded + mSkeinsAdditional;
+        if (mSkeinsNeeded > mSkeinsOwned) {
+            return mSkeinsNeeded - mSkeinsOwned + mSkeinsAdditional;
         } else {
-            return (mSkeinsNeeded - (mSkeinsOwned - 1)) + mSkeinsAdditional;
+            return mSkeinsAdditional;
         }
     }
 
     public boolean needToBuy() {
-        // need to take into account the partial skein assumptions when calculating mSkeinsNeeded
-        return (mSkeinsNeeded > 0 && mSkeinsNeeded > (mSkeinsOwned - 1)) || mSkeinsAdditional > 0;
+        // thread is marked as needed, the number needed is exceeded by the number in stash OR
+        // thread is marked as additional desired for purchase (user controlled)
+        return (mSkeinsNeeded > 0 && mSkeinsNeeded > mSkeinsOwned) || mSkeinsAdditional > 0;
     }
 
     public ArrayList<StashPattern> getPatternsList() {

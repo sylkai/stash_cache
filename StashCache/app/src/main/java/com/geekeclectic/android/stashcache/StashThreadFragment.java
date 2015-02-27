@@ -166,6 +166,15 @@ public class StashThreadFragment extends Fragment {
         mSkeinsOwned = (TextView)v.findViewById(R.id.thread_stash_quantity);
         mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
 
+        mKittedSkeins = (TextView)v.findViewById(R.id.thread_quantity_needed);
+        mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
+
+        mTotalToBuy = (TextView)v.findViewById(R.id.thread_quantity_total);
+        mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
+
+        mSkeinsToBuy = (TextView)v.findViewById(R.id.thread_toBuy_quantity);
+        mSkeinsToBuy.setText(Integer.toString(mThread.getAdditionalSkeins()));
+
         mOwnedDecrease = (Button)v.findViewById(R.id.thread_decrease_button_owned);
         mOwnedDecrease.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,6 +186,8 @@ public class StashThreadFragment extends Fragment {
                 }
 
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
+                mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
+                mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
             }
         });
 
@@ -190,17 +201,10 @@ public class StashThreadFragment extends Fragment {
 
                 mThread.increaseOwnedQuantity();
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
+                mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
+                mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
             }
         });
-
-        mKittedSkeins = (TextView)v.findViewById(R.id.thread_quantity_needed);
-        mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
-
-        mTotalToBuy = (TextView)v.findViewById(R.id.thread_quantity_total);
-        mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
-
-        mSkeinsToBuy = (TextView)v.findViewById(R.id.thread_toBuy_quantity);
-        mSkeinsToBuy.setText(Integer.toString(mThread.getAdditionalSkeins()));
 
         mToBuyDecrease = (Button)v.findViewById(R.id.thread_decrease_button_toBuy);
         mToBuyDecrease.setOnClickListener(new View.OnClickListener() {

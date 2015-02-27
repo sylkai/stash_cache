@@ -31,7 +31,7 @@ public class VerticalScrollView extends ScrollView{
         switch (action)
         {
             case MotionEvent.ACTION_DOWN:
-                Log.i("VerticalScrollView", "onInterceptTouchEvent: DOWN super false" );
+                // Log.i("VerticalScrollView", "onInterceptTouchEvent: DOWN super false" );
                 super.onTouchEvent(ev);
                 break;
 
@@ -39,15 +39,15 @@ public class VerticalScrollView extends ScrollView{
                 return false; // redirect MotionEvents to ourself
 
             case MotionEvent.ACTION_CANCEL:
-                Log.i("VerticalScrollView", "onInterceptTouchEvent: CANCEL super false" );
+                // Log.i("VerticalScrollView", "onInterceptTouchEvent: CANCEL super false" );
                 super.onTouchEvent(ev);
                 break;
 
             case MotionEvent.ACTION_UP:
-                Log.i("VerticalScrollView", "onInterceptTouchEvent: UP super false" );
+                // Log.i("VerticalScrollView", "onInterceptTouchEvent: UP super false" );
                 return false;
 
-            default: Log.i("VerticalScrollView", "onInterceptTouchEvent: " + action ); break;
+            default: // Log.i("VerticalScrollView", "onInterceptTouchEvent: " + action ); break;
         }
 
         return false;
@@ -56,7 +56,7 @@ public class VerticalScrollView extends ScrollView{
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         super.onTouchEvent(ev);
-        Log.i("VerticalScrollView", "onTouchEvent. action: " + ev.getAction() );
+        // Log.i("VerticalScrollView", "onTouchEvent. action: " + ev.getAction() );
         return true;
     }
 }

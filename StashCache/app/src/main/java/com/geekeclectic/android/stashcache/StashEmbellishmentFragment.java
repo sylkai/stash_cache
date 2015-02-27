@@ -164,6 +164,15 @@ public class StashEmbellishmentFragment extends Fragment{
         mNumberOwned = (TextView)v.findViewById(R.id.embellishment_stash_quantity);
         mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
 
+        mNumberNeeded = (TextView)v.findViewById(R.id.embellishment_quantity_needed);
+        mNumberNeeded.setText(Integer.toString(mEmbellishment.getNumberNeeded()));
+
+        mTotalToBuy = (TextView)v.findViewById(R.id.embellishment_quantity_total);
+        mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
+
+        mNumberToBuy = (TextView)v.findViewById(R.id.embellishment_toBuy_quantity);
+        mNumberToBuy.setText(Integer.toString(mEmbellishment.getAdditionalNeeded()));
+
         mOwnedDecrease = (Button)v.findViewById(R.id.embellishment_decrease_button_owned);
         mOwnedDecrease.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,6 +184,8 @@ public class StashEmbellishmentFragment extends Fragment{
                 }
 
                 mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
+                mNumberNeeded.setText(Integer.toString(mEmbellishment.getNumberNeeded()));
+                mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
             }
         });
 
@@ -188,17 +199,10 @@ public class StashEmbellishmentFragment extends Fragment{
 
                 mEmbellishment.increaseOwned();
                 mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
+                mNumberNeeded.setText(Integer.toString(mEmbellishment.getNumberNeeded()));
+                mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
             }
         });
-
-        mNumberNeeded = (TextView)v.findViewById(R.id.embellishment_quantity_needed);
-        mNumberNeeded.setText(Integer.toString(mEmbellishment.getNumberNeeded()));
-
-        mTotalToBuy = (TextView)v.findViewById(R.id.embellishment_quantity_total);
-        mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
-
-        mNumberToBuy = (TextView)v.findViewById(R.id.embellishment_toBuy_quantity);
-        mNumberToBuy.setText(Integer.toString(mEmbellishment.getAdditionalNeeded()));
 
         mToBuyDecrease = (Button)v.findViewById(R.id.embellishment_decrease_button_toBuy);
         mToBuyDecrease.setOnClickListener(new View.OnClickListener() {

@@ -130,7 +130,11 @@ public class StashEmbellishment extends StashObject {
     }
 
     public int getNumberNeeded() {
-        return mNumberNeeded - mNumberOwned;
+        if (mNumberNeeded > mNumberOwned) {
+            return mNumberNeeded - mNumberOwned;
+        } else {
+            return 0;
+        }
     }
 
     public void increaseAdditional() {
@@ -148,7 +152,11 @@ public class StashEmbellishment extends StashObject {
     }
 
     public int getNumberToBuy() {
-        return (mNumberNeeded - mNumberOwned) + mNumberAdditional;
+        if (mNumberNeeded > mNumberOwned) {
+            return (mNumberNeeded - mNumberOwned) + mNumberAdditional;
+        } else {
+            return mNumberAdditional;
+        }
     }
 
     public boolean needToBuy() {
