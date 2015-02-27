@@ -353,6 +353,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mThreadDisplayList = (ListView)v.findViewById(R.id.pattern_thread_list);
         ThreadAdapter adapter = new ThreadAdapter(mThreadList);
         mThreadDisplayList.setAdapter(adapter);
+        mThreadDisplayList.setEmptyView(v.findViewById(R.id.pattern_thread_display));
 
         // button to allow selection of threads used in pattern
         mEditEmbellishment = (ImageView)v.findViewById(R.id.pattern_embellishment_edit);
@@ -371,6 +372,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mEmbellishmentDisplayList = (ListView)v.findViewById(R.id.pattern_embellishment_list);
         EmbellishmentAdapter adapter1 = new EmbellishmentAdapter(mEmbellishmentList);
         mEmbellishmentDisplayList.setAdapter(adapter1);
+        mEmbellishmentDisplayList.setEmptyView(v.findViewById(R.id.pattern_embellishment_display));
 
         setListViewHeightBasedOnChildren(mThreadDisplayList);
         setListViewHeightBasedOnChildren(mEmbellishmentDisplayList);

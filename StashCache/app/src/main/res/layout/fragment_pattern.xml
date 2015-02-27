@@ -192,6 +192,13 @@
             android:padding="4dp"
             android:id="@+id/pattern_thread_list" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pattern_thread_display"
+            android:visibility="gone"
+            android:text="@string/pattern_thread_detail" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -224,6 +231,13 @@
             android:layout_height="0px"
             android:padding="4dp"
             android:id="@+id/pattern_embellishment_list" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pattern_embellishment_display"
+            android:visibility="gone"
+            android:text="@string/pattern_embellishment_detail" />
 
     </LinearLayout>
 
