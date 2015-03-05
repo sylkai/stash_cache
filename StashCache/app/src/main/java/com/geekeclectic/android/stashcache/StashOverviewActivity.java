@@ -106,6 +106,14 @@ public class StashOverviewActivity extends SingleFragmentActivity {
                 StashData.get(getApplicationContext()).saveStash();
                 fragment.stashChanged();
                 return super.onOptionsItemSelected(item);
+            case R.id.menu_item_export_stash:
+                StashExporter exporter = new StashExporter();
+                try {
+                    exporter.exportStash(getApplicationContext());
+                } catch (IOException e) {
+                    //
+                }
+                return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:
                 StashData.get(getApplicationContext()).deleteStash();
                 fragment.stashChanged();

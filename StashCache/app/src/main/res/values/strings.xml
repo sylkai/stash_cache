@@ -8,6 +8,7 @@
     <string name="zero_point">0.0</string>
 
     <string name="import_stash">Import Stash</string>
+    <string name="export_stash">Export Stash</string>
     <string name="delete_stash">Delete Stash</string>
 
     <string name="pattern_info">Pattern Info</string>
