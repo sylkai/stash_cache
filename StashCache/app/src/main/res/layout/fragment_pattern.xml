@@ -133,7 +133,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:src="@android:drawable/ic_menu_edit"
+                android:src="@drawable/ic_menu_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/pattern_fabric_edit"
@@ -165,7 +165,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:src="@android:drawable/ic_menu_edit"
+                android:src="@drawable/ic_menu_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/pattern_thread_edit"
@@ -205,7 +205,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:src="@android:drawable/ic_menu_edit"
+                android:src="@drawable/ic_menu_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/pattern_embellishment_edit"
