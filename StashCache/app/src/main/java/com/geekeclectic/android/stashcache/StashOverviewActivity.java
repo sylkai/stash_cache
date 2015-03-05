@@ -116,7 +116,11 @@ public class StashOverviewActivity extends SingleFragmentActivity {
                     File file = exporter.exportStash(getApplicationContext());
 
                     Intent saveIntent = new Intent(Intent.ACTION_SEND);
-                    saveIntent.setType("text/plain");
+
+                    // better filter of apps by using "application/octet-stream" instead of "text/plain"
+                    // this isn't appropriate to send to a messenger-type app, for example and this was an
+                    // easy way to filter while still providing access to Dropbox/Google Drive/email
+                    saveIntent.setType("application/octet-stream");
                     saveIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
                     startActivity(Intent.createChooser(saveIntent, "title"));
                 } catch (IOException e) {
@@ -141,10 +145,11 @@ public class StashOverviewActivity extends SingleFragmentActivity {
         UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
         if (requestCode == REQUEST_CHOOSE_STASH) {
-            String filename = data.getData().getPath();
 
             try {
-                StashImporter importer = new StashImporter(filename);
+                // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
+                // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
+                StashImporter importer = new StashImporter(getContentResolver().openInputStream(data.getData()));
                 importer.importStash(getApplicationContext());
             } catch (IOException e) {
                 //
@@ -153,6 +158,8 @@ public class StashOverviewActivity extends SingleFragmentActivity {
             StashData.get(getApplicationContext()).saveStash();
             fragment.stashChanged();
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

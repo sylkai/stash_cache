@@ -1,10 +1,13 @@
 package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,13 +21,13 @@ import java.util.UUID;
  */
 public class StashImporter {
 
-    private static String mFilename;
+    private static InputStream in;
     private static int DEFAULT = 1;
     public static final String TAG = "StashImporter";
 
-    public StashImporter(String filename) {
+    public StashImporter(InputStream input) {
         // mFilename = "stash_input.txt";
-        mFilename = filename;
+        in = input;
     }
 
     public void importStash(Context context) throws IOException {
@@ -36,7 +39,6 @@ public class StashImporter {
         try {
             // open and read the file into a StringBuilder
             // InputStream in = am.open(mFilename);
-            InputStream in = new FileInputStream(mFilename);
             reader = new BufferedReader(new InputStreamReader(in));
 
             Log.d(TAG, "Reader successfully opened.");

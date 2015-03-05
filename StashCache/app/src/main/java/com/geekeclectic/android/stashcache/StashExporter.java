@@ -49,7 +49,7 @@ public class StashExporter {
             }
         }
 
-        MediaScannerConnection.scanFile(context, new String[] { file.getPath() }, new String[] { "text/rtf" }, null);
+        MediaScannerConnection.scanFile(context, new String[] { file.getPath() }, new String[] { "file/text" }, null);
 
         return file;
 
