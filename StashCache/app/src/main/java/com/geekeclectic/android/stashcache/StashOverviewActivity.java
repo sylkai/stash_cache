@@ -1,6 +1,8 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -23,6 +26,8 @@ import java.io.IOException;
  * http://stackoverflow.com/questions/15948026/cant-change-the-text-color-with-android-action-bar-drop-down-navigation
  */
 public class StashOverviewActivity extends SingleFragmentActivity {
+
+    private static final int REQUEST_CHOOSE_STASH = 1;
 
     @Override
     protected Fragment createFragment() {
@@ -97,19 +102,23 @@ public class StashOverviewActivity extends SingleFragmentActivity {
         // handling item selection
         switch (item.getItemId()) {
             case R.id.menu_item_import_stash:
-                 StashImporter importer = new StashImporter();
-                try {
-                    importer.importStash(getApplicationContext());
-                } catch (IOException e) {
-                    //
-                }
-                StashData.get(getApplicationContext()).saveStash();
-                fragment.stashChanged();
+                Intent chooseIntent = new Intent();
+                chooseIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                chooseIntent.setType("text/plain");
+                chooseIntent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(chooseIntent, "select file"), REQUEST_CHOOSE_STASH);
+
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_export_stash:
                 StashExporter exporter = new StashExporter();
+
                 try {
-                    exporter.exportStash(getApplicationContext());
+                    File file = exporter.exportStash(getApplicationContext());
+
+                    Intent saveIntent = new Intent(Intent.ACTION_SEND);
+                    saveIntent.setType("text/plain");
+                    saveIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                    startActivity(Intent.createChooser(saveIntent, "title"));
                 } catch (IOException e) {
                     //
                 }
@@ -120,6 +129,29 @@ public class StashOverviewActivity extends SingleFragmentActivity {
                 return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+
+        if (requestCode == REQUEST_CHOOSE_STASH) {
+            String filename = data.getData().getPath();
+
+            try {
+                StashImporter importer = new StashImporter(filename);
+                importer.importStash(getApplicationContext());
+            } catch (IOException e) {
+                //
+            }
+
+            StashData.get(getApplicationContext()).saveStash();
+            fragment.stashChanged();
         }
     }
 

@@ -1,7 +1,9 @@
 package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
 
 import java.io.File;
@@ -32,7 +34,7 @@ public class StashExporter {
         newline = "\r\n";
     }
 
-    public void exportStash(Context context) throws IOException {
+    public File exportStash(Context context) throws IOException {
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File file = new File(path, mFilename);
 
@@ -49,6 +51,7 @@ public class StashExporter {
 
         MediaScannerConnection.scanFile(context, new String[] { file.getPath() }, new String[] { "text/rtf" }, null);
 
+        return file;
 
     }
 

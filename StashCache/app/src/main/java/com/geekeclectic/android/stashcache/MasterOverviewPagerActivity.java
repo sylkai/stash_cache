@@ -93,12 +93,12 @@ public class MasterOverviewPagerActivity extends FragmentActivity {
             case R.id.menu_item_import_stash:
                 Log.d(TAG, "User chose to input stash.");
 
-                StashImporter importer = new StashImporter();
+                /*StashImporter importer = new StashImporter();
                 try {
                     importer.importStash(getApplicationContext());
                 } catch (IOException e) {
                     //
-                }
+                }*/
                 StashData.get(getApplicationContext()).saveStash();
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:

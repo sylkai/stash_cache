@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,8 +22,9 @@ public class StashImporter {
     private static int DEFAULT = 1;
     public static final String TAG = "StashImporter";
 
-    public StashImporter() {
-        mFilename = "stash_input.txt";
+    public StashImporter(String filename) {
+        // mFilename = "stash_input.txt";
+        mFilename = filename;
     }
 
     public void importStash(Context context) throws IOException {
@@ -33,7 +35,8 @@ public class StashImporter {
 
         try {
             // open and read the file into a StringBuilder
-            InputStream in = am.open(mFilename);
+            // InputStream in = am.open(mFilename);
+            InputStream in = new FileInputStream(mFilename);
             reader = new BufferedReader(new InputStreamReader(in));
 
             Log.d(TAG, "Reader successfully opened.");
