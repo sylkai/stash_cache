@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.ListFragment;
 import android.content.Intent;
@@ -55,6 +56,8 @@ public class StashThreadListFragment extends ListFragment implements Observer {
         // create and set adapter using thread list
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
         setListAdapter(adapter);
+
+        // new InitialThreadListSortTask().execute();
     }
 
     public static StashThreadListFragment newInstance(String viewCode) {
@@ -147,7 +150,7 @@ public class StashThreadListFragment extends ListFragment implements Observer {
         mThreads = getListFromStash(viewCode);
         Collections.sort(mThreads, new StashThreadComparator(getActivity()));
 
-        // remind the adapter to get the updated list
+        //remind the adapter to get the updated list
         ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
@@ -283,5 +286,20 @@ public class StashThreadListFragment extends ListFragment implements Observer {
         TextView threadType;
         TextView quantity;
     }
+
+/*    private class InitialThreadListSortTask extends AsyncTask<String, Void, ArrayList<UUID>> {
+
+        @Override
+        protected ArrayList<UUID> doInBackground(String... params) {
+            Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+            return mThreads;
+        }
+
+        protected void onPostExecute(ArrayList<UUID> threads) {
+            ThreadAdapter adapter = new ThreadAdapter(mThreads);
+            setListAdapter(adapter);
+        }
+
+    }*/
 
 }

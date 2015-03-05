@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Stash Cache</string>
+    <string name="splash_screen">Welcome to Stash Cache!</string>
     <string name="action_settings">Action Settings</string>
 
     <string name="zero">0</string>

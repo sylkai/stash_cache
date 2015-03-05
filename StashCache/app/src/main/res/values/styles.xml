@@ -1,5 +1,11 @@
 <resources>
 
     <!-- Base application theme. -->
+    <style name="Theme.NoActionBar.FullScreen" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 
 </resources>

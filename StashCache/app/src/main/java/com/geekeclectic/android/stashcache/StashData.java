@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -71,6 +72,12 @@ public class StashData {
         setThreadsList();
         setFabricList();
         setEmbellishmentList();
+
+        Collections.sort(mThreadsList, new StashThreadComparator(mAppContext));
+        Collections.sort(mStashThreadsList, new StashThreadComparator(mAppContext));
+        Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(mAppContext));
+        Collections.sort(mStashEmbellishmentList, new StashEmbellishmentComparator(mAppContext));
+        Collections.sort(mPatternsData, new StashPatternComparator());
     }
 
     public static StashData get(Context c) {
@@ -108,6 +115,7 @@ public class StashData {
 
     public ArrayList<UUID> getThreadShoppingList() {
         // pass the shopping threadlist for list adapters
+        Collections.sort(mShoppingThreadsList, new StashThreadComparator(mAppContext));
         return mShoppingThreadsList;
     }
 
@@ -171,6 +179,7 @@ public class StashData {
 
     public ArrayList<UUID> getEmbellishmentShoppingList() {
         // pass the embellishment shopping list for list adapters
+        Collections.sort(mShoppingEmbellishmentList, new StashEmbellishmentComparator(mAppContext));
         return mShoppingEmbellishmentList;
     }
 
