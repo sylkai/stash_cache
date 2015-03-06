@@ -1,10 +1,12 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -25,18 +27,38 @@ import java.io.IOException;
  * Thanks to StackOverflow for solving the issue of the dropdown menu theme-ing:
  * http://stackoverflow.com/questions/15948026/cant-change-the-text-color-with-android-action-bar-drop-down-navigation
  */
-public class StashOverviewActivity extends SingleFragmentActivity {
+public class StashOverviewActivity extends FragmentActivity {
 
     private static final int REQUEST_CHOOSE_STASH = 1;
+    public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
+    private static final String VIEW_ID = "view id";
 
-    @Override
     protected Fragment createFragment() {
         return new StashOverviewPagerFragment();
+    }
+
+    protected int getLayoutResId() {
+        return R.layout.activity_fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(getLayoutResId());
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
+
+        String[] strings = getResources().getStringArray(R.array.drop_down_list);
+        int currentTab = 0;
+        int currentView = 0;
+
+        if (fragment == null) {
+            fragment = createFragment();
+            fm.beginTransaction()
+                    .add(R.id.fragmentContainer, fragment, strings[currentTab])
+                    .commit();
+        }
 
         // create spinner for the drop down menu
         SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(getActionBar().getThemedContext(), R.array.drop_down_list, android.R.layout.simple_spinner_dropdown_item);

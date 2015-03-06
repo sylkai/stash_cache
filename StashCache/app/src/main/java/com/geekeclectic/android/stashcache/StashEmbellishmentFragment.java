@@ -84,8 +84,8 @@ public class StashEmbellishmentFragment extends Fragment{
             case android.R.id.home:
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     // navigate up to stash overview and sets embellishment fragment as current
-                    Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
-                    i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    Intent i = new Intent(getActivity(), StashOverviewActivity.class);
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;

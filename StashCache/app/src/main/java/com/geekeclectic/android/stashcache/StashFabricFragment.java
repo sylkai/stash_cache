@@ -69,8 +69,8 @@ public class StashFabricFragment extends Fragment {
             case android.R.id.home:
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     // sets up navigation to go back to proper list fragment
-                    Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
-                    i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    Intent i = new Intent(getActivity(), StashOverviewActivity.class);
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;

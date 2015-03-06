@@ -135,10 +135,10 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             case android.R.id.home:
                 // set up navigation
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
-                    Intent i = new Intent(getActivity(), StashOverviewPagerActivity.class);
+                    Intent i = new Intent(getActivity(), StashOverviewActivity.class);
 
                     // note which category is calling the up to display appropriate fragment (pattern)
-                    i.putExtra(StashOverviewPagerActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;
