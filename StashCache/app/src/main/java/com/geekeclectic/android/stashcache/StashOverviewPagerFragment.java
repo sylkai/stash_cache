@@ -17,7 +17,9 @@ import java.util.Observer;
  * Activity to host the viewPager managing the listView fragments displaying the lists of different
  * stash components (patterns, fabrics, threads).  Scrolling tab bar above identifies which list
  * is active.  EXTRA_FRAGMENT_ID indicates which item class is displayed when navigating up through
- * hierarchy.
+ * hierarchy.  The page change listener recommendation to interact with the callback (allowing the
+ * activity to keep track of which view is currently displayed) comes from here:
+ * http://stackoverflow.com/questions/8538035/android-pageradapter-get-current-position
  */
 
 public class StashOverviewPagerFragment extends UpdateFragment {

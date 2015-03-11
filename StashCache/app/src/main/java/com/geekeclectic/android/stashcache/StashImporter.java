@@ -1,19 +1,15 @@
 package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
-import android.content.ContentResolver;
-import android.content.res.AssetManager;
-import android.net.Uri;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -23,17 +19,24 @@ public class StashImporter {
 
     private static InputStream in;
     private static int DEFAULT = 1;
+    private static HashMap<String, ArrayList<UUID>> threadMap;
+    private static HashMap<String, ArrayList<UUID>> embellishmentMap;
+    private boolean fileFormattedCorrectly;
+    private boolean allNumbersFormatted;
     public static final String TAG = "StashImporter";
 
     public StashImporter(InputStream input) {
         // mFilename = "stash_input.txt";
         in = input;
+        threadMap = new HashMap<String, ArrayList<UUID>>();
+        embellishmentMap = new HashMap<String, ArrayList<UUID>>();
+        fileFormattedCorrectly = true;
+        allNumbersFormatted = true;
     }
 
     public void importStash(Context context) throws IOException {
         StashData stash = StashData.get(context);
 
-        AssetManager am = context.getAssets();
         BufferedReader reader = null;
 
         try {
@@ -50,6 +53,9 @@ public class StashImporter {
                 // store source and type information
                 String source = line;
                 String type = reader.readLine();
+                if (checkToContinue(type)) {
+                    break;
+                }
 
                 // iterate through to the end of the source/type block and create a new thread for each id
                 while ((line = reader.readLine()) != null) {
@@ -58,7 +64,7 @@ public class StashImporter {
                     }
 
                     String id = line;
-                    createNewThread(source, type, id, stash, true);
+                    incrementOrAddThread(source, type, id, stash);
                 }
 
                 if (line.equals("***")) {
@@ -71,14 +77,61 @@ public class StashImporter {
                 // skip a line if the current line marks the fabric delimiter ---
                 if (line.equals("---")) {
                     line = reader.readLine();
+                    if (checkToContinue(line)) {
+                        break;
+                    }
                 }
 
                 String source = line;
                 String type = reader.readLine();
+                if (checkToContinue(type)) {
+                    break;
+                }
+
                 String color = reader.readLine();
-                int count = Integer.parseInt(reader.readLine());
-                Double height = Double.parseDouble(reader.readLine());
-                Double width = Double.parseDouble(reader.readLine());
+                if (checkToContinue(color)) {
+                    break;
+                }
+
+                line = reader.readLine();
+                int count;
+                Double height;
+                Double width;
+
+                if (checkToContinue(line)) {
+                    break;
+                } else {
+                    try {
+                        count = Integer.parseInt(line);
+                    } catch (NumberFormatException e) {
+                        count = 0;
+                        allNumbersFormatted = false;
+                    }
+                }
+
+                line = reader.readLine();
+                if (checkToContinue(line)) {
+                    break;
+                } else {
+                    try {
+                        height = Double.parseDouble(line);
+                    } catch (NumberFormatException e) {
+                        height = 0.0;
+                        allNumbersFormatted = false;
+                    }
+                }
+
+                line = reader.readLine();
+                if (checkToContinue(line)) {
+                    break;
+                } else {
+                    try {
+                        width = Double.parseDouble(line);
+                    } catch (NumberFormatException e) {
+                        width = 0.0;
+                        allNumbersFormatted = false;
+                    }
+                }
 
                 createNewFabric(source, type, color, count, height, width, stash);
             }
@@ -88,6 +141,9 @@ public class StashImporter {
                 // store source and type information
                 String source = line;
                 String type = reader.readLine();
+                if (checkToContinue(type)) {
+                    break;
+                }
 
                 // iterate through to the end of the source/type block and create a new embellishment for each id
                 while ((line = reader.readLine()) != null) {
@@ -96,7 +152,7 @@ public class StashImporter {
                     }
 
                     String id = line;
-                    createNewEmbellishment(source, type, id, stash, true);
+                    incrementOrAddEmbellishment(source, type, id, stash);
                 }
 
                 if (line.equals("***")) {
@@ -111,8 +167,36 @@ public class StashImporter {
                 // read in pattern information
                 String title = line;
                 String source = reader.readLine();
-                int width = Integer.parseInt(reader.readLine());
-                int height = Integer.parseInt(reader.readLine());
+                if (checkToContinue(source)) {
+                    break;
+                }
+
+                int width;
+                int height;
+
+                line = reader.readLine();
+                if (checkToContinue(line)) {
+                    break;
+                } else {
+                    try {
+                        width = Integer.parseInt(line);
+                    } catch (NumberFormatException e) {
+                        width = 0;
+                        allNumbersFormatted = false;
+                    }
+                }
+
+                line = reader.readLine();
+                if (checkToContinue(line)) {
+                    break;
+                } else {
+                    try {
+                        height = Integer.parseInt(line);
+                    } catch (NumberFormatException e) {
+                        height = 0;
+                        allNumbersFormatted = false;
+                    }
+                }
 
                 // create pattern
                 StashPattern pattern = new StashPattern();
@@ -129,10 +213,54 @@ public class StashImporter {
                 if (!(line = reader.readLine()).equals("*")) {
                     source = line;
                     String type = reader.readLine();
+                    if (checkToContinue(type)) {
+                        break;
+                    }
+
                     String color = reader.readLine();
-                    int count = Integer.parseInt(reader.readLine());
-                    Double fabric_height = Double.parseDouble(reader.readLine());
-                    Double fabric_width = Double.parseDouble(reader.readLine());
+                    if (checkToContinue(color)) {
+                        break;
+                    }
+
+                    int count;
+                    Double fabric_height;
+                    Double fabric_width;
+
+                    line = reader.readLine();
+                    if (checkToContinue(line)) {
+                        break;
+                    } else {
+                        try {
+                            count = Integer.parseInt(line);
+                        } catch (NumberFormatException e) {
+                            count = 0;
+                            allNumbersFormatted = false;
+                        }
+                    }
+
+                    line = reader.readLine();
+                    if (checkToContinue(line)) {
+                        break;
+                    } else {
+                        try {
+                            fabric_height = Double.parseDouble(line);
+                        } catch (NumberFormatException e) {
+                            fabric_height = 0.0;
+                            allNumbersFormatted = false;
+                        }
+                    }
+
+                    line = reader.readLine();
+                    if (checkToContinue(line)) {
+                        break;
+                    } else {
+                        try {
+                            fabric_width = Double.parseDouble(line);
+                        } catch (NumberFormatException e) {
+                            fabric_width = 0.0;
+                            allNumbersFormatted = false;
+                        }
+                    }
 
                     StashFabric fabric = createNewFabric(source, type, color, count, fabric_height, fabric_width, stash);
 
@@ -145,6 +273,10 @@ public class StashImporter {
                 while ((line = reader.readLine()) != null) {
                     source = line;
                     String type = reader.readLine();
+                    if (checkToContinue(type)) {
+                        break;
+                    }
+
                     while ((line = reader.readLine()) != null) {
                         if (line.equals("*") || line.equals("-")) {
                             break;
@@ -166,6 +298,10 @@ public class StashImporter {
                 while ((line = reader.readLine()) != null) {
                     source = line;
                     String type = reader.readLine();
+                    if (checkToContinue(type)) {
+                        break;
+                    }
+
                     while ((line = reader.readLine()) != null && !line.equals("-")) {
                         if (line.equals("*") || line.equals("---")) {
                             break;
@@ -206,6 +342,15 @@ public class StashImporter {
 
         stash.addThread(thread);
 
+        if (threadMap.get(id) == null) {
+            ArrayList<UUID> threadList = new ArrayList<UUID>();
+            threadList.add(thread.getId());
+            threadMap.put(id, threadList);
+        } else {
+            ArrayList<UUID> threadList = threadMap.get(id);
+            threadList.add(thread.getId());
+        }
+
         return thread;
     }
 
@@ -236,7 +381,35 @@ public class StashImporter {
 
         stash.addEmbellishment(embellishment);
 
+        if (embellishmentMap.get(id) == null) {
+            ArrayList<UUID> embellishmentList = new ArrayList<UUID>();
+            embellishmentList.add(embellishment.getId());
+            embellishmentMap.put(id, embellishmentList);
+        } else {
+            ArrayList<UUID> embellishmentList = embellishmentMap.get(id);
+            embellishmentList.add(embellishment.getId());
+        }
+
         return embellishment;
+    }
+
+    private void incrementOrAddThread(String source, String type, String id, StashData stash) {
+        ArrayList<UUID> threadList = threadMap.get(id);
+        StashThread thread;
+
+        if (threadList != null) {
+            for (UUID threadId : threadList) {
+                thread = stash.getThread(threadId);
+                if (thread.getSource().equals(source) && thread.getType().equals(type) && thread.getCode().equals(id)) {
+                    thread.increaseOwnedQuantity();
+                    return;
+                }
+            }
+
+            createNewThread(source, type, id, stash, true);
+        } else {
+            createNewThread(source, type, id, stash, true);
+        }
     }
 
     private StashThread findOrAddThread(String source, String type, String id, StashData stash) {
@@ -255,20 +428,52 @@ public class StashImporter {
         return thread;
     }
 
-    private StashEmbellishment findOrAddEmbellishment(String source, String type, String id, StashData stash) {
-        ArrayList<UUID> embellishmentList = stash.getEmbellishmentList();
+    private void incrementOrAddEmbellishment(String source, String type, String id, StashData stash) {
+        ArrayList<UUID> embellishmentList = embellishmentMap.get(id);
         StashEmbellishment embellishment;
 
-        for (int i = 0; i < embellishmentList.size(); i++) {
-            embellishment = stash.getEmbellishment(embellishmentList.get(i));
-            if (embellishment.getSource().equals(source) && embellishment.getType().equals(type) && embellishment.getCode().equals(id)) {
-                return embellishment;
+        if (embellishmentList != null) {
+            for (UUID embellishmentId : embellishmentList) {
+                embellishment = stash.getEmbellishment(embellishmentId);
+                if (embellishment.getSource().equals(source) && embellishment.getType().equals(type) && embellishment.getCode().equals(id)) {
+                    embellishment.increaseOwned();
+                    return;
+                }
             }
+
+            createNewEmbellishment(source, type, id, stash, true);
+        } else {
+            createNewEmbellishment(source, type, id, stash, true);
+        }
+    }
+
+    private StashEmbellishment findOrAddEmbellishment(String source, String type, String id, StashData stash) {
+        ArrayList<UUID> embellishmentList = embellishmentMap.get(id);
+        StashEmbellishment embellishment;
+
+        if (embellishmentList != null) {
+            for (UUID embellishmentId : embellishmentList) {
+                embellishment = stash.getEmbellishment(embellishmentId);
+                if (embellishment.getSource().equals(source) && embellishment.getType().equals(type) && embellishment.getCode().equals(id)) {
+                    return embellishment;
+                }
+            }
+
+            embellishment = createNewEmbellishment(source, type, id, stash, false);
+        } else {
+            embellishment = createNewEmbellishment(source, type, id, stash, false);
         }
 
-        embellishment = createNewEmbellishment(source, type, id, stash, false);
-
         return embellishment;
+    }
+
+    private boolean checkToContinue(String toCheck) {
+        if (toCheck != null && !toCheck.equals("***") && !toCheck.equals("---") && !toCheck.equals("*") && !toCheck.equals("-")) {
+            return false;
+        } else {
+            fileFormattedCorrectly = false;
+            return true;
+        }
     }
 
 }
