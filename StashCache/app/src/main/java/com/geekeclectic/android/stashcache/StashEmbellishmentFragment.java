@@ -30,7 +30,9 @@ public class StashEmbellishmentFragment extends Fragment{
 
     public static final String EXTRA_EMBELLISHMENT_ID = "com.geekeclectic.android.stashcache.embellishment_id";
 
-    private static final int CATEGORY_ID = 3;
+    private static final int VIEW_ID = 3;
+    private static final int STASH_ID = 0;
+    private static final int MASTER_ID = 1;
 
     private StashEmbellishment mEmbellishment;
     private EditText mEmbellishmentSource;
@@ -85,7 +87,14 @@ public class StashEmbellishmentFragment extends Fragment{
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     // navigate up to stash overview and sets embellishment fragment as current
                     Intent i = new Intent(getActivity(), StashOverviewActivity.class);
-                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
+
+                    if (mEmbellishment.isOwned()) {
+                        i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, STASH_ID);
+                    } else {
+                        i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, MASTER_ID);
+                    }
+
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;

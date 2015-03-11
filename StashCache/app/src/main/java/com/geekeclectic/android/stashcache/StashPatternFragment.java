@@ -3,10 +3,8 @@ package com.geekeclectic.android.stashcache;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
@@ -18,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -28,8 +25,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Observable;
@@ -55,7 +50,8 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     private static final String DIALOG_FABRIC = "fabric";
     private static final String DIALOG_THREAD = "thread";
-    private static final int CATEGORY_ID = 0;
+    private static final int VIEW_ID = 0;
+    private static final int STASH_ID = 0;
 
     private StashPattern mPattern;
     private StashPatternFragment mFragment;
@@ -138,7 +134,9 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                     Intent i = new Intent(getActivity(), StashOverviewActivity.class);
 
                     // note which category is calling the up to display appropriate fragment (pattern)
-                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, STASH_ID);
+
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;

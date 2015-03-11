@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,6 +33,8 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
 
     private ViewPager mViewPager;
     private StashOverviewPagerAdapter mAdapter;
+    private OnTabSwipeListener mCallback;
+    private int currentView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,10 +44,39 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
         mAdapter = new StashOverviewPagerAdapter(getChildFragmentManager());
 
         mViewPager.setAdapter(mAdapter);
+        mViewPager.setCurrentItem(currentView, false);
 
-        // note I will need to check which fragment was active and set it somehow, figure this out later
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrollStateChanged(int arg0) {
+                //
+            }
+
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                //
+            }
+
+            public void onPageSelected(int currentPage) {
+                mCallback.onTabSwipe(currentPage);
+                currentView = currentPage;
+            }
+        });
 
         return root;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (OnTabSwipeListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnTabSwipeListener");
+        }
+    }
+
+    @Override
+    public void setCurrentView(int view) {
+        currentView = view;
     }
 
     @Override

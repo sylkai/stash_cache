@@ -27,14 +27,25 @@ import java.io.IOException;
  * Thanks to StackOverflow for solving the issue of the dropdown menu theme-ing:
  * http://stackoverflow.com/questions/15948026/cant-change-the-text-color-with-android-action-bar-drop-down-navigation
  */
-public class StashOverviewActivity extends FragmentActivity {
+public class StashOverviewActivity extends FragmentActivity implements UpdateFragment.OnTabSwipeListener {
 
     private static final int REQUEST_CHOOSE_STASH = 1;
     public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
-    private static final String VIEW_ID = "view id";
+    public static final String EXTRA_VIEW_ID = "com.geekeclectic.android.stashcache.active_view_id";
+    private int currentTab;
+    private int currentView;
 
-    protected Fragment createFragment() {
-        return new StashOverviewPagerFragment();
+    protected UpdateFragment createFragment(int currentTab) {
+        if (currentTab == 0) {
+            return new StashOverviewPagerFragment();
+        } else if (currentTab == 1) {
+            return new MasterOverviewPagerFragment();
+        } else {
+            StashCreateShoppingList createList = new StashCreateShoppingList();
+            createList.updateShoppingList(StashData.get(getParent()));
+
+            return new ShoppingOverviewPagerFragment();
+        }
     }
 
     protected int getLayoutResId() {
@@ -47,14 +58,20 @@ public class StashOverviewActivity extends FragmentActivity {
         setContentView(getLayoutResId());
 
         FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
+        UpdateFragment fragment = (UpdateFragment) fm.findFragmentById(R.id.fragmentContainer);
 
         String[] strings = getResources().getStringArray(R.array.drop_down_list);
-        int currentTab = 0;
-        int currentView = 0;
+
+        if (getIntent().getExtras() != null) {
+            currentView = getIntent().getIntExtra(EXTRA_VIEW_ID, 0);
+            currentTab = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, 0);
+        } else {
+            currentTab = 0;
+            currentView = 0;
+        }
 
         if (fragment == null) {
-            fragment = createFragment();
+            fragment = createFragment(currentTab);
             fm.beginTransaction()
                     .add(R.id.fragmentContainer, fragment, strings[currentTab])
                     .commit();
@@ -71,7 +88,7 @@ public class StashOverviewActivity extends FragmentActivity {
             public boolean onNavigationItemSelected(int position, long itemId) {
                 String selection = strings[position];
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                Fragment fragment;
+                UpdateFragment fragment;
                 FragmentTransaction ft = fragmentManager.beginTransaction();
 
                 if (selection.equals("Master List")) {
@@ -79,25 +96,33 @@ public class StashOverviewActivity extends FragmentActivity {
                         fragment = new MasterOverviewPagerFragment();
                         ft.replace(R.id.fragmentContainer, fragment, selection);
                     } else {
-                        fragment = fragmentManager.findFragmentByTag(selection);
+                        fragment = (UpdateFragment) fragmentManager.findFragmentByTag(selection);
                         ft.replace(R.id.fragmentContainer, fragment, selection);
                     }
                 } else if (selection.equals("Shopping List")) {
                     StashCreateShoppingList createList = new StashCreateShoppingList();
                     createList.updateShoppingList(StashData.get(getParent()));
 
-                    fragment = new ShoppingOverviewPagerFragment();
-                    ft.replace(R.id.fragmentContainer, fragment, selection);
+                    if (fragmentManager.findFragmentByTag(selection) == null) {
+                        fragment = new ShoppingOverviewPagerFragment();
+                        ft.replace(R.id.fragmentContainer, fragment, selection);
+                    } else {
+                        fragment = (UpdateFragment) fragmentManager.findFragmentByTag(selection);
+                        ft.replace(R.id.fragmentContainer, fragment, selection);
+                    }
                 } else {
                     if (fragmentManager.findFragmentByTag(selection) == null) {
                         fragment = new StashOverviewPagerFragment();
                         ft.replace(R.id.fragmentContainer, fragment, selection);
                     } else {
-                        fragment = fragmentManager.findFragmentByTag(selection);
+                        fragment = (UpdateFragment) fragmentManager.findFragmentByTag(selection);
                         ft.replace(R.id.fragmentContainer, fragment, selection);
                     }
                 }
 
+                adjustViewsIfNeeded(position);
+                currentTab = position;
+                fragment.setCurrentView(currentView);
                 ft.commit();
 
                 return true;
@@ -107,7 +132,8 @@ public class StashOverviewActivity extends FragmentActivity {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionBar.setListNavigationCallbacks(mSpinnerAdapter, mOnNavigationListener);
-        actionBar.setSelectedNavigationItem(0);
+        actionBar.setSelectedNavigationItem(currentTab);
+        fragment.setCurrentView(currentView);
     }
 
     @Override
@@ -115,6 +141,14 @@ public class StashOverviewActivity extends FragmentActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.stash_menu, menu);
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        UpdateFragment fragment = (UpdateFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        fragment.setCurrentView(currentView);
     }
 
     @Override
@@ -155,6 +189,22 @@ public class StashOverviewActivity extends FragmentActivity {
                 return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void onTabSwipe(int selectedView) {
+        currentView = selectedView;
+    }
+
+    private void adjustViewsIfNeeded(int changeTabTo) {
+        if (currentTab == 2) {
+            if (currentView > 0) {
+                currentView = currentView + 1;
+            }
+        } else if (changeTabTo == 2) {
+            if (currentView > 0) {
+                currentView = currentView - 1;
+            }
         }
     }
 

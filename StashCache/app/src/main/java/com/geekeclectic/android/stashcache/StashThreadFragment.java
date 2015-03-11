@@ -31,14 +31,15 @@ public class StashThreadFragment extends Fragment {
 
     public static final String EXTRA_THREAD_ID = "com.geekeclectic.android.stashcache.thread_id";
 
-    private static final int CATEGORY_ID = 2;
+    private static final int VIEW_ID = 2;
+    private static final int STASH_ID = 0;
+    private static final int MASTER_ID = 1;
 
     private StashThread mThread;
     private ArrayList<StashPattern> mPatterns;
     private EditText mThreadSource;
     private EditText mThreadType;
     private EditText mThreadId;
-
     private Button mOwnedDecrease;
     private TextView mSkeinsOwned;
     private Button mOwnedIncrease;
@@ -87,7 +88,14 @@ public class StashThreadFragment extends Fragment {
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     // navigate up to stash overview and sets thread fragment as current
                     Intent i = new Intent(getActivity(), StashOverviewActivity.class);
-                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
+
+                    if (mThread.isOwned()) {
+                        i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, STASH_ID);
+                    } else {
+                        i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, MASTER_ID);
+                    }
+
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;

@@ -25,7 +25,8 @@ public class StashFabricFragment extends Fragment {
 
     public static final String EXTRA_FABRIC_ID = "com.geekeclectic.android.stashcache.fabric_id";
 
-    private static final int CATEGORY_ID = 1;
+    private static final int VIEW_ID = 1;
+    private static final int MASTER_ID = 0;
 
     private StashFabric mFabric;
     private StashPattern mPattern;
@@ -70,7 +71,8 @@ public class StashFabricFragment extends Fragment {
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     // sets up navigation to go back to proper list fragment
                     Intent i = new Intent(getActivity(), StashOverviewActivity.class);
-                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, CATEGORY_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, MASTER_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
                 return true;
