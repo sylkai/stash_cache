@@ -2,8 +2,10 @@ package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -14,9 +16,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Activity to host fragments (stash/master list/shopping list) each hosting a viewpager which
@@ -221,17 +226,70 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             try {
                 // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
                 // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
-                StashImporter importer = new StashImporter(getContentResolver().openInputStream(data.getData()));
-                importer.importStash(getApplicationContext());
+                AsyncStashImport importStash = new AsyncStashImport(getContentResolver().openInputStream(data.getData()), fragment);
+                importStash.execute();
+            } catch (FileNotFoundException e) {
+                //
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private class AsyncStashImport extends AsyncTask<Void, Void, Void> {
+        private InputStream forImporter;
+        private UpdateFragment fragment;
+        TransparentProgressDialog dialog;
+        int resultId;
+
+        public AsyncStashImport(InputStream in, UpdateFragment updateFragment) {
+            super();
+            forImporter = in;
+            fragment = updateFragment;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = TransparentProgressDialog.show(StashOverviewActivity.this);
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            try {
+                // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
+                // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
+                StashImporter importer = new StashImporter(forImporter);
+                resultId = importer.importStash(getApplicationContext());
             } catch (IOException e) {
                 //
             }
 
-            StashData.get(getApplicationContext()).saveStash();
-            fragment.stashChanged();
+            return null;
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+
+            String toastText;
+
+            if (resultId == 0) {
+                toastText = getString(R.string.successful_import);
+            } else if (resultId == 1) {
+                toastText = getString(R.string.incorrect_file_format);
+            } else {
+                toastText = getString(R.string.incorrect_number_format);
+            }
+
+            Toast.makeText(StashOverviewActivity.this, toastText, Toast.LENGTH_SHORT).show();
+
+            fragment.stashChanged();
+            StashData.get(getApplicationContext()).saveStash();
+        }
     }
 
 }

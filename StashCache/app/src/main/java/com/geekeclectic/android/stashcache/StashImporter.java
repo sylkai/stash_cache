@@ -2,6 +2,7 @@ package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -34,8 +35,9 @@ public class StashImporter {
         allNumbersFormatted = true;
     }
 
-    public void importStash(Context context) throws IOException {
+    public int importStash(Context context) throws IOException {
         StashData stash = StashData.get(context);
+        populateMaps(stash);
 
         BufferedReader reader = null;
 
@@ -327,6 +329,14 @@ public class StashImporter {
             if (reader != null) {
                 reader.close();
             }
+
+            if (fileFormattedCorrectly && allNumbersFormatted) {
+                return 0;
+            } else if (fileFormattedCorrectly == false) {
+                return 1;
+            } else {
+                return 2;
+            }
         }
     }
 
@@ -473,6 +483,40 @@ public class StashImporter {
         } else {
             fileFormattedCorrectly = false;
             return true;
+        }
+    }
+
+    private void populateMaps(StashData stash) {
+        ArrayList<UUID> threadList = stash.getThreadList();
+        ArrayList<UUID> shortThreadList;
+
+        for (UUID threadId : threadList) {
+            StashThread thread = stash.getThread(threadId);
+            shortThreadList = threadMap.get(thread.getCode());
+
+            if (shortThreadList == null) {
+                shortThreadList = new ArrayList<UUID>();
+            }
+
+            shortThreadList.add(threadId);
+
+            threadMap.put(thread.getCode(), shortThreadList);
+        }
+
+        ArrayList<UUID> embellishmentList = stash.getEmbellishmentList();
+        ArrayList<UUID> shortEmbellishmentList;
+
+        for (UUID embellishmentId : embellishmentList) {
+            StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
+            shortEmbellishmentList = embellishmentMap.get(embellishment.getCode());
+
+            if (shortEmbellishmentList == null) {
+                shortEmbellishmentList = new ArrayList<UUID>();
+            }
+
+            shortEmbellishmentList.add(embellishmentId);
+
+            embellishmentMap.put(embellishment.getCode(), shortEmbellishmentList);
         }
     }
 
