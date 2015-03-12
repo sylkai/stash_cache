@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -352,6 +353,17 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         ThreadAdapter adapter = new ThreadAdapter(mThreadList);
         mThreadDisplayList.setAdapter(adapter);
         mThreadDisplayList.setEmptyView(v.findViewById(R.id.pattern_thread_display));
+        mThreadDisplayList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ViewHolder vh = (ViewHolder)view.getTag();
+
+                // start StashThreadPagerActivity
+                Intent intent = new Intent(getActivity(), StashThreadPagerActivity.class);
+                intent.putExtra(StashThreadFragment.EXTRA_THREAD_ID, vh.itemId);
+                startActivity(intent);
+            }
+        });
 
         // button to allow selection of threads used in pattern
         mEditEmbellishment = (ImageView)v.findViewById(R.id.pattern_embellishment_edit);
@@ -371,6 +383,17 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         EmbellishmentAdapter adapter1 = new EmbellishmentAdapter(mEmbellishmentList);
         mEmbellishmentDisplayList.setAdapter(adapter1);
         mEmbellishmentDisplayList.setEmptyView(v.findViewById(R.id.pattern_embellishment_display));
+        mEmbellishmentDisplayList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ViewHolder vh = (ViewHolder)view.getTag();
+
+                // start StashThreadPagerActivity
+                Intent intent = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
+                intent.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, vh.itemId);
+                startActivity(intent);
+            }
+        });
 
         setListViewHeightBasedOnChildren(mThreadDisplayList);
         setListViewHeightBasedOnChildren(mEmbellishmentDisplayList);
@@ -619,13 +642,14 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 convertView.setTag(vh);
             }
 
-            ViewHolder vh =  (ViewHolder)convertView.getTag();
+            ViewHolder vh = (ViewHolder)convertView.getTag();
 
             // configure the view for this thread
             StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
 
             vh.info.setText(thread.toString());
             vh.quantity.setText(Integer.toString(mPattern.getQuantity(thread)));
+            vh.itemId = thread.getId();
 
             return convertView;
         }
@@ -650,13 +674,14 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 convertView.setTag(vh);
             }
 
-            ViewHolder vh =  (ViewHolder)convertView.getTag();
+            ViewHolder vh = (ViewHolder)convertView.getTag();
 
             // configure the view for this thread
             StashEmbellishment embellishment = StashData.get(getActivity()).getEmbellishment(getItem(position));
 
             vh.info.setText(embellishment.toString());
             vh.quantity.setText(Integer.toString(mPattern.getQuantity(embellishment)));
+            vh.itemId = embellishment.getId();
 
             return convertView;
         }
@@ -666,6 +691,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     static class ViewHolder {
         TextView info;
         TextView quantity;
+        UUID itemId;
     }
 
 }

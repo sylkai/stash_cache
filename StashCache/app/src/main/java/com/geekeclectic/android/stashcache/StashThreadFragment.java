@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -241,6 +242,17 @@ public class StashThreadFragment extends Fragment {
         PatternAdapter adapter = new PatternAdapter(mPatternList);
         mPatternDisplayList.setAdapter(adapter);
         mPatternDisplayList.setEmptyView(v.findViewById(R.id.thread_pattern_display));
+        mPatternDisplayList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ViewHolder vh = (ViewHolder)view.getTag();
+
+                // start StashThreadPagerActivity
+                Intent intent = new Intent(getActivity(), StashPatternPagerActivity.class);
+                intent.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, vh.itemId);
+                startActivity(intent);
+            }
+        });
 
         setListViewHeightBasedOnChildren(mPatternDisplayList);
 
@@ -304,6 +316,7 @@ public class StashThreadFragment extends Fragment {
 
             vh.info.setText(pattern.toString());
             vh.quantity.setText(Integer.toString(pattern.getQuantity(mThread)));
+            vh.itemId = pattern.getId();
 
             return convertView;
         }
@@ -313,6 +326,7 @@ public class StashThreadFragment extends Fragment {
     static class ViewHolder {
         TextView info;
         TextView quantity;
+        UUID itemId;
     }
 
 }
