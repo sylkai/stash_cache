@@ -252,6 +252,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         protected void onPreExecute() {
             super.onPreExecute();
             dialog = TransparentProgressDialog.show(StashOverviewActivity.this);
+            dialog.setCancelable(false);
         }
 
         @Override
