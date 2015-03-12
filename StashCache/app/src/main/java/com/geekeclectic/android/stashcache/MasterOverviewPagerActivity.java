@@ -1,3 +1,4 @@
+/*
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
@@ -17,9 +18,11 @@ import android.widget.SpinnerAdapter;
 
 import java.io.IOException;
 
+*/
 /**
  * Created by sylk on 2/17/2015.
- */
+ *//*
+
 public class MasterOverviewPagerActivity extends FragmentActivity {
 
     static final int ITEMS = 4;
@@ -93,12 +96,14 @@ public class MasterOverviewPagerActivity extends FragmentActivity {
             case R.id.menu_item_import_stash:
                 Log.d(TAG, "User chose to input stash.");
 
-                /*StashImporter importer = new StashImporter();
+                */
+/*StashImporter importer = new StashImporter();
                 try {
                     importer.importStash(getApplicationContext());
                 } catch (IOException e) {
                     //
-                }*/
+                }*//*
+
                 StashData.get(getApplicationContext()).saveStash();
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:
@@ -151,3 +156,4 @@ public class MasterOverviewPagerActivity extends FragmentActivity {
 
 }
 
+*/

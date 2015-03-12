@@ -11,6 +11,10 @@
     <string name="import_stash">Import Stash</string>
     <string name="export_stash">Export Stash</string>
     <string name="delete_stash">Delete Stash</string>
+    <string name="delete_stash_warning">Delete complete stash?</string>
+    <string name="delete_stash_additional">You\'ll lose all your information!</string>
+    <string name="delete_stash_ok">Erase</string>
+    <string name="delete_stash_back">Cancel</string>
 
     <string name="pattern_info">Pattern Info</string>
     <string name="pattern_name_hint">Pattern Name</string>

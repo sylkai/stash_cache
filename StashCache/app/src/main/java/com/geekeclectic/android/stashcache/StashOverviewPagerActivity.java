@@ -1,3 +1,4 @@
+/*
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
@@ -20,12 +21,14 @@ import android.widget.SpinnerAdapter;
 
 import java.io.IOException;
 
+*/
 /**
  * Activity to host the viewPager managing the listView fragments displaying the lists of different
  * stash components (patterns, fabrics, threads).  Scrolling tab bar above identifies which list
  * is active.  EXTRA_FRAGMENT_ID indicates which item class is displayed when navigating up through
  * hierarchy.
- */
+ *//*
+
 
 public class StashOverviewPagerActivity extends FragmentActivity {
 
@@ -99,12 +102,14 @@ public class StashOverviewPagerActivity extends FragmentActivity {
             case R.id.menu_item_import_stash:
                 Log.d(TAG, "User chose to input stash.");
 
-                /*StashImporter importer = new StashImporter();
+                */
+/*StashImporter importer = new StashImporter();
                 try {
                     importer.importStash(getApplicationContext());
                 } catch (IOException e) {
                     //
-                }*/
+                }*//*
+
                 StashData.get(getApplicationContext()).saveStash();
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:
@@ -157,3 +162,4 @@ public class StashOverviewPagerActivity extends FragmentActivity {
 
 }
 
+*/

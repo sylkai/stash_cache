@@ -2,7 +2,9 @@ package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -158,7 +160,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        final UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
         // handling item selection
         switch (item.getItemId()) {
@@ -189,8 +191,28 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 }
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:
-                StashData.get(getApplicationContext()).deleteStash();
-                fragment.stashChanged();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.delete_stash_warning);
+                builder.setMessage(R.string.delete_stash_additional);
+                builder.setIcon(R.drawable.ic_dialog_alert_holo_light);
+
+                builder.setPositiveButton(R.string.delete_stash_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        StashData.get(getApplicationContext()).deleteStash();
+                        fragment.stashChanged();
+                    }
+                });
+
+                builder.setNegativeButton(R.string.delete_stash_back, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //
+                    }
+                });
+
+                builder.show();
+
                 return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
