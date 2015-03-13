@@ -34,6 +34,7 @@ import java.util.UUID;
 public class StashThreadListFragment extends ListFragment implements Observer {
 
     private ArrayList<UUID> mThreads;
+    private int numericTab;
 
     private static final String TAG = "ThreadListFragment";
     private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
@@ -50,6 +51,15 @@ public class StashThreadListFragment extends ListFragment implements Observer {
 
         // get the current list of threads to display
         String viewCode = getArguments().getString(THREAD_VIEW_ID);
+
+        if (viewCode.equals("master")) {
+            numericTab = 1;
+        } else if (viewCode.equals("stash")) {
+            numericTab = 0;
+        } else {
+            numericTab = 2;
+        }
+
         mThreads = getListFromStash(viewCode);
         Collections.sort(mThreads, new StashThreadComparator(getActivity()));
 
@@ -171,6 +181,7 @@ public class StashThreadListFragment extends ListFragment implements Observer {
                 // start StashThreadFragment with the new thread
                 Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
                 i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
+                i.putExtra(StashThreadFragment.EXTRA_TAB_ID, numericTab);
                 startActivityForResult(i, 0);
                 return true;
             default:
@@ -213,6 +224,7 @@ public class StashThreadListFragment extends ListFragment implements Observer {
         // start StashThreadPagerActivity
         Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
         i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, threadId);
+        i.putExtra(StashThreadFragment.EXTRA_TAB_ID, numericTab);
         startActivity(i);
     }
 

@@ -36,6 +36,7 @@ public class StashPatternListFragment extends ListFragment implements Observer {
     private static final String TAG = "PatternListFragment";
     private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
     private static final String PATTERN_VIEW_ID = "com.geekeclectic.android.stashcache.pattern_view_id";
+    private int numericTab;
 
     private ArrayList<StashPattern> mPatterns;
 
@@ -49,6 +50,14 @@ public class StashPatternListFragment extends ListFragment implements Observer {
         setHasOptionsMenu(true);
 
         String viewCode = getArguments().getString(PATTERN_VIEW_ID);
+        if (viewCode.equals("master")) {
+            numericTab = 1;
+        } else if (viewCode.equals("stash")) {
+            numericTab = 0;
+        } else {
+            numericTab = 2;
+        }
+
         mPatterns = getListFromStash(viewCode);
         Collections.sort(mPatterns, new StashPatternComparator());
 
@@ -164,6 +173,7 @@ public class StashPatternListFragment extends ListFragment implements Observer {
                 // start pattern viewPager with the desired pattern fragment
                 Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
                 i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
+                i.putExtra(StashPatternFragment.EXTRA_TAB_ID, numericTab);
                 startActivityForResult(i, 0);
                 return true;
             default:
@@ -206,6 +216,7 @@ public class StashPatternListFragment extends ListFragment implements Observer {
         // start StashPatternPagerActivity
         Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
         i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
+        i.putExtra(StashPatternFragment.EXTRA_TAB_ID, numericTab);
         startActivity(i);
     }
 

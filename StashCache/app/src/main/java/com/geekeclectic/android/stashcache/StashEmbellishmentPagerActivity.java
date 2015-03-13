@@ -18,6 +18,7 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
 
     private ViewPager mViewPager;
     private ArrayList<UUID> mEmbellishments;
+    private int callingTab;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,9 +42,11 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
 
             @Override
             public Fragment getItem(int pos) {
-                return StashEmbellishmentFragment.newInstance(mEmbellishments.get(pos));
+                return StashEmbellishmentFragment.newInstance(mEmbellishments.get(pos), callingTab);
             }
         });
+
+        callingTab = getIntent().getIntExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, 0);
 
         // get the id for the desired embellishment and set the appropriate fragment as current
         UUID embellishmentId = (UUID)getIntent().getSerializableExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID);

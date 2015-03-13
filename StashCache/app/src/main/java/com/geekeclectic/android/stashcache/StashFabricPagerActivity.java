@@ -20,6 +20,8 @@ public class StashFabricPagerActivity extends FragmentActivity {
     private ViewPager mViewPager;
     private ArrayList<UUID> mFabrics;
 
+    private int callingTab;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +34,8 @@ public class StashFabricPagerActivity extends FragmentActivity {
         // get list of fabrics for viewPager
         mFabrics = StashData.get(this).getFabricList();
 
+        callingTab = getIntent().getIntExtra(StashFabricFragment.EXTRA_TAB_ID, 0);
+
         // set fragment manager to display fragments
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
@@ -42,7 +46,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
             @Override
             public Fragment getItem(int pos) {
-                return StashFabricFragment.newInstance(mFabrics.get(pos));
+                return StashFabricFragment.newInstance(mFabrics.get(pos), callingTab);
             }
         });
 

@@ -31,13 +31,11 @@ import java.util.UUID;
 public class StashThreadFragment extends Fragment {
 
     public static final String EXTRA_THREAD_ID = "com.geekeclectic.android.stashcache.thread_id";
+    public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.thread_calling_stash_id";
 
     private static final int VIEW_ID = 2;
-    private static final int STASH_ID = 0;
-    private static final int MASTER_ID = 1;
 
     private StashThread mThread;
-    private ArrayList<StashPattern> mPatterns;
     private EditText mThreadSource;
     private EditText mThreadType;
     private EditText mThreadId;
@@ -56,6 +54,8 @@ public class StashThreadFragment extends Fragment {
     private ArrayList<StashPattern> mPatternList;
     private ListView mPatternDisplayList;
 
+    private int callingTab;
+
     public StashThreadFragment() {
         // required empty public constructor
     }
@@ -67,13 +67,15 @@ public class StashThreadFragment extends Fragment {
 
         // get id for thread and pull up the appropriate thread from the stash
         UUID threadId = (UUID)getArguments().getSerializable(EXTRA_THREAD_ID);
+        callingTab = getArguments().getInt(EXTRA_TAB_ID);
         mThread = StashData.get(getActivity()).getThread(threadId);
         mPatternList = mThread.getPatternsList();
     }
 
-    public static StashThreadFragment newInstance(UUID threadId) {
+    public static StashThreadFragment newInstance(UUID threadId, int tab) {
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_THREAD_ID, threadId);
+        args.putInt(EXTRA_TAB_ID, tab);
 
         // set arguments (threadId) and attach to the fragment
         StashThreadFragment fragment = new StashThreadFragment();
@@ -89,12 +91,12 @@ public class StashThreadFragment extends Fragment {
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     // navigate up to stash overview and sets thread fragment as current
                     Intent i = new Intent(getActivity(), StashOverviewActivity.class);
-                    i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, callingTab);
 
-                    if (mThread.isOwned()) {
-                        i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, STASH_ID);
+                    if (callingTab == 2) {
+                        i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID - 1);
                     } else {
-                        i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, MASTER_ID);
+                        i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
                     }
 
                     NavUtils.navigateUpTo(getActivity(), i);

@@ -19,6 +19,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
     private ViewPager mViewPager;
     private ArrayList<UUID> mThreads;
+    private int callingTab;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,9 +44,11 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
             @Override
             public Fragment getItem(int pos) {
-                return StashThreadFragment.newInstance(mThreads.get(pos));
+                return StashThreadFragment.newInstance(mThreads.get(pos), callingTab);
             }
         });
+
+        callingTab = getIntent().getIntExtra(StashThreadFragment.EXTRA_TAB_ID, 0);
 
         // get the id for the desired thread and set the appropriate fragment as current
         UUID threadId = (UUID)getIntent().getSerializableExtra(StashThreadFragment.EXTRA_THREAD_ID);

@@ -24,6 +24,7 @@ import java.util.UUID;
 public class StashFabricFragment extends Fragment {
 
     public static final String EXTRA_FABRIC_ID = "com.geekeclectic.android.stashcache.fabric_id";
+    public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.fabric_calling_stash_id";
 
     private static final int VIEW_ID = 1;
     private static final int MASTER_ID = 0;
@@ -38,6 +39,8 @@ public class StashFabricFragment extends Fragment {
     private EditText mFabricHeight;
     private TextView mPatternInfo;
 
+    private int callingTab;
+
     public StashFabricFragment() {
         // required empty public constructor
     }
@@ -49,14 +52,16 @@ public class StashFabricFragment extends Fragment {
 
         // get the fabric id from the arguments bundle and use that to get the appropriate fabric
         UUID fabricId = (UUID)getArguments().getSerializable(EXTRA_FABRIC_ID);
+        callingTab = getArguments().getInt(EXTRA_TAB_ID);
         mFabric = StashData.get(getActivity()).getFabric(fabricId);
 
         mPattern = mFabric.usedFor();
     }
 
-    public static StashFabricFragment newInstance(UUID patternId) {
+    public static StashFabricFragment newInstance(UUID patternId, int tab) {
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_FABRIC_ID, patternId);
+        args.putInt(EXTRA_TAB_ID, tab);
 
         StashFabricFragment fragment = new StashFabricFragment();
         fragment.setArguments(args);
@@ -71,7 +76,7 @@ public class StashFabricFragment extends Fragment {
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     // sets up navigation to go back to proper list fragment
                     Intent i = new Intent(getActivity(), StashOverviewActivity.class);
-                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, MASTER_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, callingTab);
                     i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
                     NavUtils.navigateUpTo(getActivity(), i);
                 }

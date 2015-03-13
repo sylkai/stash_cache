@@ -38,6 +38,8 @@ public class StashFabricListFragment extends ListFragment implements Observer {
     private static final int FABRIC_GROUP_ID = R.id.fabric_context_menu;
     private static final String FABRIC_VIEW_ID = "com.geekeclectic.android.stashcache.fabric_view_id";
 
+    private int numericTab;
+
     public StashFabricListFragment() {
         // required empty public constructor
     }
@@ -49,6 +51,15 @@ public class StashFabricListFragment extends ListFragment implements Observer {
 
         // get the current list of fabrics to display
         String viewCode = getArguments().getString(FABRIC_VIEW_ID);
+
+        if (viewCode.equals("master")) {
+            numericTab = 1;
+        } else if (viewCode.equals("stash")) {
+            numericTab = 0;
+        } else {
+            numericTab = 2;
+        }
+
         mFabrics = StashData.get(getActivity()).getFabricList();
 
         // create and set list adapter using fabrics list
@@ -161,6 +172,7 @@ public class StashFabricListFragment extends ListFragment implements Observer {
                 // start StashFabricFragment with the new fabric
                 Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
                 i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabric.getId());
+                i.putExtra(StashFabricFragment.EXTRA_TAB_ID, numericTab);
                 startActivityForResult(i, 0);
                 return true;
             default:
@@ -203,6 +215,7 @@ public class StashFabricListFragment extends ListFragment implements Observer {
         // start StashFabricPagerActivity
         Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
         i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabricId);
+        i.putExtra(StashFabricFragment.EXTRA_TAB_ID, numericTab);
         startActivity(i);
     }
 

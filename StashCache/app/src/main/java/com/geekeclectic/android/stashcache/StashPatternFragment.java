@@ -44,6 +44,7 @@ import java.util.UUID;
 public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener, Observer, SelectThreadQuantityDialogFragment.SelectThreadQuantityDialogListener, SelectEmbellishmentQuantityDialogFragment.SelectEmbellishmentQuantityDialogListener {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
+    public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.calling_stash_id";
     public static final String TAG = "StashPatternFragment";
     private static final int REQUEST_PICK_NEW_FABRIC = 0;
     private static final int REQUEST_TAKE_PHOTO = 1;
@@ -76,6 +77,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private ListView mEmbellishmentDisplayList;
 
     private ChangedFragmentListener mCallback;
+    private int callingTab;
 
     private String mPhotoPath;
 
@@ -94,6 +96,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         // get patternId and use it to get pattern
         mPatternId = (UUID)getArguments().getSerializable(EXTRA_PATTERN_ID);
+        callingTab = getArguments().getInt(EXTRA_TAB_ID);
         mPattern = StashData.get(getActivity()).getPattern(mPatternId);
 
         // set reference to fragment for setting listeners
@@ -115,10 +118,11 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         }
     }
 
-    public static StashPatternFragment newInstance(UUID patternId) {
+    public static StashPatternFragment newInstance(UUID patternId, int tab) {
         // associate patternId with the fragment through arguments
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_PATTERN_ID, patternId);
+        args.putInt(EXTRA_TAB_ID, tab);
 
         StashPatternFragment fragment = new StashPatternFragment();
         fragment.setArguments(args);
@@ -136,7 +140,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
                     // note which category is calling the up to display appropriate fragment (pattern)
                     i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
-                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, STASH_ID);
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, callingTab);
 
                     NavUtils.navigateUpTo(getActivity(), i);
                 }

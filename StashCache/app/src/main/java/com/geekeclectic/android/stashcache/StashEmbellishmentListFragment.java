@@ -33,6 +33,7 @@ import java.util.UUID;
 public class StashEmbellishmentListFragment extends ListFragment implements Observer {
 
     private ArrayList<UUID> mEmbellishments;
+    private int numericTab;
 
     private static final String TAG = "EmbellishmentListFragment";
     private static final int EMBELLISHMENT_GROUP_ID = R.id.embellishment_context_menu;
@@ -49,6 +50,15 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
 
         // get the current list of embellishments to display
         String viewCode = getArguments().getString(EMBELLISHMENT_VIEW_ID);
+
+        if (viewCode.equals("master")) {
+            numericTab = 1;
+        } else if (viewCode.equals("stash")) {
+            numericTab = 0;
+        } else {
+            numericTab = 2;
+        }
+
         mEmbellishments = getListFromStash(viewCode);
         Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
 
@@ -162,6 +172,7 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
                 // start StashEmbellishmentFragment with the new embellishment
                 Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
                 i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishment.getId());
+                i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, numericTab);
                 startActivityForResult(i, 0);
                 return true;
             default:
@@ -204,6 +215,7 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
         // start StashEmbellishmentPagerActivity
         Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
         i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishmentId);
+        i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, numericTab);
         startActivity(i);
     }
 

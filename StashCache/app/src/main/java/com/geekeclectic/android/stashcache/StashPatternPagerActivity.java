@@ -25,6 +25,8 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
     private ViewPager mViewPager;
     private ArrayList<StashPattern> mPatterns;
 
+    private int callingTab;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +42,8 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         // set viewPager adapter
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new ObservedAdapter(fm));
+
+        callingTab = getIntent().getIntExtra(StashPatternFragment.EXTRA_TAB_ID, 0);
 
         // pull the UUID from the desired fragment extra and iterate through the list to set it as
         // the current view
@@ -72,7 +76,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         public Fragment getItem(int pos) {
             // get pattern for the fragment and create fragment
             StashPattern pattern = mPatterns.get(pos);
-            Fragment fragment = StashPatternFragment.newInstance(pattern.getId());
+            Fragment fragment = StashPatternFragment.newInstance(pattern.getId(), callingTab);
 
             // add fragment to the list of observers
             if (fragment instanceof Observer) {

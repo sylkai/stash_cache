@@ -30,10 +30,9 @@ import java.util.UUID;
 public class StashEmbellishmentFragment extends Fragment{
 
     public static final String EXTRA_EMBELLISHMENT_ID = "com.geekeclectic.android.stashcache.embellishment_id";
+    public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.embellishment_calling_stash_id";
 
     private static final int VIEW_ID = 3;
-    private static final int STASH_ID = 0;
-    private static final int MASTER_ID = 1;
 
     private StashEmbellishment mEmbellishment;
     private EditText mEmbellishmentSource;
@@ -55,6 +54,8 @@ public class StashEmbellishmentFragment extends Fragment{
     private ArrayList<StashPattern> mPatternList;
     private ListView mPatternDisplayList;
 
+    private int callingTab;
+
     public StashEmbellishmentFragment() {
         // required empty public constructor
     }
@@ -66,13 +67,15 @@ public class StashEmbellishmentFragment extends Fragment{
 
         // get id for embellishment and pull up the appropriate embellishment from the stash
         UUID embellishmentId = (UUID)getArguments().getSerializable(EXTRA_EMBELLISHMENT_ID);
+        callingTab = getArguments().getInt(EXTRA_TAB_ID);
         mEmbellishment = StashData.get(getActivity()).getEmbellishment(embellishmentId);
         mPatternList = mEmbellishment.getPatternList();
     }
 
-    public static StashEmbellishmentFragment newInstance(UUID embellishmentId) {
+    public static StashEmbellishmentFragment newInstance(UUID embellishmentId, int tab) {
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_EMBELLISHMENT_ID, embellishmentId);
+        args.putInt(EXTRA_TAB_ID, tab);
 
         // set arguments (embellishmentId) and attach to the fragment
         StashEmbellishmentFragment fragment = new StashEmbellishmentFragment();
@@ -89,12 +92,7 @@ public class StashEmbellishmentFragment extends Fragment{
                     // navigate up to stash overview and sets embellishment fragment as current
                     Intent i = new Intent(getActivity(), StashOverviewActivity.class);
                     i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
-
-                    if (mEmbellishment.isOwned()) {
-                        i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, STASH_ID);
-                    } else {
-                        i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, MASTER_ID);
-                    }
+                    i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, callingTab);
 
                     NavUtils.navigateUpTo(getActivity(), i);
                 }
