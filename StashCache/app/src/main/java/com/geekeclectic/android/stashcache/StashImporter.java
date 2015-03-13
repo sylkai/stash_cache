@@ -66,7 +66,13 @@ public class StashImporter {
                     }
 
                     String id = line;
-                    incrementOrAddThread(source, type, id, stash);
+                    String key;
+                    if (id.contains(" ")) {
+                        key = id.split("\\s")[0];
+                    } else {
+                        key = id;
+                    }
+                    incrementOrAddThread(source, type, id, key, stash);
                 }
 
                 if (line.equals("***")) {
@@ -285,7 +291,13 @@ public class StashImporter {
                         }
 
                         String id = line;
-                        StashThread thread = findOrAddThread(source, type, id, stash);
+                        String key;
+                        if (id.contains(" ")) {
+                            key = id.split("\\s")[0];
+                        } else {
+                            key = id;
+                        }
+                        StashThread thread = findOrAddThread(source, type, id, key, stash);
 
                         thread.usedInPattern(pattern);
                         pattern.addThread(thread);
@@ -340,7 +352,7 @@ public class StashImporter {
         }
     }
 
-    private StashThread createNewThread(String source, String type, String id, StashData stash, boolean inStash) {
+    private StashThread createNewThread(String source, String type, String id, String key, StashData stash, boolean inStash) {
         StashThread thread = new StashThread();
 
         thread.setSource(source);
@@ -352,12 +364,12 @@ public class StashImporter {
 
         stash.addThread(thread);
 
-        if (threadMap.get(id) == null) {
+        if (threadMap.get(key) == null) {
             ArrayList<UUID> threadList = new ArrayList<UUID>();
             threadList.add(thread.getId());
-            threadMap.put(id, threadList);
+            threadMap.put(key, threadList);
         } else {
-            ArrayList<UUID> threadList = threadMap.get(id);
+            ArrayList<UUID> threadList = threadMap.get(key);
             threadList.add(thread.getId());
         }
 
@@ -403,37 +415,43 @@ public class StashImporter {
         return embellishment;
     }
 
-    private void incrementOrAddThread(String source, String type, String id, StashData stash) {
-        ArrayList<UUID> threadList = threadMap.get(id);
+    private void incrementOrAddThread(String source, String type, String id, String key, StashData stash) {
+        ArrayList<UUID> threadList = threadMap.get(key);
         StashThread thread;
 
         if (threadList != null) {
             for (UUID threadId : threadList) {
                 thread = stash.getThread(threadId);
-                if (thread.getSource().equals(source) && thread.getType().equals(type) && thread.getCode().equals(id)) {
+                if (isSameThread(thread, source, type, id, key)) {
+                    if (!key.equals(id) && key.equals(thread.getCode())) {
+                        thread.setCode(id);
+                    }
                     thread.increaseOwnedQuantity();
                     return;
                 }
             }
 
-            createNewThread(source, type, id, stash, true);
+            createNewThread(source, type, id, key, stash, true);
         } else {
-            createNewThread(source, type, id, stash, true);
+            createNewThread(source, type, id, key, stash, true);
         }
     }
 
-    private StashThread findOrAddThread(String source, String type, String id, StashData stash) {
+    private StashThread findOrAddThread(String source, String type, String id, String key, StashData stash) {
         ArrayList<UUID> threadList = stash.getThreadList();
         StashThread thread;
 
         for (int i = 0; i < threadList.size(); i++) {
             thread = stash.getThread(threadList.get(i));
-            if (thread.getSource().equals(source) && thread.getType().equals(type) && thread.getCode().equals(id)) {
+            if (isSameThread(thread, source, type, key, id)) {
+                if (!key.equals(id) && key.equals(thread.getCode())) {
+                    thread.setCode(id);
+                }
                 return thread;
             }
         }
 
-        thread = createNewThread(source, type, id, stash, false);
+        thread = createNewThread(source, type, id, key, stash, false);
 
         return thread;
     }
@@ -518,6 +536,20 @@ public class StashImporter {
 
             embellishmentMap.put(embellishment.getCode(), shortEmbellishmentList);
         }
+    }
+
+    private boolean isSameThread(StashThread thread, String source, String type, String id, String key) {
+        if (thread.getSource() != null && thread.getSource().equals(source)) {
+            if (thread.getType() != null && thread.getType().equals(type)) {
+                if (thread.getCode() != null && thread.getCode().equals(id)) {
+                    return true;
+                } else if (thread.getCode() != null && (thread.getCode().split("\\s")[0].equals(id) || key.equals(thread.getCode()))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 }
