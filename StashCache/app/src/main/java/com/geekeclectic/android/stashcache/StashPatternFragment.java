@@ -365,6 +365,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 // start StashThreadPagerActivity
                 Intent intent = new Intent(getActivity(), StashThreadPagerActivity.class);
                 intent.putExtra(StashThreadFragment.EXTRA_THREAD_ID, vh.itemId);
+                intent.putExtra(StashThreadFragment.EXTRA_TAB_ID, callingTab);
                 startActivity(intent);
             }
         });
@@ -395,6 +396,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 // start StashThreadPagerActivity
                 Intent intent = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
                 intent.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, vh.itemId);
+                intent.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, callingTab);
                 startActivity(intent);
             }
         });

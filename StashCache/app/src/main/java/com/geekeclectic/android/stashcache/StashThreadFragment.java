@@ -252,6 +252,7 @@ public class StashThreadFragment extends Fragment {
                 // start StashThreadPagerActivity
                 Intent intent = new Intent(getActivity(), StashPatternPagerActivity.class);
                 intent.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, vh.itemId);
+                intent.putExtra(StashPatternFragment.EXTRA_TAB_ID, callingTab);
                 startActivity(intent);
             }
         });
