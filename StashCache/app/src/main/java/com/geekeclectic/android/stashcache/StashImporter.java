@@ -510,7 +510,15 @@ public class StashImporter {
 
         for (UUID threadId : threadList) {
             StashThread thread = stash.getThread(threadId);
-            shortThreadList = threadMap.get(thread.getCode());
+
+            String id = thread.getCode();
+            String key;
+            if (id.contains(" ")) {
+                key = id.split("\\s")[0];
+            } else {
+                key = id;
+            }
+            shortThreadList = threadMap.get(key);
 
             if (shortThreadList == null) {
                 shortThreadList = new ArrayList<UUID>();
@@ -518,7 +526,7 @@ public class StashImporter {
 
             shortThreadList.add(threadId);
 
-            threadMap.put(thread.getCode(), shortThreadList);
+            threadMap.put(key, shortThreadList);
         }
 
         ArrayList<UUID> embellishmentList = stash.getEmbellishmentList();
