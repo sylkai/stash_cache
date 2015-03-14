@@ -4,7 +4,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by sylk on 10/27/2014.
+ * This is intended be the item storing information for a photo associated with a stash item.
+ * Aimed at release of 1.1, not initial.
  */
 
 public class StashPhoto {

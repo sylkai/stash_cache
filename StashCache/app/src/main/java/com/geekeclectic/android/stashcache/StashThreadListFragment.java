@@ -1,10 +1,9 @@
 package com.geekeclectic.android.stashcache;
 
-import android.os.AsyncTask;
-import android.os.Build;
-import android.support.v4.app.ListFragment;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -16,9 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.ArrayAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CheckBox;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -298,20 +296,5 @@ public class StashThreadListFragment extends ListFragment implements Observer {
         TextView threadType;
         TextView quantity;
     }
-
-/*    private class InitialThreadListSortTask extends AsyncTask<String, Void, ArrayList<UUID>> {
-
-        @Override
-        protected ArrayList<UUID> doInBackground(String... params) {
-            Collections.sort(mThreads, new StashThreadComparator(getActivity()));
-            return mThreads;
-        }
-
-        protected void onPostExecute(ArrayList<UUID> threads) {
-            ThreadAdapter adapter = new ThreadAdapter(mThreads);
-            setListAdapter(adapter);
-        }
-
-    }*/
 
 }

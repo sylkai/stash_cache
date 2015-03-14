@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Fragment for an AlertDialog to create a multi-choice list showing the threads in the stash and
+ * Fragment for an dialog to create a multi-choice list showing the threads in the stash and
  * allowing the user to select which threads are used in the pattern.  Once the user selects the
  * "OK" button, the interface calls back to the pattern fragment and updates the list of threads
  * associated with the pattern.

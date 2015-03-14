@@ -1,7 +1,13 @@
+/*
 package com.geekeclectic.android.stashcache;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
+import android.view.Display;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -9,13 +15,16 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+*/
 /**
- * Class to hold utility methods relating to the StashPhoto object and photo cleanup.
- */
+ * Class to hold utility methods relating to the StashPhoto object and photo cleanup.  All photo
+ * items intended for release 1.1, not initial.
+ *//*
+
 
 public class StashPhotoUtils {
 
-    /*public static BitmapDrawable getScaledDrawable(Activity a, String path) {
+    public static BitmapDrawable getScaledDrawable(Activity a, String path) {
         Display display = a.getWindowManager().getDefaultDisplay();
         Point displaySize = new Point();
         display.getSize(displaySize);
@@ -44,7 +53,8 @@ public class StashPhotoUtils {
         Bitmap bitmap = BitmapFactory.decodeFile(path, options);
 
         return new BitmapDrawable(a.getResources(), bitmap);
-    }*/
+    }*//*
+
 
     // recycles bitmaps when no longer displayed to clean memory
     public static void cleanImageView(ImageView imageView) {
@@ -73,3 +83,4 @@ public class StashPhotoUtils {
     }
 
 }
+*/

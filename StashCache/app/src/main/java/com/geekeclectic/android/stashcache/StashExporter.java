@@ -1,9 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
-import android.content.Intent;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Environment;
 
 import java.io.File;
@@ -16,7 +14,10 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * Created by sylk on 3/4/2015.
+ * Class to write the stash data to a text file that can then be passed by the app to another app
+ * for uploading to Dropbox/emailing/etc.  The stash is written in the pattern of threads / fabrics
+ * not assigned / embellishments / patterns (pattern info / fabric / threads / embellishments).  The
+ * string is constructed in its entirety before being written to the file.
  */
 public class StashExporter {
 
@@ -35,7 +36,7 @@ public class StashExporter {
     }
 
     public File exportStash(Context context) throws IOException {
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File path = Environment.getExternalStorageDirectory();
         File file = new File(path, mFilename);
 
         Writer writer = null;
@@ -84,6 +85,7 @@ public class StashExporter {
         return sb.toString();
     }
 
+    // for threads in the stash
     private String threadListString(ArrayList<UUID> threadList, String betweenItems, StashData stash, Context context) {
         StringBuilder sb = new StringBuilder();
 
@@ -99,12 +101,15 @@ public class StashExporter {
             StashThread thread = stash.getThread(threadId);
 
             if (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType)) {
+                // not equal to the previous source/type
                 if (!currentSource.equals("") || !currentType.equals("")) {
-                        newItem = true;
+                    // not a new file
+                    newItem = true;
                 }
             }
 
             if (newItem) {
+                // not a new file, so add the marker between items before the source and type
                 sb.append(betweenItems);
                 sb.append(newline);
                 sb.append(thread.getSource());
@@ -112,6 +117,7 @@ public class StashExporter {
                 sb.append(thread.getType());
                 sb.append(newline);
             } else if (currentSource.equals("") && currentType.equals("")) {
+                // if it is a brand new file, just write the source and type
                 sb.append(thread.getSource());
                 sb.append(newline);
                 sb.append(thread.getType());
@@ -119,10 +125,12 @@ public class StashExporter {
             }
 
             for (int i = 0; i < thread.getSkeinsOwned(); i++) {
+                // write the number n times, where n is the quantity owned
                 sb.append(thread.getCode());
                 sb.append(newline);
             }
 
+            // set to match the last item entered, and reset the "new item" marker
             currentSource = thread.getSource();
             currentType = thread.getType();
             newItem = false;
@@ -131,6 +139,7 @@ public class StashExporter {
         return sb.toString();
     }
 
+    // for threads called for in a pattern
     private String threadListString(ArrayList<UUID> threadList, String betweenItems, StashData stash, Context context, StashPattern pattern) {
         StringBuilder sb = new StringBuilder();
 
@@ -146,12 +155,15 @@ public class StashExporter {
             StashThread thread = stash.getThread(threadId);
 
             if (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType)) {
+                // not equal to the previous source / type
                 if (!currentSource.equals("") || !currentType.equals("")) {
+                    // not the first item of the thread list
                     newItem = true;
                 }
             }
 
             if (newItem) {
+                // not the first item on the thread list, so needs the divider
                 sb.append(betweenItems);
                 sb.append(newline);
                 sb.append(thread.getSource());
@@ -159,17 +171,20 @@ public class StashExporter {
                 sb.append(thread.getType());
                 sb.append(newline);
             } else if (currentSource.equals("") && currentType.equals("")) {
+                // if the first thread entered for the pattern
                 sb.append(thread.getSource());
                 sb.append(newline);
                 sb.append(thread.getType());
                 sb.append(newline);
             }
 
+            // not the number owned but the number called for by the pattern
             for (int i = 0; i < pattern.getQuantity(thread); i++) {
                 sb.append(thread.getCode());
                 sb.append(newline);
             }
 
+            // set to match the last item entered, and reset the "new item" marker
             currentSource = thread.getSource();
             currentType = thread.getType();
             newItem = false;
@@ -186,6 +201,7 @@ public class StashExporter {
         for (UUID fabricId : fabricList) {
             StashFabric fabric = stash.getFabric(fabricId);
 
+            // skip fabrics assigned to patterns because they will be included with the pattern
             if (!fabric.isAssigned()) {
                 if (sb.length() != 0) {
                     sb.append(betweenItems);
@@ -211,6 +227,7 @@ public class StashExporter {
         return sb.toString();
     }
 
+    // for embellishments in stash
     private String embellishmentListString(ArrayList<UUID> embellishmentList, String betweenItems, StashData stash, Context context) {
         StringBuilder sb = new StringBuilder();
 
@@ -226,12 +243,15 @@ public class StashExporter {
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
 
             if (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType)) {
+                // not the same as the previous item entered
                 if (!currentSource.equals("") || !currentType.equals("")) {
+                    // not the first embellishment entered
                     newItem = true;
                 }
             }
 
             if (newItem) {
+                // not the first embellishment entered, so add the divider
                 sb.append(betweenItems);
                 sb.append(newline);
                 sb.append(embellishment.getSource());
@@ -239,6 +259,7 @@ public class StashExporter {
                 sb.append(embellishment.getType());
                 sb.append(newline);
             } else if (currentSource.equals("") && currentType.equals("")) {
+                // first embellishment entered, so no divider
                 sb.append(embellishment.getSource());
                 sb.append(newline);
                 sb.append(embellishment.getType());
@@ -246,6 +267,7 @@ public class StashExporter {
             }
 
             for (int i = 0; i < embellishment.getNumberOwned(); i++) {
+                // add the the code n times, where n is the number owned
                 sb.append(embellishment.getCode());
                 sb.append(newline);
             }
@@ -258,6 +280,7 @@ public class StashExporter {
         return sb.toString();
     }
 
+    // for embellishments called for in a pattern
     private String embellishmentListString(ArrayList<UUID> embellishmentList, String betweenItems, StashData stash, Context context, StashPattern pattern) {
         StringBuilder sb = new StringBuilder();
 
@@ -273,12 +296,15 @@ public class StashExporter {
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
 
             if (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType)) {
+                // not the same as the previous embellishment entered
                 if (!currentSource.equals("") || !currentType.equals("")) {
+                    // not the first embellishment entered
                     newItem = true;
                 }
             }
 
             if (newItem) {
+                // not the first embellishment entered, so add the divider
                 sb.append(betweenItems);
                 sb.append(newline);
                 sb.append(embellishment.getSource());
@@ -286,22 +312,20 @@ public class StashExporter {
                 sb.append(embellishment.getType());
                 sb.append(newline);
             } else if (currentSource.equals("") && currentType.equals("")) {
+                // first embellishment entered, so no divider
                 sb.append(embellishment.getSource());
                 sb.append(newline);
                 sb.append(embellishment.getType());
                 sb.append(newline);
             }
 
-            for (int i = 0; i < embellishment.getNumberOwned(); i++) {
-                sb.append(embellishment.getCode());
-                sb.append(newline);
-            }
-
             for (int i = 0; i < pattern.getQuantity(embellishment); i++) {
+                // if it's called for n times in the pattern, add the number n times to the list
                 sb.append(embellishment.getCode());
                 sb.append(newline);
             }
 
+            // reset to account for the item just entered
             currentSource = embellishment.getSource();
             currentType = embellishment.getType();
             newItem = false;
@@ -321,6 +345,7 @@ public class StashExporter {
 
         for (StashPattern pattern : patternList) {
             if (sb.length() != 0) {
+                // not the first thing entered into the string, so add the divider
                 sb.append(betweenItems);
                 sb.append(newline);
             }
@@ -338,6 +363,7 @@ public class StashExporter {
             sb.append(patternCategories);
             sb.append(newline);
 
+            // if there is a fabric associated with this pattern, this is where it goes
             if (pattern.getFabric() != null) {
                 StashFabric fabric = pattern.getFabric();
 
@@ -359,10 +385,12 @@ public class StashExporter {
             sb.append(patternCategories);
             sb.append(newline);
 
+            // add the info for the strings in the pattern
             sb.append(threadListString(pattern.getThreadList(), patternItems, stash, context, pattern));
             sb.append(patternCategories);
             sb.append(newline);
 
+            // add the info for the embellishments in the pattern
             sb.append(embellishmentListString(pattern.getEmbellishmentList(), patternItems, stash, context, pattern));
         }
 

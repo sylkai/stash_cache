@@ -254,22 +254,25 @@ public class StashPatternListFragment extends ListFragment implements Observer {
             // if no view given, inflate one
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_pattern, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.patternName = (TextView)convertView.findViewById(R.id.pattern_list_item_nameTextView);
+                vh.patternSource = (TextView)convertView.findViewById(R.id.pattern_list_item_sourceTextView);
+                vh.patternKitted = (CheckBox)convertView.findViewById(R.id.pattern_kitted_checkbox);
+                convertView.setTag(vh);
             }
 
             // configure the view for this pattern
             StashPattern pattern = getItem(position);
+            ViewHolder vh = (ViewHolder)convertView.getTag();
 
-            TextView patternNameTextView = (TextView)convertView.findViewById(R.id.pattern_list_item_nameTextView);
-            patternNameTextView.setText(pattern.getPatternName());
+            vh.patternName.setText(pattern.getPatternName());
+            vh.patternSource.setText(pattern.getSource());
 
-            TextView patternSourceTextView = (TextView)convertView.findViewById(R.id.pattern_list_item_sourceTextView);
-            patternSourceTextView.setText(pattern.getSource());
+            vh.patternKitted.setTag(pattern);
+            vh.patternKitted.setChecked(pattern.getKitted());
 
-            CheckBox patternKittedCheck = (CheckBox)convertView.findViewById(R.id.pattern_kitted_checkbox);
-            patternKittedCheck.setTag(pattern);
-            patternKittedCheck.setChecked(pattern.getKitted());
-
-            patternKittedCheck.setOnClickListener(new View.OnClickListener() {
+            vh.patternKitted.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     CheckBox checkBox = (CheckBox) view;
@@ -280,6 +283,12 @@ public class StashPatternListFragment extends ListFragment implements Observer {
 
             return convertView;
         }
+    }
+
+    static class ViewHolder {
+        TextView patternName;
+        TextView patternSource;
+        CheckBox patternKitted;
     }
 
 }

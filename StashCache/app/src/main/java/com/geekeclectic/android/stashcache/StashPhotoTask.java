@@ -1,3 +1,4 @@
+/*
 package com.geekeclectic.android.stashcache;
 
 import android.app.Activity;
@@ -9,9 +10,13 @@ import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
 
+*/
 /**
- * Created by sylk on 10/29/2014.
- */
+ * Class dealing with photo processing for stash objects.  All photo stuff intended for release of 1.1,
+ * not initial.
+ *//*
+
+
 public class StashPhotoTask extends AsyncTask<Integer, Void, BitmapDrawable> {
     private final WeakReference<ImageView> imageViewReference;
     private Activity mActivity;
@@ -88,3 +93,4 @@ public class StashPhotoTask extends AsyncTask<Integer, Void, BitmapDrawable> {
         return inSampleSize;
     }
 }
+*/

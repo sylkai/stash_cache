@@ -2,7 +2,6 @@ package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -14,20 +13,23 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * Created by sylk on 1/22/2015.
+ * Class to import data from a text file into the stash.  Formatted in the pattern / fabric not assigned /
+ * embellishments / pattern (pattern info / fabric if assigned / thread / embellishments). InputStream
+ * is provided by the caller - may come from file on the device, Dropbox, etc.
  */
 public class StashImporter {
 
-    private static InputStream in;
-    private static int DEFAULT = 1;
-    private static HashMap<String, ArrayList<UUID>> threadMap;
-    private static HashMap<String, ArrayList<UUID>> embellishmentMap;
-    private boolean fileFormattedCorrectly;
-    private boolean allNumbersFormatted;
     public static final String TAG = "StashImporter";
 
+    private boolean fileFormattedCorrectly;
+    private boolean allNumbersFormatted;
+    private static HashMap<String, ArrayList<UUID>> threadMap;
+    private static HashMap<String, ArrayList<UUID>> embellishmentMap;
+    private static InputStream in;
+    private static int DEFAULT = 1;
+    private static String UTF8 = "utf8";
+
     public StashImporter(InputStream input) {
-        // mFilename = "stash_input.txt";
         in = input;
         threadMap = new HashMap<String, ArrayList<UUID>>();
         embellishmentMap = new HashMap<String, ArrayList<UUID>>();
@@ -44,7 +46,7 @@ public class StashImporter {
         try {
             // open and read the file into a StringBuilder
             // InputStream in = am.open(mFilename);
-            reader = new BufferedReader(new InputStreamReader(in));
+            reader = new BufferedReader(new InputStreamReader(in, UTF8));
 
             Log.d(TAG, "Reader successfully opened.");
 
@@ -495,6 +497,9 @@ public class StashImporter {
         return embellishment;
     }
 
+    // if the string is not null/a divider, this returns false (preventing a break)
+    // if it does return true, it marks the file format check as false so that the user can be alerted
+    // that there was a formatting issue
     private boolean checkToContinue(String toCheck) {
         if (toCheck != null && !toCheck.equals("***") && !toCheck.equals("---") && !toCheck.equals("*") && !toCheck.equals("-")) {
             return false;
@@ -511,6 +516,8 @@ public class StashImporter {
         for (UUID threadId : threadList) {
             StashThread thread = stash.getThread(threadId);
 
+            // check to see if there is additional info in the code, if so, shorten it so only the first
+            // portion is used as the map key
             String id = thread.getCode();
             String key;
             if (id.contains(" ")) {
@@ -546,12 +553,17 @@ public class StashImporter {
         }
     }
 
+    // check to see if the thread is the same
     private boolean isSameThread(StashThread thread, String source, String type, String id, String key) {
         if (thread.getSource() != null && thread.getSource().equals(source)) {
+            // same source
             if (thread.getType() != null && thread.getType().equals(type)) {
+                // same type
                 if (thread.getCode() != null && thread.getCode().equals(id)) {
+                    // same code, so the same
                     return true;
                 } else if (thread.getCode() != null && (thread.getCode().split("\\s")[0].equals(id) || key.equals(thread.getCode()))) {
+                    // check if the code has a bit (likely numeric) in front that matches the stored code (or vice versa)
                     return true;
                 }
             }

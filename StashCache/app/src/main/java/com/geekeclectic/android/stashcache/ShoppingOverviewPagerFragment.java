@@ -14,17 +14,16 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * Activity to host the viewPager managing the listView fragments displaying the lists of different
+ * Fragment to host the viewPager managing the listView fragments displaying the lists of different
  * stash components (patterns, fabrics, threads).  Scrolling tab bar above identifies which list
- * is active.  EXTRA_FRAGMENT_ID indicates which item class is displayed when navigating up through
- * hierarchy.
+ * is active.  Callback to the host activity keeps track of which fragment (fabric for/threads/embellishments)
+ * is currently displayed, to allow for maintaining the active fragment between switching categories.
  */
 
 public class ShoppingOverviewPagerFragment extends UpdateFragment {
 
     static final int ITEMS = 3;
     static final String TAG = "ShoppingOverview";
-    public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
 
     private ViewPager mViewPager;
     private StashOverviewPagerAdapter mAdapter;
@@ -51,6 +50,7 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
             }
 
             public void onPageSelected(int currentPage) {
+                // keep track of which fragment is currently displayed and let the host activity know
                 mCallback.onTabSwipe(currentPage);
                 currentView = currentPage;
             }
@@ -76,10 +76,7 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
 
     @Override
     public void stashChanged() {
-        updateFragments();
-    }
-
-    private void updateFragments() {
+        // called from the host activity to tell the lists to update their datasets
         mAdapter.updateFragments();
     }
 

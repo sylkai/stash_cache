@@ -6,8 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 /**
- * Created by sylk on 3/5/2015.
+ * Splash screen to display on initial bootup while the stash is loading and sorted in the background.
  */
+
 public class StashSplashScreen extends Activity {
 
     @Override

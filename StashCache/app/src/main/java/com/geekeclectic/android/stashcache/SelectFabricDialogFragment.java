@@ -28,7 +28,7 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
     private FabricAdapter mAdapter;
     private static SelectFabricDialogListener mSelectFabricDialogCallback;
 
-    // to send selection back to the patternfragment for linking
+    // to send selection back to the PatternFragment for linking
     public interface SelectFabricDialogListener {
         public void onSelectedFabric(UUID fabricId);
     }
@@ -87,28 +87,37 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
             // if we weren't given a view, inflate one
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_select_fabric, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.fabricInfo = (TextView) convertView.findViewById(R.id.fabric_select_list_item_infoTextView);
+                vh.fabricSize = (TextView) convertView.findViewById(R.id.fabric_select_list_item_sizeTextView);
+                vh.fabricAssigned = (TextView) convertView.findViewById(R.id.fabric_select_list_item_patternTextView);
+                convertView.setTag(vh);
             }
 
             // configure view for this fabric - KEEP IN MIND VIEW MAY BE RECYCLED AND ALL FIELDS
             // MUST BE INITIALIZED AGAIN
             StashFabric fabric = StashData.get(getActivity()).getFabric(getItem(position));
+            ViewHolder vh = (ViewHolder)convertView.getTag();
 
-            TextView fabricInfoTextView = (TextView) convertView.findViewById(R.id.fabric_select_list_item_infoTextView);
-            fabricInfoTextView.setText(fabric.getInfo());
+            vh.fabricInfo.setText(fabric.getInfo());
+            vh.fabricSize.setText(fabric.getSize());
 
-            TextView fabricSizeTextView = (TextView) convertView.findViewById(R.id.fabric_select_list_item_sizeTextView);
-            fabricSizeTextView.setText(fabric.getSize());
-
-            TextView fabricPatternTextView = (TextView) convertView.findViewById(R.id.fabric_select_list_item_patternTextView);
             if(fabric.isAssigned()) {
-                fabricPatternTextView.setText(fabric.usedFor().getPatternName());
+                vh.fabricAssigned.setText(fabric.usedFor().getPatternName());
             } else {
-                fabricPatternTextView.setText(R.string.fabric_selectPattern);
+                vh.fabricAssigned.setText(R.string.fabric_selectPattern);
             }
 
             return convertView;
         }
 
+    }
+
+    static class ViewHolder {
+        TextView fabricInfo;
+        TextView fabricSize;
+        TextView fabricAssigned;
     }
 
 }

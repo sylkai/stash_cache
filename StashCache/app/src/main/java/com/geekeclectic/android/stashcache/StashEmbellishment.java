@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 1/19/2015.
+ * Each instance of this class corresponds to a type of embellishment in the stash.  The embellishment
+ * is assigned a unique ID.  Fields for manufacturer, type, color code, number owned, and a
+ * list of patterns it is used.  Also track the number needed for patterns and the number the user
+ * wants to purchase.
  */
 public class StashEmbellishment extends StashObject {
 
@@ -104,10 +107,12 @@ public class StashEmbellishment extends StashObject {
     }
 
     public void increaseOwned() {
+        // increases the number owned by 1
         mNumberOwned = mNumberOwned + 1;
     }
 
     public void decreaseOwned() {
+        // if the number owned is greater than 0, decrease it by 1
         if (mNumberOwned > 0) {
             mNumberOwned = mNumberOwned - 1;
         }

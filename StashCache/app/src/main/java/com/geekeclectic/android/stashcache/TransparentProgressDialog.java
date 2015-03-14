@@ -16,18 +16,8 @@ public class TransparentProgressDialog extends Dialog {
     }
 
     public static TransparentProgressDialog show(Context context, CharSequence title,
-                                        CharSequence message) {
-        return show(context, title, message, false);
-    }
-
-    public static TransparentProgressDialog show(Context context, CharSequence title,
                                         CharSequence message, boolean indeterminate) {
         return show(context, title, message, indeterminate, false, null);
-    }
-
-    public static TransparentProgressDialog show(Context context, CharSequence title,
-                                        CharSequence message, boolean indeterminate, boolean cancelable) {
-        return show(context, title, message, indeterminate, cancelable, null);
     }
 
     public static TransparentProgressDialog show(Context context, CharSequence title,

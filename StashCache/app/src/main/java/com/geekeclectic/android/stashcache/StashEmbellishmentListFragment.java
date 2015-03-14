@@ -230,6 +230,7 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
     }
 
     private void setAppropriateEmptyMessage(String viewCode) {
+        // empty message depends on the active tab,
         if (viewCode.equals("master")) {
             setEmptyText("You have not entered any embellishments.");
         } else if (viewCode.equals("stash")) {

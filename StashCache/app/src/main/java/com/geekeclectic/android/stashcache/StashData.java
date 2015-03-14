@@ -73,6 +73,9 @@ public class StashData {
         setFabricList();
         setEmbellishmentList();
 
+        // sort the lists, since reading them from the map means that the sorted order was not preserved
+        // by doing an initial sort, there is not a long delay when calling a list for the first time
+        // after loading the data from JSON
         Collections.sort(mThreadsList, new StashThreadComparator(mAppContext));
         Collections.sort(mStashThreadsList, new StashThreadComparator(mAppContext));
         Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(mAppContext));
@@ -95,6 +98,7 @@ public class StashData {
     }
 
     public void setThreadShoppingList(ArrayList<UUID> shoppingList) {
+        // store the shopping list provided by the shoppinglist creator
         mShoppingThreadsList = shoppingList;
     }
 
@@ -236,6 +240,7 @@ public class StashData {
     }
 
     public ArrayList<StashPattern> getFabricForList() {
+        // return list of patterns marked as kitted and needing fabric for the shopping list
         return mFabricForList;
     }
 
@@ -347,6 +352,7 @@ public class StashData {
     }
 
     public void deleteStash() {
+        // clears ALL stash data and then saves it
         mEmbellishmentData.clear();
         mEmbellishmentList.clear();
         mStashEmbellishmentList.clear();

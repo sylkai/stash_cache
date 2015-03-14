@@ -6,30 +6,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
 /**
- * Activity to host the viewPager managing the listView fragments displaying the lists of different
+ * Fragment to host the viewPager managing the listView fragments displaying the lists of different
  * stash components (patterns, fabrics, threads).  Scrolling tab bar above identifies which list
- * is active.  EXTRA_FRAGMENT_ID indicates which item class is displayed when navigating up through
- * hierarchy.
+ * is active.  The callback to the hosting activity keeps track of which component is currently
+ * displayed, to allow the same component to be displayed when switching between stash/master/shopping.
  */
 
 public class MasterOverviewPagerFragment extends UpdateFragment {
 
     static final int ITEMS = 4;
     static final String TAG = "MasterOverview";
-    public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
 
     private ViewPager mViewPager;
     private StashOverviewPagerAdapter mAdapter;
@@ -56,6 +50,7 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
             }
 
             public void onPageSelected(int currentPage) {
+                // keep track of which fragment is currently displayed and let the host activity know
                 mCallback.onTabSwipe(currentPage);
                 currentView = currentPage;
             }
@@ -76,15 +71,13 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
 
     @Override
     public void setCurrentView(int view) {
+        // called by the host activity to set which view is active (called before onCreateView is called)
         currentView = view;
     }
 
     @Override
     public void stashChanged() {
-        updateFragments();
-    }
-
-    private void updateFragments() {
+        // called by the host activity to tell the lists to update their datasets
         mAdapter.updateFragments();
     }
 

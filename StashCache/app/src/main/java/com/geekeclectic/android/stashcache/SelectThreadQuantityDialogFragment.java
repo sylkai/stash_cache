@@ -17,7 +17,8 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * Created by sylk on 2/23/2015.
+ * This dialog fragment allows the user to set which embellishments (and how many) a pattern calls
+ * for.  The list is populated by all embellishments in the master list.
  */
 public class SelectThreadQuantityDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -33,6 +34,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
     public static SelectThreadQuantityDialogFragment newInstance(ArrayList<UUID> threads, StashPattern pattern, Context context) {
         final SelectThreadQuantityDialogFragment dialog = new SelectThreadQuantityDialogFragment();
 
+        // make sure the threadlist is sorted for display
         mThreads = threads;
         Collections.sort(mThreads, new StashThreadComparator(context));
         mPattern = pattern;
@@ -52,6 +54,8 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                 break;
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();
+
+                // let the pattern fragment know to update the displayed thread list
                 mSelectThreadQuantityDialogCallback.onThreadQuantitiesUpdate();
                 break;
             default:  // user is selecting an option
@@ -106,7 +110,6 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
             vh.threadRef = thread;
 
             vh.threadInfo.setText(thread.toString());
-
             vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(thread)));
 
             vh.decreaseButton.setTag(vh);
@@ -116,10 +119,12 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                     Button decreaseButton = (Button) v;
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
+                    // if the quantity of this thread is > 0, decrease it by one
                     if (vh.patternRef.getQuantity(vh.threadRef) != 0) {
                         vh.patternRef.decreaseQuantity(vh.threadRef);
                     }
 
+                    // update the text display
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.threadRef)));
                 }
             });
@@ -131,7 +136,10 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                     Button increaseButton = (Button)v;
                     ViewHolder vh = (ViewHolder)increaseButton.getTag();
 
+                    // increase the quantity of the thread for this pattern by 1
                     vh.patternRef.increaseQuantity(vh.threadRef);
+
+                    // update the text display
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.threadRef)));
                 }
             });

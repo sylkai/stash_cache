@@ -1,15 +1,12 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -39,6 +36,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     private static final int REQUEST_CHOOSE_STASH = 1;
     public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
     public static final String EXTRA_VIEW_ID = "com.geekeclectic.android.stashcache.active_view_id";
+
     private int currentTab;
     private int currentView;
 
@@ -70,13 +68,16 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         String[] strings = getResources().getStringArray(R.array.drop_down_list);
 
         if (getIntent().getExtras() != null) {
+            // get the tab / view pair from the intent
             currentView = getIntent().getIntExtra(EXTRA_VIEW_ID, 0);
             currentTab = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, 0);
         } else {
+            // default to stash / patterns view
             currentTab = 0;
             currentView = 0;
         }
 
+        // if there's no fragment stored, create a new one
         if (fragment == null) {
             fragment = createFragment(currentTab);
             fm.beginTransaction()
@@ -98,6 +99,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 UpdateFragment fragment;
                 FragmentTransaction ft = fragmentManager.beginTransaction();
 
+                // get (or create) the appropriate fragment
                 if (selection.equals("Master List")) {
                     if (fragmentManager.findFragmentByTag(selection) == null) {
                         fragment = new MasterOverviewPagerFragment();
@@ -191,6 +193,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 }
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:
+                // display a dialog box to confirm that the user absolutely wants to delete the stash
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.delete_stash_warning);
                 builder.setMessage(R.string.delete_stash_additional);
@@ -199,6 +202,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 builder.setPositiveButton(R.string.delete_stash_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        // it was confirmed, so delete the stash and refresh fragments
                         StashData.get(getApplicationContext()).deleteStash();
                         fragment.stashChanged();
                     }
@@ -224,10 +228,12 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     }
 
     private void adjustViewsIfNeeded(int changeTabTo) {
+        // current view is shopping list, so need to adjust to no fabric view by adding 1
         if (currentTab == 2) {
             if (currentView > 0) {
                 currentView = currentView + 1;
             }
+            // switching to shopping list, so adjust to no fabric view by subtracting 1
         } else if (changeTabTo == 2) {
             if (currentView > 0) {
                 currentView = currentView - 1;
@@ -258,6 +264,8 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    // import the stash as a async task with a dialog that blocks user activity on the UI thread
+    // during the import
     private class AsyncStashImport extends AsyncTask<Void, Void, Void> {
         private InputStream forImporter;
         private UpdateFragment fragment;
@@ -280,8 +288,6 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
-                // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
-                // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
                 StashImporter importer = new StashImporter(forImporter);
                 resultId = importer.importStash(getApplicationContext());
             } catch (IOException e) {

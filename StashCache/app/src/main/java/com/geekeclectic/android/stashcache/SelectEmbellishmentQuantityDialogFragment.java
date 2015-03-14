@@ -17,7 +17,8 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * Created by sylk on 2/23/2015.
+ * This dialog fragment allows the user to set which embellishments (and how many) a pattern calls
+ * for.  The list is populated by all embellishments in the master list.
  */
 public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -33,6 +34,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
     public static SelectEmbellishmentQuantityDialogFragment newInstance(ArrayList<UUID> embellishments, StashPattern pattern, Context context) {
         final SelectEmbellishmentQuantityDialogFragment dialog = new SelectEmbellishmentQuantityDialogFragment();
 
+        // sort the embellishment list to be sure that it is displayed properly
         mEmbellishments = embellishments;
         Collections.sort(mEmbellishments, new StashEmbellishmentComparator(context));
         mPattern = pattern;
@@ -52,6 +54,8 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                 break;
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();
+
+                // call back to let the pattern know to update the displayed embellishments
                 mSelectEmbellishmentQuantityDialogCallback.onEmbellishmentQuantitiesUpdate();
                 break;
             default:  // user is selecting an option
@@ -109,6 +113,8 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
 
             vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(embellishment)));
 
+            // when the button is clicked, if the quantity of the embellishment called for by the pattern
+            // is not already zero, decrease it
             vh.decreaseButton.setTag(vh);
             vh.decreaseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -120,10 +126,12 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                         vh.patternRef.decreaseQuantity(vh.embellishmentRef);
                     }
 
+                    // change the displayed quantity
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.embellishmentRef)));
                 }
             });
 
+            // when the button is clicked, increase the quantity of the embellishment called for by the pattern
             vh.increaseButton.setTag(vh);
             vh.increaseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -132,6 +140,8 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                     ViewHolder vh = (ViewHolder)increaseButton.getTag();
 
                     vh.patternRef.increaseQuantity(vh.embellishmentRef);
+
+                    // change the displayed quantity
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.embellishmentRef)));
                 }
             });
