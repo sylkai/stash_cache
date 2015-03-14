@@ -551,7 +551,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         if (requestCode == REQUEST_PICK_NEW_FABRIC) {
             updateFabricInfo();
         } else if (requestCode == REQUEST_TAKE_PHOTO) {
-            showPhoto();
+            // showPhoto();
         }
     }
 
@@ -588,7 +588,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         }
     }
 
-    private void showPhoto() {
+/*    private void showPhoto() {
         StashPhoto photo = mPattern.getPhoto();
 
         if (photo != null) {
@@ -596,7 +596,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             StashPhotoTask task = new StashPhotoTask(getActivity(), mViewPhoto, path);
             task.execute(mViewPhoto.getId());
         }
-    }
+    }*/
 
     private void setListViewHeightBasedOnChildren(ListView listView) {
         // method modified from an answer here: http://stackoverflow.com/questions/3495890/how-can-i-put-a-listview-into-a-scrollview-without-it-collapsing/3495908#3495908
