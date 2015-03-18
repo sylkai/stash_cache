@@ -173,7 +173,7 @@ public class StashImporter {
             // read in pattern data; each pattern is separated by ---
             // if fabric provided in pattern (under pattern info, separated by *), create new fabric
             // check for existing threads/embellishments and create new if missing
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null && !line.equals("***")) {
                 // read in pattern information
                 String title = line;
                 String source = reader.readLine();
@@ -319,7 +319,7 @@ public class StashImporter {
                     }
 
                     while ((line = reader.readLine()) != null && !line.equals("-")) {
-                        if (line.equals("*") || line.equals("---")) {
+                        if (line.equals("*") || line.equals("---") || line.equals("***")) {
                             break;
                         }
 
@@ -330,11 +330,70 @@ public class StashImporter {
                         pattern.addEmbellishment(embellishment);
                     }
 
-                    if (line == null || line.equals("---")) {
+                    if (line == null || line.equals("---") || line.equals("***")) {
                         break;
                     }
                 }
 
+                if (line.equals("***")) {
+                    break;
+                }
+
+            }
+
+            // read in thread data; end of thread block is marked by *** and will break loop
+            while ((line = reader.readLine()) != null && !line.equals("***")) {
+                // store source and type information
+                String source = line;
+                String type = reader.readLine();
+                if (checkToContinue(type)) {
+                    break;
+                }
+
+                // iterate through to the end of the source/type block and create a new thread for each id
+                while ((line = reader.readLine()) != null) {
+                    if (line.equals("***") || line.equals("---")) {
+                        break;
+                    }
+
+                    String id = line;
+                    String key;
+                    if (id.contains(" ")) {
+                        key = id.split("\\s")[0];
+                    } else {
+                        key = id;
+                    }
+                    createNewThread(source, type, id, key, stash, false);
+                }
+
+                if (line.equals("***")) {
+                    break;
+                }
+
+            }
+
+            // read in embellishment data; end of the block is marked by *** and will break loop
+            while ((line = reader.readLine()) != null && !line.equals("***")) {
+                // store source and type information
+                String source = line;
+                String type = reader.readLine();
+                if (checkToContinue(type)) {
+                    break;
+                }
+
+                // iterate through to the end of the source/type block and create a new embellishment for each id
+                while ((line = reader.readLine()) != null) {
+                    if (line.equals("***") || line.equals("---")) {
+                        break;
+                    }
+
+                    String id = line;
+                    createNewEmbellishment(source, type, id, stash, false);
+                }
+
+                if (line.equals("***")) {
+                    break;
+                }
             }
 
         } catch (FileNotFoundException e) {

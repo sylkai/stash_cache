@@ -25,6 +25,8 @@ public class StashExporter {
     private static String UTF8 = "utf8";
     private static String newline;
     public static final String TAG = "StashExporter";
+    private static ArrayList<UUID> mOrphanThread;
+    private static ArrayList<UUID> mOrphanEmbellishments;
 
     public StashExporter() {
         mFilename = "stash_export.txt";
@@ -58,6 +60,8 @@ public class StashExporter {
 
     public String buildStashString(Context context) {
         StashData stash = StashData.get(context);
+        mOrphanThread = new ArrayList<UUID>(stash.getThreadList());
+        mOrphanEmbellishments = new ArrayList<UUID>(stash.getEmbellishmentList());
 
         StringBuilder sb = new StringBuilder();
 
@@ -81,6 +85,21 @@ public class StashExporter {
 
         // build pattern stash
         sb.append(patternListString(betweenItems, stash, context));
+        sb.append(betweenCategories);
+        sb.append(newline);
+
+        // if there are any threads that have not been added, append them now
+        if (!mOrphanThread.isEmpty()) {
+            sb.append(orphanThreadListString(mOrphanThread, betweenItems, stash, context));
+        }
+
+        sb.append(betweenCategories);
+        sb.append(newline);
+
+        // if there are any embellishemnts that have not been added, append them now
+        if (!mOrphanEmbellishments.isEmpty()) {
+            sb.append(orphanEmbellishmentListString(mOrphanEmbellishments, betweenItems, stash, context));
+        }
 
         return sb.toString();
     }
@@ -99,6 +118,7 @@ public class StashExporter {
         for (UUID threadId : threadList) {
             // get the thread for each entry on the list
             StashThread thread = stash.getThread(threadId);
+            mOrphanThread.remove(threadId);
 
             if (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType)) {
                 // not equal to the previous source/type
@@ -153,6 +173,7 @@ public class StashExporter {
         for (UUID threadId : threadList) {
             // get the thread for each entry on the list
             StashThread thread = stash.getThread(threadId);
+            mOrphanThread.remove(threadId);
 
             if (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType)) {
                 // not equal to the previous source / type
@@ -183,6 +204,58 @@ public class StashExporter {
                 sb.append(thread.getCode());
                 sb.append(newline);
             }
+
+            // set to match the last item entered, and reset the "new item" marker
+            currentSource = thread.getSource();
+            currentType = thread.getType();
+            newItem = false;
+        }
+
+        return sb.toString();
+    }
+
+    // for miscellaneous other threads
+    private String orphanThreadListString(ArrayList<UUID> threadList, String betweenItems, StashData stash, Context context) {
+        StringBuilder sb = new StringBuilder();
+
+        String currentSource = "";
+        String currentType = "";
+
+        boolean newItem = false;
+
+        Collections.sort(threadList, new StashThreadComparator(context));
+
+        for (UUID threadId : threadList) {
+            // get the thread for each entry on the list
+            StashThread thread = stash.getThread(threadId);
+
+            if (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType)) {
+                // not equal to the previous source/type
+                if (!currentSource.equals("") || !currentType.equals("")) {
+                    // not a new file
+                    newItem = true;
+                }
+            }
+
+            if (newItem) {
+                // not a new file, so add the marker between items before the source and type
+                sb.append(betweenItems);
+                sb.append(newline);
+                sb.append(thread.getSource());
+                sb.append(newline);
+                sb.append(thread.getType());
+                sb.append(newline);
+            } else if (currentSource.equals("") && currentType.equals("")) {
+                // if it is a brand new file, just write the source and type
+                sb.append(thread.getSource());
+                sb.append(newline);
+                sb.append(thread.getType());
+                sb.append(newline);
+            }
+
+            // write the number n times, where n is the quantity owned
+            sb.append(thread.getCode());
+            sb.append(newline);
 
             // set to match the last item entered, and reset the "new item" marker
             currentSource = thread.getSource();
@@ -241,6 +314,7 @@ public class StashExporter {
         for (UUID embellishmentId : embellishmentList) {
             // get the thread for each entry on the list
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
+            mOrphanEmbellishments.remove(embellishmentId);
 
             if (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType)) {
                 // not the same as the previous item entered
@@ -294,6 +368,7 @@ public class StashExporter {
         for (UUID embellishmentId : embellishmentList) {
             // get the thread for each entry on the list
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
+            mOrphanEmbellishments.remove(embellishmentId);
 
             if (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType)) {
                 // not the same as the previous embellishment entered
@@ -326,6 +401,57 @@ public class StashExporter {
             }
 
             // reset to account for the item just entered
+            currentSource = embellishment.getSource();
+            currentType = embellishment.getType();
+            newItem = false;
+        }
+
+        return sb.toString();
+    }
+
+    // for miscellaneous other embellishments
+    private String orphanEmbellishmentListString(ArrayList<UUID> embellishmentList, String betweenItems, StashData stash, Context context) {
+        StringBuilder sb = new StringBuilder();
+
+        String currentSource = "";
+        String currentType = "";
+
+        boolean newItem = false;
+
+        Collections.sort(embellishmentList, new StashEmbellishmentComparator(context));
+
+        for (UUID embellishmentId : embellishmentList) {
+            // get the thread for each entry on the list
+            StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
+
+            if (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType)) {
+                // not the same as the previous item entered
+                if (!currentSource.equals("") || !currentType.equals("")) {
+                    // not the first embellishment entered
+                    newItem = true;
+                }
+            }
+
+            if (newItem) {
+                // not the first embellishment entered, so add the divider
+                sb.append(betweenItems);
+                sb.append(newline);
+                sb.append(embellishment.getSource());
+                sb.append(newline);
+                sb.append(embellishment.getType());
+                sb.append(newline);
+            } else if (currentSource.equals("") && currentType.equals("")) {
+                // first embellishment entered, so no divider
+                sb.append(embellishment.getSource());
+                sb.append(newline);
+                sb.append(embellishment.getType());
+                sb.append(newline);
+            }
+
+            // add the the code n times, where n is the number owned
+            sb.append(embellishment.getCode());
+            sb.append(newline);
+
             currentSource = embellishment.getSource();
             currentType = embellishment.getType();
             newItem = false;
