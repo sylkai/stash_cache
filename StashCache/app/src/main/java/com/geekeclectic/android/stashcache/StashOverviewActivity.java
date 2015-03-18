@@ -47,7 +47,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             return new MasterOverviewPagerFragment();
         } else {
             StashCreateShoppingList createList = new StashCreateShoppingList();
-            createList.updateShoppingList(StashData.get(getParent()));
+            createList.updateShoppingList(getApplicationContext());
 
             return new ShoppingOverviewPagerFragment();
         }
@@ -110,7 +110,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                     }
                 } else if (selection.equals("Shopping List")) {
                     StashCreateShoppingList createList = new StashCreateShoppingList();
-                    createList.updateShoppingList(StashData.get(getParent()));
+                    createList.updateShoppingList(getApplicationContext());
 
                     if (fragmentManager.findFragmentByTag(selection) == null) {
                         fragment = new ShoppingOverviewPagerFragment();
@@ -216,6 +216,11 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 });
 
                 builder.show();
+
+                return super.onOptionsItemSelected(item);
+            case R.id.menu_item_preferences:
+                Intent intent = new Intent(this, StashPreferencesActivity.class);
+                startActivity(intent);
 
                 return super.onOptionsItemSelected(item);
             default:

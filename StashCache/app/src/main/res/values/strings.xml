@@ -87,6 +87,10 @@
     <string name="incorrect_file_format">At least one item did not import properly. Please check the file formatting.</string>
     <string name="incorrect_number_format">At least one set of numbers did not import properly. Please check the file formatting.</string>
 
+    <string name="preferences">Settings</string>
+    <string name="skeins_setting">Skeins per pattern</string>
+    <string name="skeins_setting_summary">Require a new skein for each thread in a pattern (instead of allowing overlap)</string>
+
     <string-array name="fabric_choice_picker">
         <item>Choose existing fabric</item>
         <item>Enter new fabric</item>

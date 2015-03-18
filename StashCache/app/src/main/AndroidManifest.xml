@@ -28,7 +28,7 @@
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".StashOverviewPagerActivity" />
+                android:value=".StashOverviewActivity" />
 
         </activity>
         <activity
@@ -36,21 +36,29 @@
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".StashOverviewPagerActivity" />
+                android:value=".StashOverviewActivity" />
 
         </activity>
         <activity
             android:name=".StashFabricPagerActivity"
             android:windowSoftInputMode="stateHidden">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".StashOverviewPagerActivity" />
+                android:value=".StashOverviewActivity" />
 
         </activity>
         <activity
             android:name=".StashThreadPagerActivity"
             android:windowSoftInputMode="stateHidden">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".StashOverviewPagerActivity" />
+                android:value=".StashOverviewActivity" />
+
+        </activity>
+        <activity
+            android:name=".StashPreferencesActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".StashOverviewActivity" />
 
         </activity>
     </application>

@@ -1,5 +1,8 @@
 package com.geekeclectic.android.stashcache;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -140,13 +143,17 @@ public class StashThread extends StashObject {
         mSkeinsNeeded = 0;
     }
 
-    public void addNeeded(int increment) {
+    public void addNeeded(int increment, boolean overlap) {
         if (mSkeinsNeeded == 0) {
             // has not already been added to the list
             mSkeinsNeeded = increment;
         } else {
             // last skein required treated as a partial and subtracted (assuming everything rounded up)
-            mSkeinsNeeded = mSkeinsNeeded + (increment - 1);
+            if (overlap) {
+                mSkeinsNeeded = mSkeinsNeeded + (increment - 1);
+            } else {
+                mSkeinsNeeded = mSkeinsNeeded + increment;
+            }
         }
     }
 

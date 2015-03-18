@@ -1,5 +1,9 @@
 package com.geekeclectic.android.stashcache;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -23,7 +27,10 @@ public class StashCreateShoppingList {
         mFabricNeeded = new ArrayList<StashPattern>();
     }
 
-    public void updateShoppingList(StashData stash) {
+    public void updateShoppingList(Context context) {
+        StashData stash = StashData.get(context);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean overlap = !sharedPrefs.getBoolean(StashPreferencesActivity.KEY_NEW_SKEIN_FOR_EACH, false);
         ArrayList<StashPattern> patternList = stash.getPatternData();
 
         // reset all information stored in thread/embellishments, to account for patterns being
@@ -52,7 +59,7 @@ public class StashCreateShoppingList {
                 ArrayList<UUID> threadList = pattern.getThreadList();
                 for (UUID threadId : threadList) {
                     StashThread thread = stash.getThread(threadId);
-                    thread.addNeeded(pattern.getQuantity(thread));
+                    thread.addNeeded(pattern.getQuantity(thread), overlap);
                 }
             }
 
