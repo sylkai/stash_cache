@@ -7,4 +7,9 @@
         android:title="@string/new_embellishment"
         android:showAsAction="ifRoom|withText" />
 
+    <item android:id="@+id/menu_item_edit_embellishment_stash"
+        android:icon="@drawable/ic_menu_edit"
+        android:title="@string/edit_embellishment_stash"
+        android:showAsAction="ifRoom|withText" />
+
 </menu>

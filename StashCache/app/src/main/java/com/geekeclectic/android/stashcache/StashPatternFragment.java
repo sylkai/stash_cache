@@ -54,7 +54,6 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private static final String DIALOG_FABRIC = "fabric";
     private static final String DIALOG_THREAD = "thread";
     private static final int VIEW_ID = 0;
-    private static final int STASH_ID = 0;
 
     private StashPattern mPattern;
     private StashPatternFragment mFragment;
@@ -355,9 +354,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
 
-                // create a copy of the thread list to avoid modification errors
                 SelectThreadQuantityDialogFragment dialog = SelectThreadQuantityDialogFragment.newInstance(StashData.get(getActivity()).getThreadList(), mPattern, getActivity());
-                //dialog.setSelectThreadDialogListener(mFragment);
                 dialog.setSelectThreadQuantityDialogCallback(mFragment);
                 dialog.show(fm, DIALOG_THREAD);
             }

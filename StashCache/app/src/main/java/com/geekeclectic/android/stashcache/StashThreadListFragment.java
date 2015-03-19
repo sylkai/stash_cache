@@ -3,6 +3,7 @@ package com.geekeclectic.android.stashcache;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ActionMode;
@@ -29,7 +30,7 @@ import java.util.UUID;
 /**
  * Fragment to display list of threads.  Long press allows user to select items to be deleted.
  */
-public class StashThreadListFragment extends ListFragment implements Observer {
+public class StashThreadListFragment extends ListFragment implements Observer, StashThreadQuantityDialogFragment.StashThreadQuantityDialogListener {
 
     private ArrayList<UUID> mThreads;
     private int numericTab;
@@ -37,6 +38,7 @@ public class StashThreadListFragment extends ListFragment implements Observer {
     private static final String TAG = "ThreadListFragment";
     private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
     private static final String THREAD_VIEW_ID = "com.geekeclectic.android.stashcache.thread_view_id";
+    private static final String EDIT_STASH_DIALOG = "edit stash thread dialog";
 
     public StashThreadListFragment() {
         // required empty public constructor
@@ -58,7 +60,7 @@ public class StashThreadListFragment extends ListFragment implements Observer {
             numericTab = 2;
         }
 
-        mThreads = getListFromStash(viewCode);
+        mThreads = getListFromStash();
         Collections.sort(mThreads, new StashThreadComparator(getActivity()));
 
         // create and set adapter using thread list
@@ -145,7 +147,6 @@ public class StashThreadListFragment extends ListFragment implements Observer {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         setAppropriateEmptyMessage(getArguments().getString(THREAD_VIEW_ID));
     }
 
@@ -154,8 +155,7 @@ public class StashThreadListFragment extends ListFragment implements Observer {
         super.onResume();
 
         // re-sort the list to make sure everything is where it should be
-        String viewCode = getArguments().getString(THREAD_VIEW_ID);
-        mThreads = getListFromStash(viewCode);
+        mThreads = getListFromStash();
         Collections.sort(mThreads, new StashThreadComparator(getActivity()));
 
         //remind the adapter to get the updated list
@@ -181,7 +181,21 @@ public class StashThreadListFragment extends ListFragment implements Observer {
                 i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
                 i.putExtra(StashThreadFragment.EXTRA_TAB_ID, numericTab);
                 startActivityForResult(i, 0);
-                return true;
+                return super.onOptionsItemSelected(item);
+            case R.id.menu_item_edit_thread_stash:
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+
+                ArrayList<UUID> threadList;
+                if (numericTab == 0) {
+                    threadList = new ArrayList<UUID>(StashData.get(getActivity()).getThreadList());
+                } else {
+                    threadList = new ArrayList<UUID>(mThreads);
+                }
+
+                StashThreadQuantityDialogFragment dialog = StashThreadQuantityDialogFragment.newInstance(threadList, getActivity());
+                dialog.setStashThreadQuantityDialogCallback(this);
+                dialog.show(fm, EDIT_STASH_DIALOG);
+                return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -226,10 +240,20 @@ public class StashThreadListFragment extends ListFragment implements Observer {
         startActivity(i);
     }
 
-    private ArrayList<UUID> getListFromStash(String viewCode) {
-        if (viewCode.equals("master")) {
+    public void onThreadQuantitiesUpdate() {
+        mThreads = getListFromStash();
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
+        ThreadAdapter adapter = new ThreadAdapter(mThreads);
+        setListAdapter(adapter);
+
+        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    private ArrayList<UUID> getListFromStash() {
+        if (numericTab == 1) {
             return StashData.get(getActivity()).getThreadList();
-        } else if (viewCode.equals("stash")) {
+        } else if (numericTab == 0) {
             return StashData.get(getActivity()).getThreadStashList();
         } else {
             return StashData.get(getActivity()).getThreadShoppingList();
@@ -248,8 +272,10 @@ public class StashThreadListFragment extends ListFragment implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
-        if (numericTab == 2) {
-            mThreads = StashData.get(getActivity()).getThreadShoppingList();
+        if (mThreads != getListFromStash()) {
+            mThreads = getListFromStash();
+            Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
             ThreadAdapter adapter = new ThreadAdapter(mThreads);
             setListAdapter(adapter);
         }

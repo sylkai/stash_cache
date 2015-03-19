@@ -151,6 +151,16 @@ public class StashData {
         mStashThreadsList.remove(threadId);
     }
 
+    public void addThreadToShoppingList(UUID threadId) {
+        if (!mShoppingThreadsList.contains(threadId)) {
+            mShoppingThreadsList.add(threadId);
+        }
+    }
+
+    public void removeThreadFromShoppingList(UUID threadId) {
+        mShoppingThreadsList.remove(threadId);
+    }
+
     public StashThread getThread(UUID key) {
         // given a UUID key, look up the toString() and return thread object
         return mThreadsData.get(key.toString());
@@ -198,6 +208,16 @@ public class StashData {
     public void removeEmbellishmentFromStash(UUID embellishmentId) {
         // needed to update the list as the user edits the quantities of embellishments owned
         mStashEmbellishmentList.remove(embellishmentId);
+    }
+
+    public void addEmbellishmentToShoppingList(UUID embellishmentId) {
+        if (!mShoppingEmbellishmentList.contains(embellishmentId)) {
+            mShoppingEmbellishmentList.add(embellishmentId);
+        }
+    }
+
+    public void removeEmbellishmentFromShoppingList(UUID embellishmentId) {
+        mShoppingEmbellishmentList.remove(embellishmentId);
     }
 
     public void setEmbellishmentList() {

@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.os.Build;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ import java.util.UUID;
 /**
  * Fragment to display list of embellishments.  Long press allows user to select items to be deleted.
  */
-public class StashEmbellishmentListFragment extends ListFragment implements Observer {
+public class StashEmbellishmentListFragment extends ListFragment implements Observer, StashEmbellishmentQuantityDialogFragment.StashEmbellishmentQuantityDialogListener {
 
     private ArrayList<UUID> mEmbellishments;
     private int numericTab;
@@ -38,6 +39,7 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
     private static final String TAG = "EmbellishmentListFragment";
     private static final int EMBELLISHMENT_GROUP_ID = R.id.embellishment_context_menu;
     private static final String EMBELLISHMENT_VIEW_ID = "com.geekeclectic.android.stashcache.embellishment_view_id";
+    private static final String EDIT_STASH_DIALOG = "embellishment stash dialog";
 
     public StashEmbellishmentListFragment() {
         // required empty public constructor
@@ -59,7 +61,7 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
             numericTab = 2;
         }
 
-        mEmbellishments = getListFromStash(viewCode);
+        mEmbellishments = getListFromStash();
         Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
 
         // create and set adapter using embellishment list
@@ -174,7 +176,21 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
                 i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishment.getId());
                 i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, numericTab);
                 startActivityForResult(i, 0);
-                return true;
+                return super.onOptionsItemSelected(item);
+            case R.id.menu_item_edit_embellishment_stash:
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+
+                ArrayList<UUID> embellishmentList;
+                if (numericTab == 0) {
+                    embellishmentList = new ArrayList<UUID>(StashData.get(getActivity()).getEmbellishmentList());
+                } else {
+                    embellishmentList = new ArrayList<UUID>(mEmbellishments);
+                }
+
+                StashEmbellishmentQuantityDialogFragment dialog = StashEmbellishmentQuantityDialogFragment.newInstance(embellishmentList, getActivity());
+                dialog.setStashEmbellishmentQuantityDialogCallback(this);
+                dialog.show(fm, EDIT_STASH_DIALOG);
+                return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -219,10 +235,20 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
         startActivity(i);
     }
 
-    private ArrayList<UUID> getListFromStash(String viewCode) {
-        if (viewCode.equals("master")) {
+    public void onEmbellishmentQuantitiesUpdate() {
+        mEmbellishments = getListFromStash();
+        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
+
+        EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);
+        setListAdapter(adapter);
+
+        ((EmbellishmentAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    private ArrayList<UUID> getListFromStash() {
+        if (numericTab == 1) {
             return StashData.get(getActivity()).getEmbellishmentList();
-        } else if (viewCode.equals("stash")) {
+        } else if (numericTab == 0) {
             return StashData.get(getActivity()).getEmbellishmentStashList();
         } else {
             return StashData.get(getActivity()).getEmbellishmentShoppingList();

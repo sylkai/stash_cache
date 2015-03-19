@@ -21,6 +21,12 @@
     <string name="fabric">Fabric</string>
     <string name="thread">Thread</string>
 
+    <string name="edit_thread_stash">Edit Quantities</string>
+    <string name="thread_stashQuantity">Edit thread in stash</string>
+
+    <string name="edit_embellishment_stash">Edit Quantities</string>
+    <string name="embellishment_stashQuantity">Edit embellishments in stash</string>
+
     <string name="pattern_info">Pattern Info</string>
     <string name="pattern_name_hint">Pattern Name</string>
     <string name="designer_hint">Source</string>

@@ -248,7 +248,6 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
         if (requestCode == REQUEST_CHOOSE_STASH) {
@@ -268,7 +267,6 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             StashCreateShoppingList shoppingList = new StashCreateShoppingList();
             shoppingList.updateShoppingList(this);
 
-            Log.d(TAG, "this ran");
             fragment.stashChanged();
         }
 
