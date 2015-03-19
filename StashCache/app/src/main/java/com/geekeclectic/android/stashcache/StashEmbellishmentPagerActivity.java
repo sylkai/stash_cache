@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -46,6 +47,25 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
             }
         });
 
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrollStateChanged(int arg0) {
+                //
+            }
+
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                //
+            }
+
+            public void onPageSelected(int currentEmbellishment) {
+                // keep track of which fragment is currently displayed and let the host activity know
+                StashEmbellishment embellishment = StashData.get(getApplicationContext()).getEmbellishment(mEmbellishments.get(currentEmbellishment));
+                ActionBar actionBar = getActionBar();
+
+                actionBar.setTitle(getString(R.string.embellishment));
+                actionBar.setSubtitle(embellishment.toString());
+            }
+        });
+
         callingTab = getIntent().getIntExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, 0);
 
         // get the id for the desired embellishment and set the appropriate fragment as current
@@ -53,6 +73,13 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
         for (int i = 0; i < mEmbellishments.size(); i++) {
             if (mEmbellishments.get(i).equals(embellishmentId)) {
                 mViewPager.setCurrentItem(i);
+                if (i == 0) {
+                    StashEmbellishment embellishment = StashData.get(getApplicationContext()).getEmbellishment(mEmbellishments.get(i));
+                    ActionBar actionBar = getActionBar();
+
+                    actionBar.setTitle(getString(R.string.embellishment));
+                    actionBar.setSubtitle(embellishment.toString());
+                }
                 break;
             }
         }

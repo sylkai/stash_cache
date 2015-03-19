@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,7 +28,6 @@ public class StashFabricFragment extends Fragment {
     public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.fabric_calling_stash_id";
 
     private static final int VIEW_ID = 1;
-    private static final int MASTER_ID = 0;
 
     private StashFabric mFabric;
     private StashPattern mPattern;
@@ -124,7 +124,11 @@ public class StashFabricFragment extends Fragment {
         mFabricType.setText(mFabric.getType());
         mFabricType.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mFabric.setType(c.toString());
+                if (!c.toString().equals(mFabric.getType())) {
+                    mFabric.setType(c.toString());
+                    ActionBar actionBar = getActivity().getActionBar();
+                    actionBar.setSubtitle(mFabric.getInfo());
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -140,7 +144,11 @@ public class StashFabricFragment extends Fragment {
         mFabricColor.setText(mFabric.getColor());
         mFabricColor.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mFabric.setColor(c.toString());
+                if (!c.toString().equals(mFabric.getColor())) {
+                    mFabric.setColor(c.toString());
+                    ActionBar actionBar = getActivity().getActionBar();
+                    actionBar.setSubtitle(mFabric.getInfo());
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -156,8 +164,15 @@ public class StashFabricFragment extends Fragment {
         mFabricCount.setText(Integer.toString(mFabric.getCount()));
         mFabricCount.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                if (c.length() > 0) {
-                    mFabric.setCount(Integer.parseInt(c.toString()));
+                if (!Integer.toString(mFabric.getCount()).equals(c.toString())) {
+                    if (c.length() > 0) {
+                        mFabric.setCount(Integer.parseInt(c.toString()));
+                    } else {
+                        mFabric.setCount(0);
+                    }
+
+                    ActionBar actionBar = getActivity().getActionBar();
+                    actionBar.setSubtitle(mFabric.getInfo());
                 }
             }
 

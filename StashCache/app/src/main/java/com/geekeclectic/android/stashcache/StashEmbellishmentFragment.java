@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Created by sylk on 1/19/2015.
+ * Fragment to display information for an embellishment in the stash and allow the user to edit it.
  */
 public class StashEmbellishmentFragment extends Fragment{
 
@@ -125,7 +126,11 @@ public class StashEmbellishmentFragment extends Fragment{
         mEmbellishmentSource.setText(mEmbellishment.getSource());
         mEmbellishmentSource.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mEmbellishment.setSource(c.toString());
+                if (!c.toString().equals(mEmbellishment.getSource())) {
+                    mEmbellishment.setSource(c.toString());
+                    ActionBar actionBar = getActivity().getActionBar();
+                    actionBar.setSubtitle(mEmbellishment.toString());
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -141,7 +146,11 @@ public class StashEmbellishmentFragment extends Fragment{
         mEmbellishmentType.setText(mEmbellishment.getType());
         mEmbellishmentType.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mEmbellishment.setType(c.toString());
+                if (!c.toString().equals(mEmbellishment.getType())) {
+                    mEmbellishment.setType(c.toString());
+                    ActionBar actionBar = getActivity().getActionBar();
+                    actionBar.setSubtitle(mEmbellishment.toString());
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -157,7 +166,11 @@ public class StashEmbellishmentFragment extends Fragment{
         mEmbellishmentId.setText(mEmbellishment.getCode());
         mEmbellishmentId.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mEmbellishment.setCode(c.toString());
+                if (!c.toString().equals(mEmbellishment.getCode())) {
+                    mEmbellishment.setCode(c.toString());
+                    ActionBar actionBar = getActivity().getActionBar();
+                    actionBar.setSubtitle(mEmbellishment.toString());
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

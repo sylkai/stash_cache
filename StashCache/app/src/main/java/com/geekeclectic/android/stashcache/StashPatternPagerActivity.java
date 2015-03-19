@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -43,6 +44,25 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new ObservedAdapter(fm));
 
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrollStateChanged(int arg0) {
+                //
+            }
+
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                //
+            }
+
+            public void onPageSelected(int currentPattern) {
+                // keep track of which fragment is currently displayed and let the host activity know
+                StashPattern pattern = mPatterns.get(currentPattern);
+                ActionBar actionBar = getActionBar();
+
+                actionBar.setTitle(getString(R.string.pattern));
+                actionBar.setSubtitle(pattern.toString());
+            }
+        });
+
         callingTab = getIntent().getIntExtra(StashPatternFragment.EXTRA_TAB_ID, 0);
 
         // pull the UUID from the desired fragment extra and iterate through the list to set it as
@@ -51,6 +71,15 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         for (int i = 0; i < mPatterns.size(); i++) {
             if (mPatterns.get(i).getId().equals(patternId)) {
                 mViewPager.setCurrentItem(i);
+
+                if (i == 0) {
+                    StashPattern pattern = mPatterns.get(i);
+                    ActionBar actionBar = getActionBar();
+
+                    actionBar.setTitle(getString(R.string.pattern));
+                    actionBar.setSubtitle(pattern.toString());
+                }
+
                 break;
             }
         }

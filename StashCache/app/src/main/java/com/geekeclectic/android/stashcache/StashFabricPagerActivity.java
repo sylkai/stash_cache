@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -50,11 +51,39 @@ public class StashFabricPagerActivity extends FragmentActivity {
             }
         });
 
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrollStateChanged(int arg0) {
+                //
+            }
+
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                //
+            }
+
+            public void onPageSelected(int currentFabric) {
+                // keep track of which fragment is currently displayed and let the host activity know
+                StashFabric fabric = StashData.get(getApplicationContext()).getFabric(mFabrics.get(currentFabric));
+                ActionBar actionBar = getActionBar();
+
+                actionBar.setTitle(getString(R.string.fabric));
+                actionBar.setSubtitle(fabric.getInfo());
+            }
+        });
+
         // get UUID for the fabric to be displayed and set the appropriate fragment
         UUID fabricId = (UUID)getIntent().getSerializableExtra(StashFabricFragment.EXTRA_FABRIC_ID);
         for (int i = 0; i < mFabrics.size(); i++) {
             if (mFabrics.get(i).equals(fabricId)) {
                 mViewPager.setCurrentItem(i);
+
+                if (i == 0) {
+                    StashFabric fabric = StashData.get(getApplicationContext()).getFabric(mFabrics.get(i));
+                    ActionBar actionBar = getActionBar();
+
+                    actionBar.setTitle(getString(R.string.fabric));
+                    actionBar.setSubtitle(fabric.getInfo());
+                }
+
                 break;
             }
         }

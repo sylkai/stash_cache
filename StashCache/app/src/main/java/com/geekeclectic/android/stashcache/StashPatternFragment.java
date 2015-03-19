@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -234,7 +235,11 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mTitleField.setText(mPattern.getPatternName());
         mTitleField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mPattern.setPatternName(c.toString());
+                if (!c.toString().equals(mPattern.getPatternName())) {
+                    mPattern.setPatternName(c.toString());
+                    ActionBar actionBar = getActivity().getActionBar();
+                    actionBar.setSubtitle(mPattern.toString());
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {
@@ -251,7 +256,11 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mSourceField.setText(mPattern.getSource());
         mSourceField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mPattern.setSource(c.toString());
+                if (!c.toString().equals(mPattern.getSource())) {
+                    mPattern.setSource(c.toString());
+                    ActionBar actionBar = getActivity().getActionBar();
+                    actionBar.setSubtitle(mPattern.toString());
+                }
             }
 
             public void beforeTextChanged(CharSequence c, int start, int count, int after) {

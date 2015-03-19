@@ -16,6 +16,11 @@
     <string name="delete_stash_ok">Erase</string>
     <string name="delete_stash_back">Cancel</string>
 
+    <string name="embellishment">Embellishment</string>
+    <string name="pattern">Pattern</string>
+    <string name="fabric">Fabric</string>
+    <string name="thread">Thread</string>
+
     <string name="pattern_info">Pattern Info</string>
     <string name="pattern_name_hint">Pattern Name</string>
     <string name="designer_hint">Source</string>
@@ -89,7 +94,7 @@
 
     <string name="preferences">Settings</string>
     <string name="skeins_setting">Skeins per pattern</string>
-    <string name="skeins_setting_summary">Require a new skein for each thread in a pattern (instead of allowing overlap)</string>
+    <string name="skeins_setting_summary">Buy a new skein for each thread in a pattern, even if already in stash</string>
 
     <string-array name="fabric_choice_picker">
         <item>Choose existing fabric</item>
