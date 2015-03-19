@@ -13,7 +13,7 @@ import android.view.MenuItem;
  * with the support fragment manager required for viewpager).  Reruns the shopping list after a
  * change in preferences to update it in case the user has selected full skein usage in kitting patterns.
  */
-public class StashPreferencesActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class StashPreferencesActivity extends PreferenceActivity {
 
     public static final String KEY_NEW_SKEIN_FOR_EACH = "new_skein_for_each";
 
@@ -39,20 +39,4 @@ public class StashPreferencesActivity extends PreferenceActivity implements Shar
         }
     }
 
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        StashCreateShoppingList shoppingList = new StashCreateShoppingList();
-        shoppingList.updateShoppingList(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-    }
 }

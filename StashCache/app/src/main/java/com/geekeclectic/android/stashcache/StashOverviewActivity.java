@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,6 +35,8 @@ import java.io.InputStream;
 public class StashOverviewActivity extends FragmentActivity implements UpdateFragment.OnTabSwipeListener {
 
     private static final int REQUEST_CHOOSE_STASH = 1;
+    private static final int REQUEST_PREFERENCES_UPDATE = 2;
+    public static final String TAG = "stash overview";
     public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
     public static final String EXTRA_VIEW_ID = "com.geekeclectic.android.stashcache.active_view_id";
 
@@ -137,6 +140,9 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         actionBar.setListNavigationCallbacks(mSpinnerAdapter, mOnNavigationListener);
         actionBar.setSelectedNavigationItem(currentTab);
         fragment.setCurrentView(currentView);
+
+        StashCreateShoppingList shoppingList = new StashCreateShoppingList();
+        shoppingList.updateShoppingList(this);
     }
 
     @Override
@@ -214,7 +220,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_preferences:
                 Intent intent = new Intent(this, StashPreferencesActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_PREFERENCES_UPDATE);
 
                 return super.onOptionsItemSelected(item);
             default:
@@ -242,13 +248,13 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_OK) {
-            return;
-        }
 
         UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
         if (requestCode == REQUEST_CHOOSE_STASH) {
+            if (resultCode != RESULT_OK) {
+                return;
+            }
 
             try {
                 // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
@@ -258,6 +264,12 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             } catch (FileNotFoundException e) {
                 //
             }
+        } else if (requestCode == REQUEST_PREFERENCES_UPDATE) {
+            StashCreateShoppingList shoppingList = new StashCreateShoppingList();
+            shoppingList.updateShoppingList(this);
+
+            Log.d(TAG, "this ran");
+            fragment.stashChanged();
         }
 
         super.onActivityResult(requestCode, resultCode, data);

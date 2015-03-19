@@ -248,6 +248,12 @@ public class StashThreadListFragment extends ListFragment implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
+        if (numericTab == 2) {
+            mThreads = StashData.get(getActivity()).getThreadShoppingList();
+            ThreadAdapter adapter = new ThreadAdapter(mThreads);
+            setListAdapter(adapter);
+        }
+
         ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
