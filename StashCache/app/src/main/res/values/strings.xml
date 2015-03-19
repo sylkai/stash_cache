@@ -93,8 +93,8 @@
     <string name="incorrect_number_format">At least one set of numbers did not import properly. Please check the file formatting.</string>
 
     <string name="preferences">Settings</string>
-    <string name="skeins_setting">Skeins per pattern</string>
-    <string name="skeins_setting_summary">Buy a new skein for each thread in a pattern, even if already in stash</string>
+    <string name="skeins_setting">Patterns use full skeins</string>
+    <string name="skeins_setting_summary">Assume that patterns use the full skein of thread</string>
 
     <string-array name="fabric_choice_picker">
         <item>Choose existing fabric</item>

@@ -245,8 +245,11 @@ public class StashPatternListFragment extends ListFragment implements Observer {
 
     private class PatternAdapter extends ArrayAdapter<StashPattern> {
 
+        private StashCreateShoppingList mShoppingList;
+
         public PatternAdapter(ArrayList<StashPattern> patterns) {
             super(getActivity(), 0, patterns);
+            mShoppingList = new StashCreateShoppingList();
         }
 
         @Override
@@ -278,6 +281,7 @@ public class StashPatternListFragment extends ListFragment implements Observer {
                     CheckBox checkBox = (CheckBox) view;
                     StashPattern pattern = (StashPattern) checkBox.getTag();
                     pattern.setKitted(checkBox.isChecked());
+                    mShoppingList.updateShoppingList(getActivity());
                 }
             });
 

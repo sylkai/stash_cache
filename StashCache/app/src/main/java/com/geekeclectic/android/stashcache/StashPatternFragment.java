@@ -76,6 +76,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private TextView mThreadInfo;
     private ListView mThreadDisplayList;
     private ListView mEmbellishmentDisplayList;
+    private StashCreateShoppingList mShoppingList;
 
     private ChangedFragmentListener mCallback;
     private int callingTab;
@@ -106,6 +107,8 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mFabric = mPattern.getFabric();
         mThreadList = mPattern.getThreadList();
         mEmbellishmentList = mPattern.getEmbellishmentList();
+
+        mShoppingList = new StashCreateShoppingList();
     }
 
     @Override
@@ -280,6 +283,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             public void onClick(View v) {
                 boolean checked = ((CheckBox) v).isChecked();
                 mPattern.setKitted(checked);
+                mShoppingList.updateShoppingList(getActivity());
             }
         });
 

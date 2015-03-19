@@ -36,6 +36,9 @@ public class StashCreateShoppingList {
         // reset all information stored in thread/embellishments, to account for patterns being
         // removed from the kitted list
         resetNeededTotals(stash);
+        mThreadShoppingList.clear();
+        mEmbellishmentShoppingList.clear();
+        mFabricNeeded.clear();
 
         ArrayList<StashPattern> kittedPatterns = new ArrayList<StashPattern>();
 

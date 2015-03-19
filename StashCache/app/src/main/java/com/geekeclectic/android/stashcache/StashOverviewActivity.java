@@ -46,9 +46,6 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         } else if (currentTab == 1) {
             return new MasterOverviewPagerFragment();
         } else {
-            StashCreateShoppingList createList = new StashCreateShoppingList();
-            createList.updateShoppingList(getApplicationContext());
-
             return new ShoppingOverviewPagerFragment();
         }
     }
@@ -109,9 +106,6 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                         ft.replace(R.id.fragmentContainer, fragment, selection);
                     }
                 } else if (selection.equals("Shopping List")) {
-                    StashCreateShoppingList createList = new StashCreateShoppingList();
-                    createList.updateShoppingList(getApplicationContext());
-
                     if (fragmentManager.findFragmentByTag(selection) == null) {
                         fragment = new ShoppingOverviewPagerFragment();
                         ft.replace(R.id.fragmentContainer, fragment, selection);
