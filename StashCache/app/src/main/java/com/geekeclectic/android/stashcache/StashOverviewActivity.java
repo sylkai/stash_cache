@@ -238,7 +238,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             if (currentView > 0) {
                 currentView = currentView + 1;
             }
-            // switching to shopping list, so adjust to no fabric view by subtracting 1
+        // switching to shopping list, so adjust to no fabric view by subtracting 1
         } else if (changeTabTo == 2) {
             if (currentView > 0) {
                 currentView = currentView - 1;

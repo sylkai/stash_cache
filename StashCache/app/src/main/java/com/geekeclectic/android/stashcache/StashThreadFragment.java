@@ -209,6 +209,10 @@ public class StashThreadFragment extends Fragment {
                     StashData.get(getActivity()).removeThreadFromStash(mThread.getId());
                 }
 
+                if (mThread.needToBuy()) {
+                    StashData.get(getActivity()).addThreadToShoppingList(mThread.getId());
+                }
+
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
                 mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
                 mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
@@ -224,6 +228,11 @@ public class StashThreadFragment extends Fragment {
                 }
 
                 mThread.increaseOwnedQuantity();
+
+                if (!mThread.needToBuy()) {
+                    StashData.get(getActivity()).removeThreadFromShoppingList(mThread.getId());
+                }
+
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
                 mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
                 mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
@@ -235,6 +244,11 @@ public class StashThreadFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mThread.decreaseAdditionalQuantity();
+
+                if (!mThread.needToBuy()) {
+                    StashData.get(getActivity()).removeThreadFromShoppingList(mThread.getId());
+                }
+
                 mSkeinsToBuy.setText(Integer.toString(mThread.getAdditionalSkeins()));
                 mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
             }
@@ -245,6 +259,11 @@ public class StashThreadFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mThread.increaseAdditionalQuantity();
+
+                if (mThread.needToBuy()) {
+                    StashData.get(getActivity()).addThreadToShoppingList(mThread.getId());
+                }
+
                 mSkeinsToBuy.setText(Integer.toString(mThread.getAdditionalSkeins()));
                 mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
             }

@@ -204,6 +204,10 @@ public class StashEmbellishmentFragment extends Fragment{
                     StashData.get(getActivity()).removeEmbellishmentFromStash(mEmbellishment.getId());
                 }
 
+                if (mEmbellishment.needToBuy()) {
+                    StashData.get(getActivity()).addEmbellishmentToShoppingList(mEmbellishment.getId());
+                }
+
                 mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
                 mNumberNeeded.setText(Integer.toString(mEmbellishment.getNumberNeeded()));
                 mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
@@ -219,6 +223,11 @@ public class StashEmbellishmentFragment extends Fragment{
                 }
 
                 mEmbellishment.increaseOwned();
+
+                if (!mEmbellishment.needToBuy()) {
+                    StashData.get(getActivity()).removeEmbellishmentFromShoppingList(mEmbellishment.getId());
+                }
+
                 mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
                 mNumberNeeded.setText(Integer.toString(mEmbellishment.getNumberNeeded()));
                 mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
@@ -230,6 +239,11 @@ public class StashEmbellishmentFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 mEmbellishment.decreaseAdditional();
+
+                if (!mEmbellishment.needToBuy()) {
+                    StashData.get(getActivity()).removeEmbellishmentFromShoppingList(mEmbellishment.getId());
+                }
+
                 mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
                 mNumberToBuy.setText(Integer.toString(mEmbellishment.getAdditionalNeeded()));
             }
@@ -240,6 +254,11 @@ public class StashEmbellishmentFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 mEmbellishment.increaseAdditional();
+
+                if (mEmbellishment.needToBuy()) {
+                    StashData.get(getActivity()).addEmbellishmentToShoppingList(mEmbellishment.getId());
+                }
+
                 mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
                 mNumberToBuy.setText(Integer.toString(mEmbellishment.getAdditionalNeeded()));
             }
