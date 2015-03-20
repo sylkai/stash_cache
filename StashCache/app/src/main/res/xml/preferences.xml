@@ -8,6 +8,12 @@
         android:summary="@string/skeins_setting_summary"
         android:defaultValue="false" />
 
+    <CheckBoxPreference
+        android:key="pref_default_over"
+        android:title="@string/over_setting"
+        android:summary="@string/over_summary"
+        android:defaultValue="true" />
+
     <com.geekeclectic.android.stashcache.SummaryEditTextPreference
         android:key="pref_border_width"
         android:title="@string/border_setting"
@@ -15,5 +21,13 @@
         android:defaultValue="3.0"
         android:inputType="numberDecimal"
         android:numeric="decimal" />
+
+    <com.geekeclectic.android.stashcache.SummaryEditTextPreference
+        android:key="pref_default_count"
+        android:title="@string/count_setting"
+        android:summary="@string/count_summary"
+        android:defaultValue="32"
+        android:inputType="number"
+        android:numeric="integer" />
 
 </PreferenceScreen>

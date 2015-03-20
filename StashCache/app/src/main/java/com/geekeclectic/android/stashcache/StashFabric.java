@@ -19,8 +19,6 @@ import java.util.UUID;
 public class StashFabric extends StashObject {
 
     // fabric width and height both recorded in inches
-    
-    protected static int OVER_COUNT = 2;
 
     private int mFabricCount;
     private double mFabricWidth;
@@ -31,6 +29,7 @@ public class StashFabric extends StashObject {
 
     private double mStitchWidth;
     private double mStitchHeight;
+    private int mOverCount;
 
     private static final String JSON_COUNT = "fabric count";
     private static final String JSON_WIDTH = "fabric width";
@@ -47,6 +46,13 @@ public class StashFabric extends StashObject {
     public StashFabric(JSONObject json, Context context) throws JSONException {
         // load fabricId and necessary numbers
         mFabricCount = json.getInt(JSON_COUNT);
+
+        if (mFabricCount > 25) {
+            mOverCount = 2;
+        } else {
+            mOverCount = 1;
+        }
+
         mFabricWidth = json.getDouble(JSON_WIDTH);
         mFabricHeight = json.getDouble(JSON_HEIGHT);
         setId(UUID.fromString(json.getString(JSON_ID)));
@@ -118,6 +124,13 @@ public class StashFabric extends StashObject {
     public void setCount(int count, Context context) {
         // fabric count must be an integer, used to calculate stitchable area
         mFabricCount = count;
+
+        if (count > 25) {
+            mOverCount = 2;
+        } else {
+            mOverCount = 1;
+        }
+
         updateStitchableArea(context);
     }
 
@@ -172,8 +185,8 @@ public class StashFabric extends StashObject {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         double edge_buffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, "3.0"));
 
-        mStitchWidth = (mFabricWidth - edge_buffer * 2) * mFabricCount / OVER_COUNT;
-        mStitchHeight = (mFabricHeight - edge_buffer * 2) * mFabricCount / OVER_COUNT;
+        mStitchWidth = (mFabricWidth - edge_buffer * 2) * mFabricCount / mOverCount;
+        mStitchHeight = (mFabricHeight - edge_buffer * 2) * mFabricCount / mOverCount;
     }
 
 }

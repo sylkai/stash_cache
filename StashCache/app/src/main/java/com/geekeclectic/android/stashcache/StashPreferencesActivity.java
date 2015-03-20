@@ -17,6 +17,8 @@ public class StashPreferencesActivity extends PreferenceActivity implements Shar
 
     public static final String KEY_NEW_SKEIN_FOR_EACH = "new_skein_for_each";
     public static final String KEY_BORDER_SETTING = "pref_border_width";
+    public static final String KEY_COUNT_SETTING = "pref_default_count";
+    public static final String KEY_OVER_SETTING = "pref_default_over";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -4,8 +4,10 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
@@ -579,7 +581,21 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             mFabricInfo.setText(mFabric.getInfo() + "\n");
             mFabricInfo.append(mFabric.getSize());
         } else {
-            mFabricInfo.setText(R.string.pattern_no_fabric);
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            double edgeBuffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, "3.0"));
+            int defaultCount = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_COUNT_SETTING, "32"));
+            int overCount;
+
+            if (sharedPrefs.getBoolean(StashPreferencesActivity.KEY_OVER_SETTING, true)) {
+                overCount = 2;
+            } else {
+                overCount = 1;
+            }
+
+            double fabricWidth = mPattern.getWidth() / ((double) defaultCount / overCount) + 2 * edgeBuffer;
+            double fabricHeight = mPattern.getHeight() / ((double) defaultCount / overCount) + 2 * edgeBuffer;
+
+            mFabricInfo.setText(String.format(getString(R.string.pattern_no_fabric), defaultCount, overCount, edgeBuffer, fabricWidth, fabricHeight));
         }
     }
 

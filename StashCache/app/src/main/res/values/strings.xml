@@ -24,6 +24,12 @@
     <string name="border_setting">Width of fabric border</string>
     <string name="border_summary">Fabric calculations are done with a border of %s inches.</string>
 
+    <string name="count_setting">Default fabric count</string>
+    <string name="count_summary">Fabric required is calculated using a default of %s count fabric.</string>
+
+    <string name="over_setting">Over Two</string>
+    <string name="over_summary">If checked, the default used for calculating how much fabric is required assumes stitching over 2. </string>
+
     <string name="edit_thread_stash">Edit Quantities</string>
     <string name="thread_stashQuantity">Edit thread in stash</string>
 
@@ -40,7 +46,7 @@
     <string name="pattern_embellishment_info">Embellishments</string>
     <string name="pattern_thread_details"> </string>
     <string name="pattern_fabric_title">Fabric</string>
-    <string name="pattern_no_fabric">No fabric selected.</string>
+    <string name="pattern_no_fabric">No fabric selected.  Using your defaults of %1$d count fabric over %2$d with a border of %3$.2f inches, you need a piece of fabric at least %4$.2f inches by %5$.2f inches.</string>
     <string name="pattern_thread_detail">No threads selected.</string>
     <string name="pattern_embellishment_detail">No embellishments selected.</string>
     <string name="is_kitted">Kitted?</string>
