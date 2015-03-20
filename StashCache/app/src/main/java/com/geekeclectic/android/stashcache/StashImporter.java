@@ -28,6 +28,7 @@ public class StashImporter {
     private static InputStream in;
     private static int DEFAULT = 1;
     private static String UTF8 = "utf8";
+    private Context mContext;
 
     public StashImporter(InputStream input) {
         in = input;
@@ -38,7 +39,8 @@ public class StashImporter {
     }
 
     public int importStash(Context context) throws IOException {
-        StashData stash = StashData.get(context);
+        mContext = context;
+        StashData stash = StashData.get(mContext);
         populateMaps(stash);
 
         BufferedReader reader = null;
@@ -443,9 +445,9 @@ public class StashImporter {
         fabric.setSource(source);
         fabric.setType(type);
         fabric.setColor(color);
-        fabric.setCount(count);
-        fabric.setHeight(height);
-        fabric.setWidth(width);
+        fabric.setCount(count, mContext);
+        fabric.setHeight(height, mContext);
+        fabric.setWidth(width, mContext);
 
         stash.addFabric(fabric);
 

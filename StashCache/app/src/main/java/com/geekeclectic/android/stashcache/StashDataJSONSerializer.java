@@ -107,7 +107,7 @@ public class StashDataJSONSerializer {
 
         // create fabric object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
-            StashFabric fabric = new StashFabric(array.getJSONObject(i));
+            StashFabric fabric = new StashFabric(array.getJSONObject(i), mContext);
             fabricMap.put(fabric.getKey(), fabric);
         }
 

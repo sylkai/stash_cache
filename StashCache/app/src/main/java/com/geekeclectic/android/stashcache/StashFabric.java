@@ -1,5 +1,9 @@
 package com.geekeclectic.android.stashcache;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,8 +19,7 @@ import java.util.UUID;
 public class StashFabric extends StashObject {
 
     // fabric width and height both recorded in inches
-
-    protected static int EDGE_BUFFER = 2;
+    
     protected static int OVER_COUNT = 2;
 
     private int mFabricCount;
@@ -41,14 +44,14 @@ public class StashFabric extends StashObject {
         // random UUID generated in parent class
     }
 
-    public StashFabric(JSONObject json) throws JSONException {
+    public StashFabric(JSONObject json, Context context) throws JSONException {
         // load fabricId and necessary numbers
         mFabricCount = json.getInt(JSON_COUNT);
         mFabricWidth = json.getDouble(JSON_WIDTH);
         mFabricHeight = json.getDouble(JSON_HEIGHT);
         setId(UUID.fromString(json.getString(JSON_ID)));
 
-        updateStitchableArea();
+        updateStitchableArea(context);
 
         // check to make sure value was assigned before loading remaining variables
         if (json.has(JSON_COLOR)) {
@@ -112,30 +115,30 @@ public class StashFabric extends StashObject {
         return mFabricFor;
     }
 
-    public void setCount(int count) {
+    public void setCount(int count, Context context) {
         // fabric count must be an integer, used to calculate stitchable area
         mFabricCount = count;
-        updateStitchableArea();
+        updateStitchableArea(context);
     }
 
     public int getCount() {
         return mFabricCount;
     }
 
-    public void setWidth(double width) {
+    public void setWidth(double width, Context context) {
         // fabric width in inches, can be decimal - used to calculate stitchable area
         mFabricWidth = width;
-        updateStitchableArea();
+        updateStitchableArea(context);
     }
 
     public double getWidth() {
         return mFabricWidth;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(double height, Context context) {
         // fabric height in inches, can be decimal - used to calculate stitchable area
         mFabricHeight = height;
-        updateStitchableArea();
+        updateStitchableArea(context);
     }
 
     public double getHeight() {
@@ -163,11 +166,14 @@ public class StashFabric extends StashObject {
         return (mFabricFor != null);
     }
 
-    private void updateStitchableArea() {
+    private void updateStitchableArea(Context context) {
         // calculates the available stitch count using the fabric size and count, minus surrounding
         // edge buffer for framing, updated every time height/width/count is changed
-        mStitchWidth = (mFabricWidth - EDGE_BUFFER * 2) * mFabricCount / OVER_COUNT;
-        mStitchHeight = (mFabricHeight - EDGE_BUFFER * 2) * mFabricCount / OVER_COUNT;
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        double edge_buffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, "3.0"));
+
+        mStitchWidth = (mFabricWidth - edge_buffer * 2) * mFabricCount / OVER_COUNT;
+        mStitchHeight = (mFabricHeight - edge_buffer * 2) * mFabricCount / OVER_COUNT;
     }
 
 }

@@ -166,9 +166,9 @@ public class StashFabricFragment extends Fragment {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (!Integer.toString(mFabric.getCount()).equals(c.toString())) {
                     if (c.length() > 0) {
-                        mFabric.setCount(Integer.parseInt(c.toString()));
+                        mFabric.setCount(Integer.parseInt(c.toString()), getActivity());
                     } else {
-                        mFabric.setCount(0);
+                        mFabric.setCount(0, getActivity());
                     }
 
                     ActionBar actionBar = getActivity().getActionBar();
@@ -190,7 +190,7 @@ public class StashFabricFragment extends Fragment {
         mFabricWidth.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
-                    mFabric.setWidth(Double.parseDouble(c.toString()));
+                    mFabric.setWidth(Double.parseDouble(c.toString()), getActivity());
                 }
             }
 
@@ -208,7 +208,7 @@ public class StashFabricFragment extends Fragment {
         mFabricHeight.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
-                    mFabric.setHeight(Double.parseDouble(c.toString()));
+                    mFabric.setHeight(Double.parseDouble(c.toString()), getActivity());
                 }
             }
 

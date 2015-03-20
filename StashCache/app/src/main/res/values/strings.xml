@@ -21,6 +21,9 @@
     <string name="fabric">Fabric</string>
     <string name="thread">Thread</string>
 
+    <string name="border_setting">Width of fabric border</string>
+    <string name="border_summary">Fabric calculations are done with a border of %s inches.</string>
+
     <string name="edit_thread_stash">Edit Quantities</string>
     <string name="thread_stashQuantity">Edit thread in stash</string>
 
