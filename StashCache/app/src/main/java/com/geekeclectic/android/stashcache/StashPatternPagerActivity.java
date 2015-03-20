@@ -1,14 +1,23 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -82,6 +91,40 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
 
                 break;
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.pattern_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handling item selection
+        switch (item.getItemId()) {
+            case R.id.menu_item_export_pattern:
+                StashExporter exporter = new StashExporter();
+
+                try {
+                    File file = exporter.exportPattern(mPatterns.get(mViewPager.getCurrentItem()), getApplicationContext());
+
+                    Intent saveIntent = new Intent(Intent.ACTION_SEND);
+
+                    // better filter of apps by using "application/octet-stream" instead of "text/plain"
+                    // this isn't appropriate to send to a messenger-type app, for example and this was an
+                    // easy way to filter while still providing access to Dropbox/Google Drive/email
+                    saveIntent.setType("application/octet-stream");
+                    saveIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                    startActivity(Intent.createChooser(saveIntent, getString(R.string.send_file_to)));
+                } catch (IOException e) {
+                    //
+                }
+                return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

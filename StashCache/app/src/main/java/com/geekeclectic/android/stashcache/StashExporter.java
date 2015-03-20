@@ -29,8 +29,6 @@ public class StashExporter {
     private static ArrayList<UUID> mOrphanEmbellishments;
 
     public StashExporter() {
-        mFilename = "stash_export.txt";
-
         // newline = System.getProperty("line.separator") would be the proper way to do that but
         // this does not display the linebreaks properly in Windows Notepad, whereas this does.
         // Since users are not likely to be technically savvy, this matters.
@@ -38,6 +36,8 @@ public class StashExporter {
     }
 
     public File exportStash(Context context) throws IOException {
+        mFilename = "stash_export.txt";
+
         File path = Environment.getExternalStorageDirectory();
         File file = new File(path, mFilename);
 
@@ -58,7 +58,30 @@ public class StashExporter {
 
     }
 
-    public String buildStashString(Context context) {
+    public File exportPattern(StashPattern pattern, Context context) throws IOException {
+        mFilename = pattern.toString() + ".txt";
+
+        File path = Environment.getExternalStorageDirectory();
+        File file = new File(path, mFilename);
+
+        Writer writer = null;
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            writer = new OutputStreamWriter(out, UTF8);
+            writer.write(buildPatternString(pattern, context));
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
+
+        MediaScannerConnection.scanFile(context, new String[] { file.getPath() }, new String[] { "file/text" }, null);
+
+        return file;
+
+    }
+
+    private String buildStashString(Context context) {
         StashData stash = StashData.get(context);
         mOrphanThread = new ArrayList<UUID>(stash.getThreadList());
         mOrphanEmbellishments = new ArrayList<UUID>(stash.getEmbellishmentList());
@@ -100,6 +123,40 @@ public class StashExporter {
         if (!mOrphanEmbellishments.isEmpty()) {
             sb.append(orphanEmbellishmentListString(mOrphanEmbellishments, betweenItems, stash, context));
         }
+
+        return sb.toString();
+    }
+
+    private String buildPatternString(StashPattern pattern, Context context) {
+        StashData stash = StashData.get(context);
+        mOrphanThread = new ArrayList<UUID>(stash.getThreadList());
+        mOrphanEmbellishments = new ArrayList<UUID>(stash.getEmbellishmentList());
+
+        StringBuilder sb = new StringBuilder();
+
+        String betweenItems = "---";
+        String betweenCategories = "***";
+
+        // marker for thread stash
+        sb.append(betweenCategories);
+        sb.append(newline);
+
+        // marker for fabric stash
+        sb.append(betweenCategories);
+        sb.append(newline);
+
+        // marker for embellishment stash
+        sb.append(betweenCategories);
+        sb.append(newline);
+
+        // build pattern stash
+        sb.append(patternString(pattern, stash, context));
+        sb.append(betweenCategories);
+        sb.append(newline);
+
+        // marker for orphan threads
+        sb.append(betweenCategories);
+        sb.append(newline);
 
         return sb.toString();
     }
@@ -519,6 +576,41 @@ public class StashExporter {
             // add the info for the embellishments in the pattern
             sb.append(embellishmentListString(pattern.getEmbellishmentList(), patternItems, stash, context, pattern));
         }
+
+        return sb.toString();
+    }
+
+    private String patternString(StashPattern pattern, StashData stash, Context context) {
+        StringBuilder sb = new StringBuilder();
+
+        String patternItems = "-";
+        String patternCategories = "*";
+
+        sb.append(pattern.getPatternName());
+        sb.append(newline);
+        sb.append(pattern.getSource());
+        sb.append(newline);
+
+        sb.append(pattern.getWidth());
+        sb.append(newline);
+        sb.append(pattern.getHeight());
+        sb.append(newline);
+
+        sb.append(patternCategories);
+        sb.append(newline);
+
+        // fabric info would go here but is excluded from export of pattern for sharing
+
+        sb.append(patternCategories);
+        sb.append(newline);
+
+        // add the info for the strings in the pattern
+        sb.append(threadListString(pattern.getThreadList(), patternItems, stash, context, pattern));
+        sb.append(patternCategories);
+        sb.append(newline);
+
+        // add the info for the embellishments in the pattern
+        sb.append(embellishmentListString(pattern.getEmbellishmentList(), patternItems, stash, context, pattern));
 
         return sb.toString();
     }

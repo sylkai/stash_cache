@@ -187,7 +187,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                     // easy way to filter while still providing access to Dropbox/Google Drive/email
                     saveIntent.setType("application/octet-stream");
                     saveIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-                    startActivity(Intent.createChooser(saveIntent, "title"));
+                    startActivity(Intent.createChooser(saveIntent, getString(R.string.send_file_to)));
                 } catch (IOException e) {
                     //
                 }
