@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,18 +26,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
  * Fragment to display list of patterns.  Long press allows user to select items to be deleted.
  */
 
-public class StashPatternListFragment extends ListFragment implements Observer {
+public class StashPatternListFragment extends UpdateListFragment implements Observer {
 
     private static final String TAG = "PatternListFragment";
     private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
     private static final String PATTERN_VIEW_ID = "com.geekeclectic.android.stashcache.pattern_view_id";
     private int numericTab;
+    private UpdateListFragmentsListener mCallback;
 
     private ArrayList<StashPattern> mPatterns;
 
@@ -114,6 +117,7 @@ public class StashPatternListFragment extends ListFragment implements Observer {
                                 // checked, remove it from the stash
                                 for (int i = adapter.getCount() - 1; i >=0; i--) {
                                     if (getListView().isItemChecked(i)) {
+                                        // remove pattern
                                         stash.deletePattern(adapter.getItem(i));
                                     }
                                 }
@@ -122,6 +126,7 @@ public class StashPatternListFragment extends ListFragment implements Observer {
 
                                 // notify the adapter to refresh the view
                                 adapter.notifyDataSetChanged();
+                                mCallback.onListFragmentUpdate();
                                 return true;
                             default:
                                 return false;
@@ -153,6 +158,17 @@ public class StashPatternListFragment extends ListFragment implements Observer {
         super.onResume();
         // always check on load to see if data set needs updating
         ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (UpdateListFragmentsListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement UpdateListFragmentsListener");
+        }
     }
 
     @Override
@@ -191,6 +207,7 @@ public class StashPatternListFragment extends ListFragment implements Observer {
         if (item.getGroupId() == PATTERN_GROUP_ID) {
             // if the requesting fragment was THIS ONE, get the info
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            StashData stash = StashData.get(getActivity());
             int position = info.position;
             PatternAdapter adapter = (PatternAdapter) getListAdapter();
             StashPattern pattern = adapter.getItem(position);
@@ -198,9 +215,10 @@ public class StashPatternListFragment extends ListFragment implements Observer {
             switch (item.getItemId()) {
                 case R.id.menu_item_delete_pattern:
                     // delete the pattern and update the view
-                    StashData.get(getActivity()).deletePattern(pattern);
+                    stash.deletePattern(pattern);
                     adapter.notifyDataSetChanged();
-                    return true;
+                    mCallback.onListFragmentUpdate();
+                    return super.onContextItemSelected(item);
             }
         }
 
@@ -230,6 +248,7 @@ public class StashPatternListFragment extends ListFragment implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
+        Collections.sort(mPatterns, new StashPatternComparator());
         ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
     }
 

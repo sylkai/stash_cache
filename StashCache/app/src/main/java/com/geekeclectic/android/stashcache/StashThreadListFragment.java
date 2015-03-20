@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,10 +31,11 @@ import java.util.UUID;
 /**
  * Fragment to display list of threads.  Long press allows user to select items to be deleted.
  */
-public class StashThreadListFragment extends ListFragment implements Observer, StashThreadQuantityDialogFragment.StashThreadQuantityDialogListener {
+public class StashThreadListFragment extends UpdateListFragment implements Observer, StashThreadQuantityDialogFragment.StashThreadQuantityDialogListener {
 
     private ArrayList<UUID> mThreads;
     private int numericTab;
+    private UpdateListFragmentsListener mCallback;
 
     private static final String TAG = "ThreadListFragment";
     private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
@@ -116,8 +118,9 @@ public class StashThreadListFragment extends ListFragment implements Observer, S
                                 StashData stash = StashData.get(getActivity());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
-                                        // if item has been selected, delete it from the stash
                                         StashThread thread = stash.getThread(adapter.getItem(i));
+
+                                        // delete thread from the stash
                                         stash.deleteThread(thread);
                                     }
                                 }
@@ -126,6 +129,7 @@ public class StashThreadListFragment extends ListFragment implements Observer, S
 
                                 // refresh the list
                                 adapter.notifyDataSetChanged();
+                                mCallback.onListFragmentUpdate();
                                 return true;
                             default:
                                 return false;
@@ -148,6 +152,17 @@ public class StashThreadListFragment extends ListFragment implements Observer, S
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setAppropriateEmptyMessage(getArguments().getString(THREAD_VIEW_ID));
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (UpdateListFragmentsListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement UpdateListFragmentsListener");
+        }
     }
 
     @Override
@@ -211,16 +226,18 @@ public class StashThreadListFragment extends ListFragment implements Observer, S
         if (item.getGroupId() == THREAD_GROUP_ID) {
             // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            StashData stash = StashData.get(getActivity());
             int position = info.position;
             ThreadAdapter adapter = (ThreadAdapter) getListAdapter();
-            StashThread thread = StashData.get(getActivity()).getThread(adapter.getItem(position));
+            StashThread thread = stash.getThread(adapter.getItem(position));
 
             switch (item.getItemId()) {
                 case R.id.menu_item_delete_thread:
                     // delete the thread from the stash
-                    StashData.get(getActivity()).deleteThread(thread);
+                    stash.deleteThread(thread);
                     adapter.notifyDataSetChanged();
-                    return true;
+                    mCallback.onListFragmentUpdate();
+                    return super.onContextItemSelected(item);
             }
         }
 

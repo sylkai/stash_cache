@@ -5,7 +5,7 @@
 
         <item android:id="@+id/menu_item_import_stash"
             android:icon="@drawable/ic_menu_import"
-            android:title="@string/import_stash" />
+            android:title="@string/import_file" />
 
         <item android:id="@+id/menu_item_export_stash"
             android:icon="@drawable/ic_menu_upload"

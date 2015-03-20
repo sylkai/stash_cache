@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,10 +30,11 @@ import java.util.UUID;
 /**
  * Fragment to display list of fabrics.  Long press allows user to select items to be deleted.
  */
-public class StashFabricListFragment extends ListFragment implements Observer {
+public class StashFabricListFragment extends UpdateListFragment implements Observer {
 
-    FabricAdapter adapter;
-    ArrayList<UUID> mFabrics;
+    private FabricAdapter adapter;
+    private ArrayList<UUID> mFabrics;
+    private UpdateListFragmentsListener mCallback;
 
     private static final String TAG = "FabricListFragment";
     private static final int FABRIC_GROUP_ID = R.id.fabric_context_menu;
@@ -113,8 +115,9 @@ public class StashFabricListFragment extends ListFragment implements Observer {
                                 StashData stash = StashData.get(getActivity());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
-                                        // if the item is checked, remove the item from the stash
                                         StashFabric fabric = stash.getFabric(adapter.getItem(i));
+
+                                        // remove fabric from the stash
                                         stash.deleteFabric(fabric);
                                     }
                                 }
@@ -123,6 +126,7 @@ public class StashFabricListFragment extends ListFragment implements Observer {
 
                                 // notify the adapter that the backing list has changed and refresh
                                 adapter.notifyDataSetChanged();
+                                mCallback.onListFragmentUpdate();
                                 return true;
                             default:
                                 return false;
@@ -140,6 +144,17 @@ public class StashFabricListFragment extends ListFragment implements Observer {
 
 
         return v;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (UpdateListFragmentsListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement UpdateListFragmentsListener");
+        }
     }
 
     @Override
@@ -190,16 +205,18 @@ public class StashFabricListFragment extends ListFragment implements Observer {
         if (item.getGroupId() == FABRIC_GROUP_ID) {
             // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            StashData stash = StashData.get(getActivity());
             int position = info.position;
             FabricAdapter adapter = (FabricAdapter) getListAdapter();
-            StashFabric fabric = StashData.get(getActivity()).getFabric(adapter.getItem(position));
+            StashFabric fabric = stash.getFabric(adapter.getItem(position));
 
             switch (item.getItemId()) {
                 case R.id.menu_item_delete_fabric:
                     // delete fabric and notify adapter of data change
-                    StashData.get(getActivity()).deleteFabric(fabric);
+                    stash.deleteFabric(fabric);
                     adapter.notifyDataSetChanged();
-                    return true;
+                    mCallback.onListFragmentUpdate();
+                    return super.onContextItemSelected(item);
             }
         }
 

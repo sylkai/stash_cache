@@ -32,7 +32,7 @@ import java.io.InputStream;
  * Thanks to StackOverflow for solving the issue of the dropdown menu theme-ing:
  * http://stackoverflow.com/questions/15948026/cant-change-the-text-color-with-android-action-bar-drop-down-navigation
  */
-public class StashOverviewActivity extends FragmentActivity implements UpdateFragment.OnTabSwipeListener {
+public class StashOverviewActivity extends FragmentActivity implements UpdateFragment.OnTabSwipeListener, UpdateListFragment.UpdateListFragmentsListener {
 
     private static final int REQUEST_CHOOSE_STASH = 1;
     private static final int REQUEST_PREFERENCES_UPDATE = 2;
@@ -230,6 +230,11 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     public void onTabSwipe(int selectedView) {
         currentView = selectedView;
+    }
+
+    public void onListFragmentUpdate() {
+        UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        fragment.stashChanged();
     }
 
     private void adjustViewsIfNeeded(int changeTabTo) {

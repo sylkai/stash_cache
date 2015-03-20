@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.Activity;
 import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
@@ -31,10 +32,11 @@ import java.util.UUID;
 /**
  * Fragment to display list of embellishments.  Long press allows user to select items to be deleted.
  */
-public class StashEmbellishmentListFragment extends ListFragment implements Observer, StashEmbellishmentQuantityDialogFragment.StashEmbellishmentQuantityDialogListener {
+public class StashEmbellishmentListFragment extends UpdateListFragment implements Observer, StashEmbellishmentQuantityDialogFragment.StashEmbellishmentQuantityDialogListener {
 
     private ArrayList<UUID> mEmbellishments;
     private int numericTab;
+    private UpdateListFragmentsListener mCallback;
 
     private static final String TAG = "EmbellishmentListFragment";
     private static final int EMBELLISHMENT_GROUP_ID = R.id.embellishment_context_menu;
@@ -116,8 +118,9 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
                                 StashData stash = StashData.get(getActivity());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
-                                        // if item has been selected, delete it from the stash
                                         StashEmbellishment embellishment = stash.getEmbellishment(adapter.getItem(i));
+
+                                        // remove embellishment from the stash
                                         stash.deleteEmbellishment(embellishment);
                                     }
                                 }
@@ -126,6 +129,7 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
 
                                 // refresh the list
                                 adapter.notifyDataSetChanged();
+                                mCallback.onListFragmentUpdate();
                                 return true;
                             default:
                                 return false;
@@ -142,6 +146,17 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
         }
 
         return v;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCallback = (UpdateListFragmentsListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement UpdateListFragmentsListener");
+        }
     }
 
     @Override
@@ -206,16 +221,18 @@ public class StashEmbellishmentListFragment extends ListFragment implements Obse
         if (item.getGroupId() == EMBELLISHMENT_GROUP_ID) {
             // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            StashData stash = StashData.get(getActivity());
             int position = info.position;
             EmbellishmentAdapter adapter = (EmbellishmentAdapter) getListAdapter();
-            StashEmbellishment embellishment = StashData.get(getActivity()).getEmbellishment(adapter.getItem(position));
+            StashEmbellishment embellishment = stash.getEmbellishment(adapter.getItem(position));
 
             switch (item.getItemId()) {
                 case R.id.menu_item_delete_embellishment:
                     // delete the embellishment from the stash
-                    StashData.get(getActivity()).deleteEmbellishment(embellishment);
+                    stash.deleteEmbellishment(embellishment);
                     adapter.notifyDataSetChanged();
-                    return true;
+                    mCallback.onListFragmentUpdate();
+                    return super.onContextItemSelected(item);
             }
         }
 

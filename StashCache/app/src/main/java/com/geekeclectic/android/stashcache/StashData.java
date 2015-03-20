@@ -308,7 +308,25 @@ public class StashData {
     }
 
     public void deletePattern(StashPattern pattern) {
-        // removes a pattern from the database
+        // clean up all references to this pattern
+        if (pattern.getFabric() != null) {
+            StashFabric fabric = pattern.getFabric();
+            fabric.setUsedFor(null);
+        }
+
+        ArrayList<UUID> threadList = pattern.getThreadList();
+        for (UUID threadId : threadList) {
+            StashThread thread = getThread(threadId);
+            thread.removePattern(pattern);
+        }
+
+        ArrayList<UUID> embellishmentList = pattern.getEmbellishmentList();
+        for (UUID embellishmentId : embellishmentList) {
+            StashEmbellishment embellishment = getEmbellishment(embellishmentId);
+            embellishment.removePattern(pattern);
+        }
+
+        // removes the pattern from the database
         mPatternsData.remove(pattern);
         mFabricForList.remove(pattern);
     }
@@ -323,6 +341,12 @@ public class StashData {
     }
 
     public void deleteThread(StashThread thread) {
+        // clean up associations to this item
+        ArrayList<StashPattern> patternList = thread.getPatternsList();
+        for (StashPattern pattern : patternList) {
+            pattern.removeThread(thread);
+        }
+
         // removes a thread from the hashmap and the lists powering the adapters
         mThreadsData.remove(thread.getKey());
         mThreadsList.remove(thread.getId());
@@ -337,6 +361,12 @@ public class StashData {
     }
 
     public void deleteFabric(StashFabric fabric) {
+        // clean up associations with this fabric
+        if (fabric.isAssigned()) {
+            StashPattern pattern = fabric.usedFor();
+            pattern.setFabric(null);
+        }
+
         // removes fabric from the hashmap and the list powering the adapter
         mFabricData.remove(fabric.getKey());
         mFabricList.remove(fabric.getId());
@@ -352,6 +382,12 @@ public class StashData {
     }
 
     public void deleteEmbellishment(StashEmbellishment embellishment) {
+        // clean up all associations to the embellishment
+        ArrayList<StashPattern> patternList = embellishment.getPatternList();
+        for (StashPattern pattern : patternList) {
+            pattern.removeEmbellishment(embellishment);
+        }
+
         // removes embellishment from the hashmap and the lists powering the adapters
         mEmbellishmentData.remove(embellishment.getKey());
         mEmbellishmentList.remove(embellishment.getId());
