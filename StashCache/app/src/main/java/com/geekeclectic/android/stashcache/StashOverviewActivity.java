@@ -42,6 +42,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     private int currentTab;
     private int currentView;
+    private Menu menuRef;
 
     protected UpdateFragment createFragment(int currentTab) {
         if (currentTab == 0) {
@@ -149,6 +150,8 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.stash_menu, menu);
+        menuRef = menu;
+        setVisibleMenuItems();
         return true;
     }
 
@@ -230,6 +233,9 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     public void onTabSwipe(int selectedView) {
         currentView = selectedView;
+        if (menuRef != null) {
+            setVisibleMenuItems();
+        }
     }
 
     public void onListFragmentUpdate() {
@@ -248,6 +254,24 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             if (currentView > 0) {
                 currentView = currentView - 1;
             }
+        }
+    }
+
+    private void setVisibleMenuItems() {
+        if (menuRef.hasVisibleItems()) {
+            menuRef.setGroupVisible(R.id.menu_add_edit, false);
+        }
+
+        if (currentView == 0) {
+            menuRef.findItem(R.id.menu_item_new_pattern).setVisible(true);
+        } else if (currentTab < 2 && currentView == 1) {
+            menuRef.findItem(R.id.menu_item_new_fabric).setVisible(true);
+        } else if ((currentTab < 2 && currentView == 2) || (currentTab == 2 && currentView == 1)) {
+            menuRef.findItem(R.id.menu_item_edit_thread_stash).setVisible(true);
+            menuRef.findItem(R.id.menu_item_new_thread).setVisible(true);
+        } else {
+            menuRef.findItem(R.id.menu_item_edit_embellishment_stash).setVisible(true);
+            menuRef.findItem(R.id.menu_item_new_embellishment).setVisible(true);
         }
     }
 

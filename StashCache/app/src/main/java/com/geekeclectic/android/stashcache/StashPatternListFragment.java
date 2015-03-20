@@ -218,7 +218,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
                     stash.deletePattern(pattern);
                     adapter.notifyDataSetChanged();
                     mCallback.onListFragmentUpdate();
-                    return super.onContextItemSelected(item);
+                    return true;
             }
         }
 

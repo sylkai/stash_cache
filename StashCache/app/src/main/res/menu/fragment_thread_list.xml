@@ -2,7 +2,7 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/menu_item_edit_thread_stash"
+    <!--<item android:id="@+id/menu_item_edit_thread_stash"
         android:icon="@drawable/ic_menu_edit"
         android:title="@string/edit_thread_stash"
         android:showAsAction="ifRoom|withText" />
@@ -10,6 +10,6 @@
     <item android:id="@+id/menu_item_new_thread"
         android:icon="@drawable/ic_menu_add"
         android:title="@string/new_thread"
-        android:showAsAction="ifRoom|withText" />
+        android:showAsAction="ifRoom|withText" />-->
 
 </menu>

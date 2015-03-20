@@ -216,7 +216,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
                     stash.deleteFabric(fabric);
                     adapter.notifyDataSetChanged();
                     mCallback.onListFragmentUpdate();
-                    return super.onContextItemSelected(item);
+                    return true;
             }
         }
 

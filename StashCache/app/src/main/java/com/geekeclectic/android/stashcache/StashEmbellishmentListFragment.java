@@ -191,7 +191,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
                 i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishment.getId());
                 i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, numericTab);
                 startActivityForResult(i, 0);
-                return super.onOptionsItemSelected(item);
+                return true;
             case R.id.menu_item_edit_embellishment_stash:
                 FragmentManager fm = getActivity().getSupportFragmentManager();
 
@@ -205,7 +205,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
                 StashEmbellishmentQuantityDialogFragment dialog = StashEmbellishmentQuantityDialogFragment.newInstance(embellishmentList, getActivity());
                 dialog.setStashEmbellishmentQuantityDialogCallback(this);
                 dialog.show(fm, EDIT_STASH_DIALOG);
-                return super.onOptionsItemSelected(item);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

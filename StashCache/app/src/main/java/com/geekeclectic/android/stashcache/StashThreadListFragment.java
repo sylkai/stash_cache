@@ -196,7 +196,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
                 i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
                 i.putExtra(StashThreadFragment.EXTRA_TAB_ID, numericTab);
                 startActivityForResult(i, 0);
-                return super.onOptionsItemSelected(item);
+                return true;
             case R.id.menu_item_edit_thread_stash:
                 FragmentManager fm = getActivity().getSupportFragmentManager();
 
@@ -210,7 +210,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
                 StashThreadQuantityDialogFragment dialog = StashThreadQuantityDialogFragment.newInstance(threadList, getActivity());
                 dialog.setStashThreadQuantityDialogCallback(this);
                 dialog.show(fm, EDIT_STASH_DIALOG);
-                return super.onOptionsItemSelected(item);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
