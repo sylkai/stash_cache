@@ -39,6 +39,8 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     public static final String TAG = "stash overview";
     public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
     public static final String EXTRA_VIEW_ID = "com.geekeclectic.android.stashcache.active_view_id";
+    private static final String KEY_FRAGMENT_ID = "com.geekeclectic.android.stashcache.stored_fragment_id";
+    private static final String KEY_VIEW_ID = "com.geekeclectic.android.stashcache.stored_view_id";
 
     private int currentTab;
     private int currentView;
@@ -68,7 +70,10 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
         String[] strings = getResources().getStringArray(R.array.drop_down_list);
 
-        if (getIntent().getExtras() != null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_VIEW_ID)) {
+            currentView = savedInstanceState.getInt(KEY_VIEW_ID);
+            currentTab = savedInstanceState.getInt(KEY_FRAGMENT_ID);
+        } else if (getIntent().getExtras() != null) {
             // get the tab / view pair from the intent
             currentView = getIntent().getIntExtra(EXTRA_VIEW_ID, 0);
             currentTab = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, 0);
@@ -153,6 +158,14 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         menuRef = menu;
         setVisibleMenuItems();
         return true;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putInt(KEY_FRAGMENT_ID, currentTab);
+        savedInstanceState.putInt(KEY_VIEW_ID, currentView);
     }
 
     @Override
