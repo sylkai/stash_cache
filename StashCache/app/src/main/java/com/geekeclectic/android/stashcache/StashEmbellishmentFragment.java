@@ -69,7 +69,7 @@ public class StashEmbellishmentFragment extends Fragment{
         // get id for embellishment and pull up the appropriate embellishment from the stash
         UUID embellishmentId = (UUID)getArguments().getSerializable(EXTRA_EMBELLISHMENT_ID);
         callingTab = getArguments().getInt(EXTRA_TAB_ID);
-        mEmbellishment = StashData.get(getActivity()).getEmbellishment(embellishmentId);
+        mEmbellishment = StashData.get(getActivity().getApplicationContext()).getEmbellishment(embellishmentId);
         mPatternList = mEmbellishment.getPatternList();
     }
 
@@ -106,7 +106,7 @@ public class StashEmbellishmentFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-        StashData.get(getActivity()).saveStash();
+        StashData.get(getActivity().getApplicationContext()).saveStash();
     }
 
     @TargetApi(11)
@@ -201,11 +201,11 @@ public class StashEmbellishmentFragment extends Fragment{
                 mEmbellishment.decreaseOwned();
 
                 if (!mEmbellishment.isOwned()) {
-                    StashData.get(getActivity()).removeEmbellishmentFromStash(mEmbellishment.getId());
+                    StashData.get(getActivity().getApplicationContext()).removeEmbellishmentFromStash(mEmbellishment.getId());
                 }
 
                 if (mEmbellishment.needToBuy()) {
-                    StashData.get(getActivity()).addEmbellishmentToShoppingList(mEmbellishment.getId());
+                    StashData.get(getActivity().getApplicationContext()).addEmbellishmentToShoppingList(mEmbellishment.getId());
                 }
 
                 mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
@@ -219,13 +219,13 @@ public class StashEmbellishmentFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 if (!mEmbellishment.isOwned()) {
-                    StashData.get(getActivity()).addEmbellishmentToStash(mEmbellishment.getId());
+                    StashData.get(getActivity().getApplicationContext()).addEmbellishmentToStash(mEmbellishment.getId());
                 }
 
                 mEmbellishment.increaseOwned();
 
                 if (!mEmbellishment.needToBuy()) {
-                    StashData.get(getActivity()).removeEmbellishmentFromShoppingList(mEmbellishment.getId());
+                    StashData.get(getActivity().getApplicationContext()).removeEmbellishmentFromShoppingList(mEmbellishment.getId());
                 }
 
                 mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
@@ -241,7 +241,7 @@ public class StashEmbellishmentFragment extends Fragment{
                 mEmbellishment.decreaseAdditional();
 
                 if (!mEmbellishment.needToBuy()) {
-                    StashData.get(getActivity()).removeEmbellishmentFromShoppingList(mEmbellishment.getId());
+                    StashData.get(getActivity().getApplicationContext()).removeEmbellishmentFromShoppingList(mEmbellishment.getId());
                 }
 
                 mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
@@ -256,7 +256,7 @@ public class StashEmbellishmentFragment extends Fragment{
                 mEmbellishment.increaseAdditional();
 
                 if (mEmbellishment.needToBuy()) {
-                    StashData.get(getActivity()).addEmbellishmentToShoppingList(mEmbellishment.getId());
+                    StashData.get(getActivity().getApplicationContext()).addEmbellishmentToShoppingList(mEmbellishment.getId());
                 }
 
                 mTotalToBuy.setText(Integer.toString(mEmbellishment.getNumberToBuy()));
@@ -321,7 +321,7 @@ public class StashEmbellishmentFragment extends Fragment{
     private class PatternAdapter extends ArrayAdapter<StashPattern> {
 
         public PatternAdapter(ArrayList<StashPattern> patterns) {
-            super(getActivity(), 0, patterns);
+            super(getActivity().getApplicationContext(), 0, patterns);
         }
 
         @Override

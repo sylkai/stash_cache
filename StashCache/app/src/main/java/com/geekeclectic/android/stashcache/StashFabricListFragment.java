@@ -62,7 +62,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
             numericTab = 2;
         }
 
-        mFabrics = StashData.get(getActivity()).getFabricList();
+        mFabrics = StashData.get(getActivity().getApplicationContext()).getFabricList();
 
         // create and set list adapter using fabrics list
         adapter = new FabricAdapter(mFabrics);
@@ -112,7 +112,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
                         switch (item.getItemId()) {
                             case R.id.menu_item_delete_fabric:
                                 FabricAdapter adapter = (FabricAdapter)getListAdapter();
-                                StashData stash = StashData.get(getActivity());
+                                StashData stash = StashData.get(getActivity().getApplicationContext());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
                                         StashFabric fabric = stash.getFabric(adapter.getItem(i));
@@ -182,7 +182,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
             case R.id.menu_item_new_fabric:
                 // create a new fabric and add it to the stash
                 StashFabric fabric = new StashFabric();
-                StashData.get(getActivity()).addFabric(fabric);
+                StashData.get(getActivity().getApplicationContext()).addFabric(fabric);
 
                 // start StashFabricFragment with the new fabric
                 Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
@@ -205,7 +205,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         if (item.getGroupId() == FABRIC_GROUP_ID) {
             // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            StashData stash = StashData.get(getActivity());
+            StashData stash = StashData.get(getActivity().getApplicationContext());
             int position = info.position;
             FabricAdapter adapter = (FabricAdapter) getListAdapter();
             StashFabric fabric = stash.getFabric(adapter.getItem(position));
@@ -251,7 +251,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
 
     private class FabricAdapter extends ArrayAdapter<UUID> {
         public FabricAdapter(ArrayList<UUID> fabrics) {
-            super(getActivity(), 0, fabrics);
+            super(getActivity().getApplicationContext(), 0, fabrics);
         }
 
         @Override
@@ -262,7 +262,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
             }
 
             // configure view for this fabric
-            StashFabric fabric = StashData.get(getActivity()).getFabric(getItem(position));
+            StashFabric fabric = StashData.get(getActivity().getApplicationContext()).getFabric(getItem(position));
 
             TextView fabricInfoTextView = (TextView) convertView.findViewById(R.id.fabric_list_item_infoTextView);
             fabricInfoTextView.setText(fabric.getInfo());

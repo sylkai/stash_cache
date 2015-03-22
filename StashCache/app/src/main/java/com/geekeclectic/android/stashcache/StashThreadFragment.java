@@ -69,7 +69,7 @@ public class StashThreadFragment extends Fragment {
         // get id for thread and pull up the appropriate thread from the stash
         UUID threadId = (UUID)getArguments().getSerializable(EXTRA_THREAD_ID);
         callingTab = getArguments().getInt(EXTRA_TAB_ID);
-        mThread = StashData.get(getActivity()).getThread(threadId);
+        mThread = StashData.get(getActivity().getApplicationContext()).getThread(threadId);
         mPatternList = mThread.getPatternsList();
     }
 
@@ -111,7 +111,7 @@ public class StashThreadFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        StashData.get(getActivity()).saveStash();
+        StashData.get(getActivity().getApplicationContext()).saveStash();
     }
 
     @TargetApi(11)
@@ -206,11 +206,11 @@ public class StashThreadFragment extends Fragment {
                 mThread.decreaseOwnedQuantity();
 
                 if (!mThread.isOwned()) {
-                    StashData.get(getActivity()).removeThreadFromStash(mThread.getId());
+                    StashData.get(getActivity().getApplicationContext()).removeThreadFromStash(mThread.getId());
                 }
 
                 if (mThread.needToBuy()) {
-                    StashData.get(getActivity()).addThreadToShoppingList(mThread.getId());
+                    StashData.get(getActivity().getApplicationContext()).addThreadToShoppingList(mThread.getId());
                 }
 
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
@@ -224,13 +224,13 @@ public class StashThreadFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (!mThread.isOwned()) {
-                    StashData.get(getActivity()).addThreadToStash(mThread.getId());
+                    StashData.get(getActivity().getApplicationContext()).addThreadToStash(mThread.getId());
                 }
 
                 mThread.increaseOwnedQuantity();
 
                 if (!mThread.needToBuy()) {
-                    StashData.get(getActivity()).removeThreadFromShoppingList(mThread.getId());
+                    StashData.get(getActivity().getApplicationContext()).removeThreadFromShoppingList(mThread.getId());
                 }
 
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
@@ -246,7 +246,7 @@ public class StashThreadFragment extends Fragment {
                 mThread.decreaseAdditionalQuantity();
 
                 if (!mThread.needToBuy()) {
-                    StashData.get(getActivity()).removeThreadFromShoppingList(mThread.getId());
+                    StashData.get(getActivity().getApplicationContext()).removeThreadFromShoppingList(mThread.getId());
                 }
 
                 mSkeinsToBuy.setText(Integer.toString(mThread.getAdditionalSkeins()));
@@ -261,7 +261,7 @@ public class StashThreadFragment extends Fragment {
                 mThread.increaseAdditionalQuantity();
 
                 if (mThread.needToBuy()) {
-                    StashData.get(getActivity()).addThreadToShoppingList(mThread.getId());
+                    StashData.get(getActivity().getApplicationContext()).addThreadToShoppingList(mThread.getId());
                 }
 
                 mSkeinsToBuy.setText(Integer.toString(mThread.getAdditionalSkeins()));
@@ -329,7 +329,7 @@ public class StashThreadFragment extends Fragment {
     private class PatternAdapter extends ArrayAdapter<StashPattern> {
 
         public PatternAdapter(ArrayList<StashPattern> patterns) {
-            super(getActivity(), 0, patterns);
+            super(getActivity().getApplicationContext(), 0, patterns);
         }
 
         @Override

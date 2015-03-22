@@ -79,7 +79,7 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
 
     private class FabricAdapter extends ArrayAdapter<UUID> {
         public FabricAdapter(ArrayList<UUID> fabrics) {
-            super(getActivity(), 0, fabrics);
+            super(getActivity().getApplicationContext(), 0, fabrics);
         }
 
         @Override
@@ -97,7 +97,7 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
 
             // configure view for this fabric - KEEP IN MIND VIEW MAY BE RECYCLED AND ALL FIELDS
             // MUST BE INITIALIZED AGAIN
-            StashFabric fabric = StashData.get(getActivity()).getFabric(getItem(position));
+            StashFabric fabric = StashData.get(getActivity().getApplicationContext()).getFabric(getItem(position));
             ViewHolder vh = (ViewHolder)convertView.getTag();
 
             vh.fabricInfo.setText(fabric.getInfo());

@@ -63,7 +63,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         }
 
         mThreads = getListFromStash();
-        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+        Collections.sort(mThreads, new StashThreadComparator(getActivity().getApplicationContext()));
 
         // create and set adapter using thread list
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
@@ -115,7 +115,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
                         switch (item.getItemId()) {
                             case R.id.menu_item_delete_thread:
                                 ThreadAdapter adapter = (ThreadAdapter)getListAdapter();
-                                StashData stash = StashData.get(getActivity());
+                                StashData stash = StashData.get(getActivity().getApplicationContext());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
                                         StashThread thread = stash.getThread(adapter.getItem(i));
@@ -171,7 +171,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
 
         // re-sort the list to make sure everything is where it should be
         mThreads = getListFromStash();
-        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+        Collections.sort(mThreads, new StashThreadComparator(getActivity().getApplicationContext()));
 
         //remind the adapter to get the updated list
         ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
@@ -189,7 +189,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
             case R.id.menu_item_new_thread:
                 // create a new thread
                 StashThread thread = new StashThread();
-                StashData.get(getActivity()).addThread(thread);
+                StashData.get(getActivity().getApplicationContext()).addThread(thread);
 
                 // start StashThreadFragment with the new thread
                 Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
@@ -202,12 +202,12 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
 
                 ArrayList<UUID> threadList;
                 if (numericTab == 0) {
-                    threadList = new ArrayList<UUID>(StashData.get(getActivity()).getThreadList());
+                    threadList = new ArrayList<UUID>(StashData.get(getActivity().getApplicationContext()).getThreadList());
                 } else {
                     threadList = new ArrayList<UUID>(mThreads);
                 }
 
-                StashThreadQuantityDialogFragment dialog = StashThreadQuantityDialogFragment.newInstance(threadList, getActivity());
+                StashThreadQuantityDialogFragment dialog = StashThreadQuantityDialogFragment.newInstance(threadList, getActivity().getApplicationContext());
                 dialog.setStashThreadQuantityDialogCallback(this);
                 dialog.show(fm, EDIT_STASH_DIALOG);
                 return true;
@@ -226,7 +226,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         if (item.getGroupId() == THREAD_GROUP_ID) {
             // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            StashData stash = StashData.get(getActivity());
+            StashData stash = StashData.get(getActivity().getApplicationContext());
             int position = info.position;
             ThreadAdapter adapter = (ThreadAdapter) getListAdapter();
             StashThread thread = stash.getThread(adapter.getItem(position));
@@ -259,7 +259,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
 
     public void onThreadQuantitiesUpdate() {
         mThreads = getListFromStash();
-        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+        Collections.sort(mThreads, new StashThreadComparator(getActivity().getApplicationContext()));
 
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
         setListAdapter(adapter);
@@ -269,11 +269,11 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
 
     private ArrayList<UUID> getListFromStash() {
         if (numericTab == 1) {
-            return StashData.get(getActivity()).getThreadList();
+            return StashData.get(getActivity().getApplicationContext()).getThreadList();
         } else if (numericTab == 0) {
-            return StashData.get(getActivity()).getThreadStashList();
+            return StashData.get(getActivity().getApplicationContext()).getThreadStashList();
         } else {
-            return StashData.get(getActivity()).getThreadShoppingList();
+            return StashData.get(getActivity().getApplicationContext()).getThreadShoppingList();
         }
     }
 
@@ -291,7 +291,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
     public void update(Observable observable, Object data) {
         if (mThreads != getListFromStash()) {
             mThreads = getListFromStash();
-            Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+            Collections.sort(mThreads, new StashThreadComparator(getActivity().getApplicationContext()));
 
             ThreadAdapter adapter = new ThreadAdapter(mThreads);
             setListAdapter(adapter);
@@ -303,7 +303,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
     private class ThreadAdapter extends ArrayAdapter<UUID> {
 
         public ThreadAdapter(ArrayList<UUID> threads) {
-            super(getActivity(), 0, threads);
+            super(getActivity().getApplicationContext(), 0, threads);
         }
 
         @Override
@@ -322,7 +322,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
             ViewHolder vh = (ViewHolder)convertView.getTag();
 
             // configure the view for this thread
-            StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
+            StashThread thread = StashData.get(getActivity().getApplicationContext()).getThread(getItem(position));
 
             vh.threadInfo.setText(thread.getDescriptor());
             vh.threadType.setText(thread.getType());

@@ -148,7 +148,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         fragment.setCurrentView(currentView);
 
         StashCreateShoppingList shoppingList = new StashCreateShoppingList();
-        shoppingList.updateShoppingList(this);
+        shoppingList.updateShoppingList(getApplicationContext());
     }
 
     @Override
@@ -307,7 +307,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             }
         } else if (requestCode == REQUEST_PREFERENCES_UPDATE) {
             StashCreateShoppingList shoppingList = new StashCreateShoppingList();
-            shoppingList.updateShoppingList(this);
+            shoppingList.updateShoppingList(getApplicationContext());
 
             fragment.stashChanged();
         }
