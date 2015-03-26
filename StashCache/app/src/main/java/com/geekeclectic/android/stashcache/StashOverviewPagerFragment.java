@@ -25,8 +25,7 @@ import java.util.Observer;
 
 public class StashOverviewPagerFragment extends UpdateFragment {
 
-    static final int ITEMS = 4;
-    static final String TAG = "StashOverview";
+    public static final String TAG = "StashOverview";
 
     private ViewPager mViewPager;
     private StashOverviewPagerAdapter mAdapter;
@@ -93,24 +92,24 @@ public class StashOverviewPagerFragment extends UpdateFragment {
 
         @Override
         public int getCount() {
-            return ITEMS;
+            return StashConstants.STASH_CATEGORIES;
         }
 
         @Override
         public Fragment getItem(int i) {
             Fragment fragment;
             switch (i) {
-                case 1: // fabric list
-                    fragment = StashFabricListFragment.newInstance("stash");
+                case StashConstants.FABRIC_VIEW: // fabric list
+                    fragment = StashFabricListFragment.newInstance(StashConstants.STASH_TAB);
                     break;
-                case 2: // thread list
-                    fragment = StashThreadListFragment.newInstance("stash");
+                case StashConstants.THREAD_VIEW: // thread list
+                    fragment = StashThreadListFragment.newInstance(StashConstants.STASH_TAB);
                     break;
-                case 3: // embellishment list
-                    fragment = StashEmbellishmentListFragment.newInstance("stash");
+                case StashConstants.EMBELLISHMENT_VIEW: // embellishment list
+                    fragment = StashEmbellishmentListFragment.newInstance(StashConstants.STASH_TAB);
                     break;
                 default: // pattern list
-                    fragment =  StashPatternListFragment.newInstance("stash");
+                    fragment =  StashPatternListFragment.newInstance(StashConstants.STASH_TAB);
             }
 
             if (fragment instanceof Observer) {
@@ -123,11 +122,11 @@ public class StashOverviewPagerFragment extends UpdateFragment {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 1: // fabric list
+                case StashConstants.FABRIC_VIEW: // fabric list
                     return getString(R.string.fabric_list_title).toUpperCase();
-                case 2: // thread list
+                case StashConstants.THREAD_VIEW: // thread list
                     return getString(R.string.thread_list_title).toUpperCase();
-                case 3: // embellishment list
+                case StashConstants.EMBELLISHMENT_VIEW: // embellishment list
                     return getString(R.string.embellishment_list_title).toUpperCase();
                 default: // pattern list
                     return getString(R.string.pattern_list_title).toUpperCase();

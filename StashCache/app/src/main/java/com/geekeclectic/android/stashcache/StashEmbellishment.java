@@ -1,5 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
+import android.content.Context;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,17 +31,19 @@ public class StashEmbellishment extends StashObject {
     private static final String JSON_ADDITIONAL = "additional to buy";
     private static final String JSON_ID = "program ID";
 
-    public StashEmbellishment() {
+    public StashEmbellishment(Context context) {
         // initialize variables, random ID is set in parent class
         mNumberOwned = 0;
         mNumberNeeded = 0;
         mNumberAdditional = 0;
         mUsedIn = new ArrayList<StashPattern>();
+        setContext(context);
     }
 
-    public StashEmbellishment(JSONObject json) throws JSONException {
+    public StashEmbellishment(JSONObject json, Context context) throws JSONException {
         // initialize arraylist for patterns if creating from JSON object
         mUsedIn = new ArrayList<StashPattern>();
+        setContext(context);
 
         setSource(json.getString(JSON_SOURCE));
         mCode = json.getString(JSON_CODE);
@@ -98,23 +102,53 @@ public class StashEmbellishment extends StashObject {
         return mType;
     }
 
-    public void setNumberOwned(int number) {
-        mNumberOwned = number;
-    }
-
     public int getNumberOwned() {
         return mNumberOwned;
     }
 
+    /*
+    * This method increases the number owned by 1 and makes sure it is on the appropriate lists (stash
+    * and/or shopping).
+    */
     public void increaseOwned() {
+        // save whether it needed to be purchased
+        boolean wasOnShoppingList = needToBuy();
+
+        // if this will be the first one, add it to the stash list
+        if (mNumberOwned == 0) {
+            StashData.get(getContext()).addEmbellishmentToStash(getId());
+        }
+
         // increases the number owned by 1
         mNumberOwned = mNumberOwned + 1;
+
+        // if it previously needed to be on the shopping list and now does not, remove it
+        if (wasOnShoppingList && !needToBuy()) {
+            StashData.get(getContext()).removeEmbellishmentFromShoppingList(getId());
+        }
     }
 
+    /*
+    * This method decreases the number owned by 1 and makes sure it is on the appropriate lists (stash
+    * and/or shopping).
+    */
     public void decreaseOwned() {
+        // save whether it needed to be purchased
+        boolean wasOnShoppingList = needToBuy();
+
+        // if this is the last one owned, remove it from the stash list
+        if (mNumberOwned == 1) {
+            StashData.get(getContext()).removeEmbellishmentFromStash(getId());
+        }
+
         // if the number owned is greater than 0, decrease it by 1
         if (mNumberOwned > 0) {
             mNumberOwned = mNumberOwned - 1;
+        }
+
+        // if it previously did not need to be on the shopping list and now does, add it
+        if (!wasOnShoppingList && needToBuy()) {
+            StashData.get(getContext()).addEmbellishmentToShoppingList(getId());
         }
     }
 
@@ -126,12 +160,36 @@ public class StashEmbellishment extends StashObject {
         mNumberNeeded = 0;
     }
 
+    /*
+    * This method increases the number needed by the increment provided and adds it to the shopping list
+    * if appropriate.
+    */
     public void addNeeded(int increment) {
+        // save whether it needs to be purchased before the change
+        boolean wasOnShoppingList = needToBuy();
+
         mNumberNeeded = mNumberNeeded + increment;
+
+        // if it did not previously need to be bought and now does, add it to the shopping list
+        if (!wasOnShoppingList && needToBuy()) {
+            StashData.get(getContext()).addEmbellishmentToShoppingList(getId());
+        }
     }
 
+    /*
+    * This method decreases the number needed by the increment provided and removes it to the shopping list
+    * if appropriate.
+    */
     public void removeNeeded(int increment) {
+        // save whether it needs to be purchased before the change
+        boolean wasOnShoppingList = needToBuy();
+
         mNumberNeeded = mNumberNeeded - increment;
+
+        // if it was previously on the shopping list and now does not need to be, remove it
+        if (wasOnShoppingList && !needToBuy()) {
+            StashData.get(getContext()).removeEmbellishmentFromShoppingList(getId());
+        }
     }
 
     public int getNumberNeeded() {
@@ -142,13 +200,31 @@ public class StashEmbellishment extends StashObject {
         }
     }
 
+    /*
+    * This method increases the number of additional to buy (as set by the user) and if necessary,
+    * adds it to the shopping list.
+    */
     public void increaseAdditional() {
+        // was not on the shopping list before so add it
+        if (mNumberAdditional == 0 && !needToBuy()) {
+            StashData.get(getContext()).addEmbellishmentToShoppingList(getId());
+        }
+
         mNumberAdditional = mNumberAdditional + 1;
     }
 
+    /*
+    * This method decreases the number of additional to buy (as set by the user) and if necessary,
+    * removes it from the shopping list.
+    */
     public void decreaseAdditional() {
         if (mNumberAdditional > 0) {
             mNumberAdditional = mNumberAdditional - 1;
+        }
+
+        // if it not longer needs to be purchased, remove it from the shopping list
+        if (!needToBuy()) {
+            StashData.get(getContext()).removeEmbellishmentFromStash(getId());
         }
     }
 

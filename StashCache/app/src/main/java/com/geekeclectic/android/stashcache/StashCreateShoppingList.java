@@ -44,7 +44,7 @@ public class StashCreateShoppingList {
 
         // find the kitted patterns
         for (StashPattern pattern : patternList) {
-            if (pattern.getKitted()) {
+            if (pattern.isKitted()) {
                 kittedPatterns.add(pattern);
             }
         }
@@ -62,7 +62,7 @@ public class StashCreateShoppingList {
                 ArrayList<UUID> threadList = pattern.getThreadList();
                 for (UUID threadId : threadList) {
                     StashThread thread = stash.getThread(threadId);
-                    thread.addNeeded(pattern.getQuantity(thread), overlap);
+                    thread.updateNeeded(pattern, pattern.getQuantity(thread));
                 }
             }
 

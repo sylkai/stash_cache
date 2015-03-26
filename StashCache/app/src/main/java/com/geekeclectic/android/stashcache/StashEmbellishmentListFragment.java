@@ -3,10 +3,8 @@ package com.geekeclectic.android.stashcache;
 import android.app.Activity;
 import android.os.Build;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -19,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ArrayAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,10 +32,9 @@ import java.util.UUID;
 public class StashEmbellishmentListFragment extends UpdateListFragment implements Observer, StashEmbellishmentQuantityDialogFragment.StashEmbellishmentQuantityDialogListener {
 
     private ArrayList<UUID> mEmbellishments;
-    private int numericTab;
+    private int mViewCode;
     private UpdateListFragmentsListener mCallback;
 
-    private static final String TAG = "EmbellishmentListFragment";
     private static final int EMBELLISHMENT_GROUP_ID = R.id.embellishment_context_menu;
     private static final String EMBELLISHMENT_VIEW_ID = "com.geekeclectic.android.stashcache.embellishment_view_id";
     private static final String EDIT_STASH_DIALOG = "embellishment stash dialog";
@@ -53,15 +49,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         setHasOptionsMenu(true);
 
         // get the current list of embellishments to display
-        String viewCode = getArguments().getString(EMBELLISHMENT_VIEW_ID);
-
-        if (viewCode.equals("master")) {
-            numericTab = 1;
-        } else if (viewCode.equals("stash")) {
-            numericTab = 0;
-        } else {
-            numericTab = 2;
-        }
+        mViewCode = getArguments().getInt(EMBELLISHMENT_VIEW_ID, 0);
 
         mEmbellishments = getListFromStash();
         Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity().getApplicationContext()));
@@ -71,9 +59,9 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         setListAdapter(adapter);
     }
 
-    public static StashEmbellishmentListFragment newInstance(String viewCode) {
+    public static StashEmbellishmentListFragment newInstance(int viewId) {
         Bundle args = new Bundle();
-        args.putString(EMBELLISHMENT_VIEW_ID, viewCode);
+        args.putInt(EMBELLISHMENT_VIEW_ID, viewId);
 
         StashEmbellishmentListFragment fragment = new StashEmbellishmentListFragment();
         fragment.setArguments(args);
@@ -163,7 +151,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setAppropriateEmptyMessage(getArguments().getString(EMBELLISHMENT_VIEW_ID));
+        setAppropriateEmptyMessage();
     }
 
     @Override
@@ -183,20 +171,20 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         switch (item.getItemId()) {
             case R.id.menu_item_new_embellishment:
                 // create a new embellishment
-                StashEmbellishment embellishment = new StashEmbellishment();
+                StashEmbellishment embellishment = new StashEmbellishment(getActivity().getApplicationContext());
                 StashData.get(getActivity().getApplicationContext()).addEmbellishment(embellishment);
 
                 // start StashEmbellishmentFragment with the new embellishment
                 Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
                 i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishment.getId());
-                i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, numericTab);
+                i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, mViewCode);
                 startActivityForResult(i, 0);
                 return true;
             case R.id.menu_item_edit_embellishment_stash:
                 FragmentManager fm = getActivity().getSupportFragmentManager();
 
                 ArrayList<UUID> embellishmentList;
-                if (numericTab == 0) {
+                if (mViewCode == 0) {
                     embellishmentList = new ArrayList<UUID>(StashData.get(getActivity().getApplicationContext()).getEmbellishmentList());
                 } else {
                     embellishmentList = new ArrayList<UUID>(mEmbellishments);
@@ -247,7 +235,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         // start StashEmbellishmentPagerActivity
         Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
         i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishmentId);
-        i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, numericTab);
+        i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, mViewCode);
         startActivity(i);
     }
 
@@ -262,20 +250,20 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     }
 
     private ArrayList<UUID> getListFromStash() {
-        if (numericTab == 1) {
+        if (mViewCode == StashConstants.MASTER_TAB) {
             return StashData.get(getActivity().getApplicationContext()).getEmbellishmentList();
-        } else if (numericTab == 0) {
+        } else if (mViewCode == StashConstants.STASH_TAB) {
             return StashData.get(getActivity().getApplicationContext()).getEmbellishmentStashList();
         } else {
             return StashData.get(getActivity().getApplicationContext()).getEmbellishmentShoppingList();
         }
     }
 
-    private void setAppropriateEmptyMessage(String viewCode) {
+    private void setAppropriateEmptyMessage() {
         // empty message depends on the active tab,
-        if (viewCode.equals("master")) {
+        if (mViewCode == StashConstants.MASTER_TAB) {
             setEmptyText("You have not entered any embellishments.");
-        } else if (viewCode.equals("stash")) {
+        } else if (mViewCode == StashConstants.STASH_TAB) {
             setEmptyText("There are no embellishments in your stash.");
         } else {
             setEmptyText("There are no embellishments on your shopping list.");
@@ -311,9 +299,9 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
 
             vh.info.setText(embellishment.toString());
 
-            if (getArguments().getString(EMBELLISHMENT_VIEW_ID).equals("shopping")) {
+            if (mViewCode == StashConstants.SHOPPING_TAB) {
                 vh.quantity.setText(Integer.toString(embellishment.getNumberNeeded()));
-            } else if (getArguments().getString(EMBELLISHMENT_VIEW_ID).equals("master")) {
+            } else if (mViewCode == StashConstants.MASTER_TAB) {
                 vh.quantity.setText(Integer.toString(embellishment.getNumberOwned()) + " / " + Integer.toString(embellishment.getNumberNeeded()));
             } else {
                 vh.quantity.setText(Integer.toString(embellishment.getNumberOwned()));
@@ -321,10 +309,9 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
 
             return convertView;
         }
-
     }
 
-    static class ViewHolder {
+    private static class ViewHolder {
         TextView info;
         TextView quantity;
     }

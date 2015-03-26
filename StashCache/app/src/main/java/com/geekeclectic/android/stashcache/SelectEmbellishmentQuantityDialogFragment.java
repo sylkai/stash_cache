@@ -49,9 +49,6 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
-            case Dialog.BUTTON_NEGATIVE:
-                dialog.cancel();
-                break;
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();
 
@@ -73,17 +70,16 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
         builder.setTitle(R.string.embellishment_selectQuantity);
         builder.setAdapter(mAdapter, this);
         builder.setPositiveButton(R.string.ok, this);
-        builder.setNegativeButton(R.string.cancel, this);
 
         return builder.create();
     }
 
     private class QuantityAdapter extends ArrayAdapter<UUID> {
 
-        final StashPattern mPattern;
+        private final StashPattern mPattern;
 
         public QuantityAdapter(ArrayList<UUID> embellishments, StashPattern pattern) {
-            super(getActivity().getApplicationContext(), 0, embellishments);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, embellishments);
 
             mPattern = pattern;
         }
@@ -113,8 +109,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
 
             vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(embellishment)));
 
-            // when the button is clicked, if the quantity of the embellishment called for by the pattern
-            // is not already zero, decrease it
+            // decrease the quantity of the embellishment called for by the pattern when clicked
             vh.decreaseButton.setTag(vh);
             vh.decreaseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -122,16 +117,14 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                     Button decreaseButton = (Button) v;
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
-                    if (vh.patternRef.getQuantity(vh.embellishmentRef) != 0) {
-                        vh.patternRef.decreaseQuantity(vh.embellishmentRef);
-                    }
+                    vh.patternRef.decreaseQuantity(vh.embellishmentRef);
 
                     // change the displayed quantity
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.embellishmentRef)));
                 }
             });
 
-            // when the button is clicked, increase the quantity of the embellishment called for by the pattern
+            // increase the quantity of the embellishment called for by the pattern when clicked
             vh.increaseButton.setTag(vh);
             vh.increaseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -150,13 +143,13 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
         }
     }
 
-    static class ViewHolder {
-        TextView embellishmentInfo;
-        TextView quantity;
-        Button decreaseButton;
-        Button increaseButton;
-        StashEmbellishment embellishmentRef;
-        StashPattern patternRef;
+    private static class ViewHolder {
+        public TextView embellishmentInfo;
+        public TextView quantity;
+        public Button decreaseButton;
+        public Button increaseButton;
+        public StashEmbellishment embellishmentRef;
+        public StashPattern patternRef;
     }
 
 }

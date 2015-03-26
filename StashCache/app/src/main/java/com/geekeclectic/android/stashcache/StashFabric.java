@@ -39,27 +39,30 @@ public class StashFabric extends StashObject {
     private static final String JSON_SOURCE = "fabric company";
     private static final String JSON_ID = "fabric id";
 
-    public StashFabric() {
+    public StashFabric(Context context) {
         // random UUID generated in parent class
+        setContext(context);
     }
 
     public StashFabric(JSONObject json, Context context) throws JSONException {
         // load fabricId and necessary numbers
         mFabricCount = json.getInt(JSON_COUNT);
+        setContext(context);
 
-        if (mFabricCount > 25) {
-            mOverCount = 2;
+        if (mFabricCount > StashConstants.OVER_TWO_DEFAULT) {
+            mOverCount = StashConstants.OVER_TWO;
         } else {
-            mOverCount = 1;
+            mOverCount = StashConstants.OVER_ONE;
         }
 
         mFabricWidth = json.getDouble(JSON_WIDTH);
         mFabricHeight = json.getDouble(JSON_HEIGHT);
         setId(UUID.fromString(json.getString(JSON_ID)));
 
-        updateStitchableArea(context);
+        updateStitchableArea();
 
-        // check to make sure value was assigned before loading remaining variables
+        // check to make sure value was assigned before loading remaining variables - otherwise an
+        // exception is thrown
         if (json.has(JSON_COLOR)) {
             mFabricColor = json.getString(JSON_COLOR);
         }
@@ -121,37 +124,37 @@ public class StashFabric extends StashObject {
         return mFabricFor;
     }
 
-    public void setCount(int count, Context context) {
+    public void setCount(int count) {
         // fabric count must be an integer, used to calculate stitchable area
         mFabricCount = count;
 
-        if (count > 25) {
-            mOverCount = 2;
+        if (count > StashConstants.OVER_TWO_DEFAULT) {
+            mOverCount = StashConstants.OVER_TWO;
         } else {
-            mOverCount = 1;
+            mOverCount = StashConstants.OVER_ONE;
         }
 
-        updateStitchableArea(context);
+        updateStitchableArea();
     }
 
     public int getCount() {
         return mFabricCount;
     }
 
-    public void setWidth(double width, Context context) {
+    public void setWidth(double width) {
         // fabric width in inches, can be decimal - used to calculate stitchable area
         mFabricWidth = width;
-        updateStitchableArea(context);
+        updateStitchableArea();
     }
 
     public double getWidth() {
         return mFabricWidth;
     }
 
-    public void setHeight(double height, Context context) {
+    public void setHeight(double height) {
         // fabric height in inches, can be decimal - used to calculate stitchable area
         mFabricHeight = height;
-        updateStitchableArea(context);
+        updateStitchableArea();
     }
 
     public double getHeight() {
@@ -179,14 +182,14 @@ public class StashFabric extends StashObject {
         return (mFabricFor != null);
     }
 
-    private void updateStitchableArea(Context context) {
+    private void updateStitchableArea() {
         // calculates the available stitch count using the fabric size and count, minus surrounding
         // edge buffer for framing, updated every time height/width/count is changed
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        double edge_buffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, "3.0"));
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        double edge_buffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));
 
-        mStitchWidth = (mFabricWidth - edge_buffer * 2) * mFabricCount / mOverCount;
-        mStitchHeight = (mFabricHeight - edge_buffer * 2) * mFabricCount / mOverCount;
+        mStitchWidth = (mFabricWidth - edge_buffer * StashConstants.TWO_BORDERS) * mFabricCount / mOverCount;
+        mStitchHeight = (mFabricHeight - edge_buffer * StashConstants.TWO_BORDERS) * mFabricCount / mOverCount;
     }
 
 }

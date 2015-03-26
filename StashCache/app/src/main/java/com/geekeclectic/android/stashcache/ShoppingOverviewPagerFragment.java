@@ -22,8 +22,7 @@ import java.util.Observer;
 
 public class ShoppingOverviewPagerFragment extends UpdateFragment {
 
-    static final int ITEMS = 3;
-    static final String TAG = "ShoppingOverview";
+    public static final String TAG = "ShoppingOverview";
 
     private ViewPager mViewPager;
     private StashOverviewPagerAdapter mAdapter;
@@ -62,6 +61,8 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        // exceptions handled because Java, not because they should ever be called
         try {
             mCallback = (OnTabSwipeListener) activity;
         } catch (ClassCastException e) {
@@ -90,21 +91,21 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
 
         @Override
         public int getCount() {
-            return ITEMS;
+            return StashConstants.SHOPPING_CATEGORIES;
         }
 
         @Override
         public Fragment getItem(int i) {
             Fragment fragment;
             switch (i) {
-                case 1: // thread list
-                    fragment = StashThreadListFragment.newInstance("shopping");
+                case StashConstants.SHOPPING_THREAD_VIEW: // thread list
+                    fragment = StashThreadListFragment.newInstance(StashConstants.SHOPPING_TAB);
                     break;
-                case 2: // embellishment list
-                    fragment = StashEmbellishmentListFragment.newInstance("shopping");
+                case StashConstants.SHOPPING_EMBELLISHMENT_VIEW: // embellishment list
+                    fragment = StashEmbellishmentListFragment.newInstance(StashConstants.SHOPPING_TAB);
                     break;
                 default: // pattern list
-                    fragment = StashPatternListFragment.newInstance("shopping");
+                    fragment = StashPatternListFragment.newInstance(StashConstants.SHOPPING_TAB);
             }
 
             if (fragment instanceof Observer) {
@@ -117,9 +118,9 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 1: // thread list
+                case StashConstants.SHOPPING_THREAD_VIEW: // thread list
                     return getString(R.string.thread_list_title).toUpperCase();
-                case 2: // embellishment list
+                case StashConstants.SHOPPING_EMBELLISHMENT_VIEW: // embellishment list
                     return getString(R.string.embellishment_list_title).toUpperCase();
                 default: // pattern list
                     return getString(R.string.shopping_pattern_list_title).toUpperCase();

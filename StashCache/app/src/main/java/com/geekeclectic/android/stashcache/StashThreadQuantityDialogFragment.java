@@ -47,10 +47,7 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
-            /*case Dialog.BUTTON_NEGATIVE:
-                dialog.cancel();
 
-                break;*/
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();
 
@@ -72,17 +69,16 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
         builder.setTitle(R.string.thread_stashQuantity);
         builder.setAdapter(mAdapter, this);
         builder.setPositiveButton(R.string.ok, this);
-        // builder.setNegativeButton(R.string.cancel, this);
 
         return builder.create();
     }
 
     private class QuantityAdapter extends ArrayAdapter<UUID> {
 
-        StashData stash;
+        private StashData stash;
 
         public QuantityAdapter(ArrayList<UUID> threads) {
-            super(getActivity().getApplicationContext(), 0, threads);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, threads);
             stash = StashData.get(getActivity().getApplicationContext());
         }
 
@@ -116,18 +112,7 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
                     Button decreaseButton = (Button) v;
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
-                    // if the quantity of this thread is > 0, decrease it by one
-                    if (vh.threadRef.getSkeinsOwned() > 0) {
-                        vh.threadRef.decreaseOwnedQuantity();
-                    }
-
-                    if (vh.threadRef.getSkeinsOwned() == 0) {
-                        stash.removeThreadFromStash(vh.threadRef.getId());
-                    }
-
-                    if (vh.threadRef.needToBuy()) {
-                        stash.addThreadToShoppingList(vh.threadRef.getId());
-                    }
+                    vh.threadRef.decreaseOwnedQuantity();
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.threadRef.getSkeinsOwned()));
@@ -141,16 +126,8 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
                     Button increaseButton = (Button)v;
                     ViewHolder vh = (ViewHolder)increaseButton.getTag();
 
-                    if (vh.threadRef.getSkeinsOwned() == 0) {
-                        stash.addThreadToStash(vh.threadRef.getId());
-                    }
-
                     // increase the quantity of the thread for this pattern by 1
                     vh.threadRef.increaseOwnedQuantity();
-
-                    if (!vh.threadRef.needToBuy()) {
-                        stash.removeThreadFromShoppingList(vh.threadRef.getId());
-                    }
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.threadRef.getSkeinsOwned()));
@@ -161,12 +138,12 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
         }
     }
 
-    static class ViewHolder {
-        TextView threadInfo;
-        TextView quantity;
-        Button decreaseButton;
-        Button increaseButton;
-        StashThread threadRef;
+    private static class ViewHolder {
+        public TextView threadInfo;
+        public TextView quantity;
+        public Button decreaseButton;
+        public Button increaseButton;
+        public StashThread threadRef;
     }
 
 }

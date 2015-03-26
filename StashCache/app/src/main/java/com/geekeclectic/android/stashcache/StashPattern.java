@@ -1,5 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
+import android.content.Context;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +41,7 @@ public class StashPattern extends StashObject {
     private static final String JSON_QUANTITY_ENTRY = "number";
     private static final String JSON_KITTED = "kitted";
 
-    public StashPattern() {
+    public StashPattern(Context context) {
         // random ID generated in parent class
 
         // initialize threadList
@@ -47,14 +49,16 @@ public class StashPattern extends StashObject {
         mEmbellishments = new ArrayList<UUID>();
         mQuantities = new HashMap<UUID, Integer>();
         mIsKitted = false;
+        setContext(context);
     }
 
-    public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap, HashMap<String, StashEmbellishment> embellishmentMap) throws JSONException {
+    public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap, HashMap<String, StashEmbellishment> embellishmentMap, Context context) throws JSONException {
         setId(UUID.fromString(json.getString(JSON_PATTERN)));
+        setContext(context);
         mIsKitted = json.getBoolean(JSON_KITTED);
 
         // because values are only stored if they exist, we need to check for the tag before
-        // getting the value
+        // getting the value (otherwise an exception is thrown)
         if (json.has(JSON_NAME)) {
             mPatternName = json.getString(JSON_NAME);
         }
@@ -90,18 +94,21 @@ public class StashPattern extends StashObject {
             for (int i = 0; i < array.length(); i++) {
                 // look up threadId in threadMap to get appropriate thread object
                 StashThread thread = threadMap.get(array.getString(i));
+                UUID threadId = thread.getId();
 
-                if (mThreads.contains(thread.getId())) {
-                    mQuantities.put(thread.getId(), mQuantities.get(thread.getId()) + 1);
+                if (mThreads.contains(threadId)) {
+                    mQuantities.put(threadId, mQuantities.get(threadId) + 1);
+                    thread.updateNeeded(this, mQuantities.get(threadId));
                 } else {
                     // set link in thread object to the pattern
                     thread.usedInPattern(this);
 
                     // add threadId to list
-                    mThreads.add(thread.getId());
+                    mThreads.add(threadId);
 
                     // add thread to quantities map
-                    mQuantities.put(thread.getId(), 1);
+                    mQuantities.put(threadId, 1);
+                    thread.updateNeeded(this, mQuantities.get(threadId));
                 }
             }
         }
@@ -248,84 +255,86 @@ public class StashPattern extends StashObject {
         return mPatternFabric;
     }
 
-    public void addThread(StashThread thread) {
-        if (!mThreads.contains(thread.getId())) {
-            mThreads.add(thread.getId());
-            mQuantities.put(thread.getId(), 1);
-        } else {
-            mQuantities.put(thread.getId(), mQuantities.get(thread.getId()) + 1);
-        }
-    }
-
     public void removeThread(StashThread thread) {
+        // get rid of connections between the thread and pattern (pattern contribution to the
+        // shopping list if kitted handled in removePattern (because of overlap)
         mThreads.remove(thread.getId());
         mQuantities.remove(thread.getId());
-    }
-
-    public void addEmbellishment(StashEmbellishment embellishment) {
-        if (!mEmbellishments.contains(embellishment.getId())) {
-            mEmbellishments.add(embellishment.getId());
-            mQuantities.put(embellishment.getId(), 1);
-        } else {
-            mQuantities.put(embellishment.getId(), mQuantities.get(embellishment.getId()) + 1);
-        }
-
+        thread.removePattern(this);
     }
 
     public void removeEmbellishment(StashEmbellishment embellishment) {
+        // if the pattern was marked kitted, remove the pattern's contribution to the embellishment shopping list
+        if (mIsKitted) {
+            embellishment.removeNeeded(mQuantities.get(embellishment.getId()));
+        }
+
+        // get rid of connections between the embellishment and pattern
         mEmbellishments.remove(embellishment.getId());
         mQuantities.remove(embellishment.getId());
-    }
-
-    public void updateQuantity(StashThread thread, int number) {
-        mQuantities.put(thread.getId(), number);
+        embellishment.removePattern(this);
     }
 
     public void decreaseQuantity(StashThread thread) {
-        // decrease quantity for thread in the quantitymap by one, remove it from map/thread list if
+        // decrease quantity for thread in the quantitymap by 1, remove it from map/thread list if
         // quantity goes to 0
-        if (mQuantities.get(thread.getId()) == 1) {
-            mQuantities.remove(thread.getId());
-            mThreads.remove(thread.getId());
+        UUID threadId = thread.getId();
+        Integer count = mQuantities.get(threadId);
+
+        if (count == 1) {
+            mQuantities.remove(threadId);
+            mThreads.remove(threadId);
             thread.removePattern(this);
-        } else {
-            mQuantities.put(thread.getId(), mQuantities.get(thread.getId()) - 1);
+        } else if (count > 1) {
+            mQuantities.put(threadId, count - 1);
+            thread.updateNeeded(this, count - 1);
         }
     }
 
     public void increaseQuantity(StashThread thread) {
-        // increase quantity for thread in the quantitymap by one, add it to map/thread list if the
+        // increase quantity for thread in the quantitymap by 1, add it to map/thread list if the
         // quantity had been 0
-        if (mQuantities.get(thread.getId()) == null) {
-            mQuantities.put(thread.getId(), 1);
-            mThreads.add(thread.getId());
+        UUID threadId = thread.getId();
+        Integer count = mQuantities.get(threadId);
+
+        if (count == null) {
+            mQuantities.put(threadId, 1);
+            mThreads.add(threadId);
             thread.usedInPattern(this);
-        } else {
-            mQuantities.put(thread.getId(), mQuantities.get(thread.getId()) + 1);
+            thread.updateNeeded(this, mQuantities.get(threadId));
+        } else if (count > 0) {
+            mQuantities.put(threadId, count + 1);
+            thread.updateNeeded(this, mQuantities.get(threadId));
         }
     }
 
     public void decreaseQuantity(StashEmbellishment embellishment) {
-        // decrease quantity for embellishment in the quantitymap by one, remove it from map/thread list if
+        // decrease quantity for embellishment in the quantitymap by 1, remove it from map/thread list if
         // quantity goes to 0
-        if (mQuantities.get(embellishment.getId()) == 1) {
-            mQuantities.remove(embellishment.getId());
-            mEmbellishments.remove(embellishment.getId());
+        UUID embellishmentId = embellishment.getId();
+        Integer count = mQuantities.get(embellishmentId);
+
+        if (count == 1) {
+            mQuantities.remove(embellishmentId);
+            mEmbellishments.remove(embellishmentId);
             embellishment.removePattern(this);
-        } else {
-            mQuantities.put(embellishment.getId(), mQuantities.get(embellishment.getId()) - 1);
+        } else if (count > 1) {
+            mQuantities.put(embellishmentId, count - 1);
         }
     }
 
     public void increaseQuantity(StashEmbellishment embellishment) {
-        // increase quantity for embellishment in the quantitymap by one, add it to map/thread list if the
+        // increase quantity for embellishment in the quantitymap by 1, add it to map/thread list if the
         // quantity had been 0
-        if (mQuantities.get(embellishment.getId()) == null) {
-            mQuantities.put(embellishment.getId(), 1);
-            mEmbellishments.add(embellishment.getId());
+        UUID embellishmentId = embellishment.getId();
+        Integer count = mQuantities.get(embellishmentId);
+
+        if (count == null) {
+            mQuantities.put(embellishmentId, 1);
+            mEmbellishments.add(embellishmentId);
             embellishment.usedInPattern(this);
-        } else {
-            mQuantities.put(embellishment.getId(), mQuantities.get(embellishment.getId()) + 1);
+        } else if (count > 0) {
+            mQuantities.put(embellishmentId, count + 1);
         }
     }
 
@@ -353,7 +362,7 @@ public class StashPattern extends StashObject {
         mIsKitted = isKitted;
     }
 
-    public boolean getKitted() {
+    public boolean isKitted() {
         return mIsKitted;
     }
 

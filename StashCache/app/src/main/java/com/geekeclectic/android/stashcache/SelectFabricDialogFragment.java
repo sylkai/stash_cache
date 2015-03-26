@@ -79,7 +79,7 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
 
     private class FabricAdapter extends ArrayAdapter<UUID> {
         public FabricAdapter(ArrayList<UUID> fabrics) {
-            super(getActivity().getApplicationContext(), 0, fabrics);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, fabrics);
         }
 
         @Override
@@ -114,10 +114,10 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
 
     }
 
-    static class ViewHolder {
-        TextView fabricInfo;
-        TextView fabricSize;
-        TextView fabricAssigned;
+    private static class ViewHolder {
+        public TextView fabricInfo;
+        public TextView fabricSize;
+        public TextView fabricAssigned;
     }
 
 }

@@ -34,7 +34,7 @@ public class StashThreadFragment extends Fragment {
     public static final String EXTRA_THREAD_ID = "com.geekeclectic.android.stashcache.thread_id";
     public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.thread_calling_stash_id";
 
-    private static final int VIEW_ID = 2;
+    private static final int VIEW_ID = StashConstants.THREAD_VIEW;
 
     private StashThread mThread;
     private EditText mThreadSource;
@@ -94,7 +94,8 @@ public class StashThreadFragment extends Fragment {
                     Intent i = new Intent(getActivity(), StashOverviewActivity.class);
                     i.putExtra(StashOverviewActivity.EXTRA_FRAGMENT_ID, callingTab);
 
-                    if (callingTab == 2) {
+                    // adjust if necessary because the calling tab was the shopping tab
+                    if (callingTab == StashConstants.SHOPPING_TAB) {
                         i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID - 1);
                     } else {
                         i.putExtra(StashOverviewActivity.EXTRA_VIEW_ID, VIEW_ID);
@@ -205,14 +206,6 @@ public class StashThreadFragment extends Fragment {
             public void onClick(View view) {
                 mThread.decreaseOwnedQuantity();
 
-                if (!mThread.isOwned()) {
-                    StashData.get(getActivity().getApplicationContext()).removeThreadFromStash(mThread.getId());
-                }
-
-                if (mThread.needToBuy()) {
-                    StashData.get(getActivity().getApplicationContext()).addThreadToShoppingList(mThread.getId());
-                }
-
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
                 mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
                 mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
@@ -223,15 +216,7 @@ public class StashThreadFragment extends Fragment {
         mOwnedIncrease.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mThread.isOwned()) {
-                    StashData.get(getActivity().getApplicationContext()).addThreadToStash(mThread.getId());
-                }
-
                 mThread.increaseOwnedQuantity();
-
-                if (!mThread.needToBuy()) {
-                    StashData.get(getActivity().getApplicationContext()).removeThreadFromShoppingList(mThread.getId());
-                }
 
                 mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
                 mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
@@ -245,10 +230,6 @@ public class StashThreadFragment extends Fragment {
             public void onClick(View view) {
                 mThread.decreaseAdditionalQuantity();
 
-                if (!mThread.needToBuy()) {
-                    StashData.get(getActivity().getApplicationContext()).removeThreadFromShoppingList(mThread.getId());
-                }
-
                 mSkeinsToBuy.setText(Integer.toString(mThread.getAdditionalSkeins()));
                 mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
             }
@@ -259,10 +240,6 @@ public class StashThreadFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mThread.increaseAdditionalQuantity();
-
-                if (mThread.needToBuy()) {
-                    StashData.get(getActivity().getApplicationContext()).addThreadToShoppingList(mThread.getId());
-                }
 
                 mSkeinsToBuy.setText(Integer.toString(mThread.getAdditionalSkeins()));
                 mTotalToBuy.setText(Integer.toString(mThread.getSkeinsToBuy()));
@@ -303,8 +280,8 @@ public class StashThreadFragment extends Fragment {
         }
 
         int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
-        if (listAdapter.getCount() > 4) {
-            for (int i = 0; i < 4; i++) {
+        if (listAdapter.getCount() > StashConstants.DISPLAY_LIST_ITEMS) {
+            for (int i = 0; i < StashConstants.DISPLAY_LIST_ITEMS; i++) {
                 View listItem = listAdapter.getView(i, null, listView);
                 if (listItem instanceof ViewGroup)
                     listItem.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
@@ -329,7 +306,7 @@ public class StashThreadFragment extends Fragment {
     private class PatternAdapter extends ArrayAdapter<StashPattern> {
 
         public PatternAdapter(ArrayList<StashPattern> patterns) {
-            super(getActivity().getApplicationContext(), 0, patterns);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, patterns);
         }
 
         @Override
@@ -358,10 +335,10 @@ public class StashThreadFragment extends Fragment {
 
     }
 
-    static class ViewHolder {
-        TextView info;
-        TextView quantity;
-        UUID itemId;
+    private static class ViewHolder {
+        public TextView info;
+        public TextView quantity;
+        public UUID itemId;
     }
 
 }

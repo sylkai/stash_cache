@@ -49,9 +49,6 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
-            case Dialog.BUTTON_NEGATIVE:
-                dialog.cancel();
-                break;
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();
 
@@ -73,7 +70,6 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
         builder.setTitle(R.string.thread_selectQuantity);
         builder.setAdapter(mAdapter, this);
         builder.setPositiveButton(R.string.ok, this);
-        builder.setNegativeButton(R.string.cancel, this);
 
         return builder.create();
     }
@@ -83,7 +79,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
         final StashPattern mPattern;
 
         public QuantityAdapter(ArrayList<UUID> threads, StashPattern pattern) {
-            super(getActivity().getApplicationContext(), 0, threads);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, threads);
 
             mPattern = pattern;
         }
@@ -112,6 +108,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
             vh.threadInfo.setText(thread.toString());
             vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(thread)));
 
+            // decrease the quantity of thread called for by the pattern by one when clicked
             vh.decreaseButton.setTag(vh);
             vh.decreaseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -119,16 +116,14 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                     Button decreaseButton = (Button) v;
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
-                    // if the quantity of this thread is > 0, decrease it by one
-                    if (vh.patternRef.getQuantity(vh.threadRef) != 0) {
-                        vh.patternRef.decreaseQuantity(vh.threadRef);
-                    }
+                    vh.patternRef.decreaseQuantity(vh.threadRef);
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.threadRef)));
                 }
             });
 
+            // increase the quantity of thread called for by the pattern by one when clicked
             vh.increaseButton.setTag(vh);
             vh.increaseButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -136,7 +131,6 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                     Button increaseButton = (Button)v;
                     ViewHolder vh = (ViewHolder)increaseButton.getTag();
 
-                    // increase the quantity of the thread for this pattern by 1
                     vh.patternRef.increaseQuantity(vh.threadRef);
 
                     // update the text display
@@ -148,13 +142,13 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
         }
     }
 
-    static class ViewHolder {
-        TextView threadInfo;
-        TextView quantity;
-        Button decreaseButton;
-        Button increaseButton;
-        StashThread threadRef;
-        StashPattern patternRef;
+    private static class ViewHolder {
+        public TextView threadInfo;
+        public TextView quantity;
+        public Button decreaseButton;
+        public Button increaseButton;
+        public StashThread threadRef;
+        public StashPattern patternRef;
     }
 
 }

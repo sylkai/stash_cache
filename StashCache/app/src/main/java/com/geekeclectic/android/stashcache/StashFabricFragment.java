@@ -27,7 +27,7 @@ public class StashFabricFragment extends Fragment {
     public static final String EXTRA_FABRIC_ID = "com.geekeclectic.android.stashcache.fabric_id";
     public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.fabric_calling_stash_id";
 
-    private static final int VIEW_ID = 1;
+    private static final int VIEW_ID = StashConstants.FABRIC_VIEW;
 
     private StashFabric mFabric;
     private StashPattern mPattern;
@@ -166,9 +166,9 @@ public class StashFabricFragment extends Fragment {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (!Integer.toString(mFabric.getCount()).equals(c.toString())) {
                     if (c.length() > 0) {
-                        mFabric.setCount(Integer.parseInt(c.toString()), getActivity().getApplicationContext());
+                        mFabric.setCount(Integer.parseInt(c.toString()));
                     } else {
-                        mFabric.setCount(0, getActivity().getApplicationContext());
+                        mFabric.setCount(StashConstants.INT_ZERO);
                     }
 
                     ActionBar actionBar = getActivity().getActionBar();
@@ -190,9 +190,9 @@ public class StashFabricFragment extends Fragment {
         mFabricWidth.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
-                    mFabric.setWidth(Double.parseDouble(c.toString()), getActivity().getApplicationContext());
+                    mFabric.setWidth(Double.parseDouble(c.toString()));
                 } else {
-                    mFabric.setWidth(0.0, getActivity().getApplicationContext());
+                    mFabric.setWidth(StashConstants.DOUBLE_ZERO);
                 }
             }
 
@@ -210,9 +210,9 @@ public class StashFabricFragment extends Fragment {
         mFabricHeight.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
-                    mFabric.setHeight(Double.parseDouble(c.toString()), getActivity().getApplicationContext());
+                    mFabric.setHeight(Double.parseDouble(c.toString()));
                 } else {
-                    mFabric.setHeight(0.0, getActivity().getApplicationContext());
+                    mFabric.setHeight(StashConstants.DOUBLE_ZERO);
                 }
             }
 

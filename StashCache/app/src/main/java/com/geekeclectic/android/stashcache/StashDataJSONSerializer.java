@@ -95,7 +95,7 @@ public class StashDataJSONSerializer {
 
         // create thread object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
-            StashThread thread = new StashThread(array.getJSONObject(i));
+            StashThread thread = new StashThread(array.getJSONObject(i), mContext);
             threadMap.put(thread.getKey(), thread);
         }
 
@@ -119,7 +119,7 @@ public class StashDataJSONSerializer {
 
         // create thread object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
-            StashEmbellishment embellishment = new StashEmbellishment(array.getJSONObject(i));
+            StashEmbellishment embellishment = new StashEmbellishment(array.getJSONObject(i), mContext);
             embellishmentMap.put(embellishment.getKey(), embellishment);
         }
 
@@ -132,7 +132,7 @@ public class StashDataJSONSerializer {
         // create pattern object from each JSON object in the array (using threadMap and fabricMap
         // to create linkages) and add it to the list
         for (int i = 0; i < array.length(); i++) {
-            StashPattern pattern = new StashPattern(array.getJSONObject(i), threadMap, fabricMap, embellishmentMap);
+            StashPattern pattern = new StashPattern(array.getJSONObject(i), threadMap, fabricMap, embellishmentMap, mContext);
             patternList.add(pattern);
         }
 

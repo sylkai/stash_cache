@@ -44,18 +44,19 @@ import java.util.UUID;
  * display of the fragment in case the underlying information for the Pattern has been updated.
  */
 
-public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, SelectThreadDialogFragment.SelectThreadDialogListener, Observer, SelectThreadQuantityDialogFragment.SelectThreadQuantityDialogListener, SelectEmbellishmentQuantityDialogFragment.SelectEmbellishmentQuantityDialogListener {
+public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, Observer, SelectThreadQuantityDialogFragment.SelectThreadQuantityDialogListener, SelectEmbellishmentQuantityDialogFragment.SelectEmbellishmentQuantityDialogListener {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
     public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.calling_stash_id";
     public static final String TAG = "StashPatternFragment";
+
     private static final int REQUEST_PICK_NEW_FABRIC = 0;
     private static final int REQUEST_TAKE_PHOTO = 1;
     private static final int RESULT_OK = 0;
 
     private static final String DIALOG_FABRIC = "fabric";
     private static final String DIALOG_THREAD = "thread";
-    private static final int VIEW_ID = 0;
+    private static final int VIEW_ID = StashConstants.PATTERN_VIEW;
 
     private StashPattern mPattern;
     private StashPatternFragment mFragment;
@@ -74,7 +75,6 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private ImageView mEditThread;
     private ImageView mEditEmbellishment;
     private TextView mFabricInfo;
-    private TextView mThreadInfo;
     private ListView mThreadDisplayList;
     private ListView mEmbellishmentDisplayList;
     private StashCreateShoppingList mShoppingList;
@@ -116,6 +116,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
+        // should never need to throw an exception, but it must be handled anyway...
         try {
             mCallback = (ChangedFragmentListener) activity;
         } catch (ClassCastException e) {
@@ -278,7 +279,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         // checkbox to indicate whether a pattern is to be kitted or not
         mIsKitted = (CheckBox)v.findViewById(R.id.pattern_kitted);
-        mIsKitted.setChecked(mPattern.getKitted());
+        mIsKitted.setChecked(mPattern.isKitted());
         mIsKitted.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -299,7 +300,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                     mPattern.setWidth(Integer.parseInt(c.toString()));
                 } else {
                     // user removed width information
-                    mPattern.setWidth(0);
+                    mPattern.setWidth(StashConstants.INT_ZERO);
                 }
             }
 
@@ -323,7 +324,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                     mPattern.setHeight(Integer.parseInt(c.toString()));
                 } else {
                     // user removed height information
-                    mPattern.setHeight(0);
+                    mPattern.setHeight(StashConstants.INT_ZERO);
                 }
             }
 
@@ -420,7 +421,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     }
 
     public void onSelectedOption(int selectedIndex) {
-        if (selectedIndex == 0) {
+        if (selectedIndex == StashConstants.USE_EXISTING_FABRIC) {
             // user chose to use existing fabric
             Log.d(TAG, "User chose to use existing fabric");
 
@@ -449,7 +450,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             SelectFabricDialogFragment dialog = SelectFabricDialogFragment.newInstance(possibleFabrics, previousFabric);
             dialog.setSelectFabricDialogListener(mFragment);
             dialog.show(fm, DIALOG_FABRIC);
-        } else if (selectedIndex == 2) {
+        } else if (selectedIndex == StashConstants.REMOVE_FABRIC) {
             // user chose to remove fabric
 
             mPattern.setFabric(null);
@@ -467,7 +468,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
 
             // create new fabric
-            mFabric = new StashFabric();
+            mFabric = new StashFabric(getActivity().getApplicationContext());
             StashData.get(getActivity().getApplicationContext()).addFabric(mFabric);
 
             // set links between fabric and pattern
@@ -506,7 +507,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         }
     }
 
-    public void onThreadsSelected(ArrayList<UUID> selectedThreads) {
+    /*public void onThreadsSelected(ArrayList<UUID> selectedThreads) {
         ArrayList<UUID> removeThreads = new ArrayList<UUID>();
 
         for (UUID threadId : mThreadList) {
@@ -541,7 +542,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         }
 
         updateThreadInfo();
-    }
+    }*/
 
     public void onThreadQuantitiesUpdate() {
         updateThreadInfo();
@@ -582,36 +583,25 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             mFabricInfo.append(mFabric.getSize());
         } else {
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            double edgeBuffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, "3.0"));
-            int defaultCount = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_COUNT_SETTING, "32"));
+            double edgeBuffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));
+            int defaultCount = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_COUNT_SETTING, StashConstants.DEFAULT_COUNT));
             int overCount;
 
             if (sharedPrefs.getBoolean(StashPreferencesActivity.KEY_OVER_SETTING, true)) {
-                overCount = 2;
+                overCount = StashConstants.OVER_TWO;
             } else {
-                overCount = 1;
+                overCount = StashConstants.OVER_ONE;
             }
 
-            double fabricWidth = mPattern.getWidth() / ((double) defaultCount / overCount) + 2 * edgeBuffer;
-            double fabricHeight = mPattern.getHeight() / ((double) defaultCount / overCount) + 2 * edgeBuffer;
+            double fabricWidth = mPattern.getWidth() / ((double) defaultCount / overCount) + StashConstants.TWO_BORDERS * edgeBuffer;
+            double fabricHeight = mPattern.getHeight() / ((double) defaultCount / overCount) + StashConstants.TWO_BORDERS * edgeBuffer;
 
             mFabricInfo.setText(String.format(getString(R.string.pattern_no_fabric), defaultCount, overCount, edgeBuffer, fabricWidth, fabricHeight));
         }
     }
 
     private void updateThreadInfo() {
-        if (mThreadList.size() > 0) {
-            Collections.sort(mThreadList, new StashThreadComparator(getActivity().getApplicationContext()));
-            /*mThreadInfo.setText("");
-
-            for (UUID threadId : mThreadList) {
-                StashThread thread = StashData.get(getActivity()).getThread(threadId);
-                mThreadInfo.append(thread.toString() + "\n");
-            }*/
-            ((ThreadAdapter)mThreadDisplayList.getAdapter()).notifyDataSetChanged();
-        } else {
-            // mThreadInfo.setText(R.string.pattern_no_thread);
-        }
+        ((ThreadAdapter)mThreadDisplayList.getAdapter()).notifyDataSetChanged();
     }
 
 /*    private void showPhoto() {
@@ -633,8 +623,8 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         }
 
         int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
-        if (listAdapter.getCount() > 4) {
-            for (int i = 0; i < 4; i++) {
+        if (listAdapter.getCount() > StashConstants.DISPLAY_LIST_ITEMS) {
+            for (int i = 0; i < StashConstants.DISPLAY_LIST_ITEMS; i++) {
                 View listItem = listAdapter.getView(i, null, listView);
                 if (listItem instanceof ViewGroup)
                     listItem.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
@@ -659,7 +649,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private class ThreadAdapter extends ArrayAdapter<UUID> {
 
         public ThreadAdapter(ArrayList<UUID> threads) {
-            super(getActivity().getApplicationContext(), 0, threads);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, threads);
         }
 
         @Override
@@ -691,7 +681,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private class EmbellishmentAdapter extends ArrayAdapter<UUID> {
 
         public EmbellishmentAdapter(ArrayList<UUID> embellishments) {
-            super(getActivity().getApplicationContext(), 0, embellishments);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, embellishments);
         }
 
         @Override
@@ -720,10 +710,10 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     }
 
-    static class ViewHolder {
-        TextView info;
-        TextView quantity;
-        UUID itemId;
+    private static class ViewHolder {
+        public TextView info;
+        public TextView quantity;
+        public UUID itemId;
     }
 
 }

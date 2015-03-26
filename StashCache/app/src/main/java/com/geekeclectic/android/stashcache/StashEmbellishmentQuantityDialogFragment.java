@@ -47,10 +47,6 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
-            /*case Dialog.BUTTON_NEGATIVE:
-                dialog.cancel();
-
-                break;*/
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();
 
@@ -72,7 +68,6 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
         builder.setTitle(R.string.embellishment_stashQuantity);
         builder.setAdapter(mAdapter, this);
         builder.setPositiveButton(R.string.ok, this);
-        // builder.setNegativeButton(R.string.cancel, this);
 
         return builder.create();
     }
@@ -117,17 +112,7 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
                     // if the quantity of this thread is > 0, decrease it by one
-                    if (vh.embellishmentRef.getNumberOwned() > 0) {
-                        vh.embellishmentRef.decreaseOwned();
-                    }
-
-                    if (vh.embellishmentRef.getNumberOwned() == 0) {
-                        stash.removeEmbellishmentFromStash(vh.embellishmentRef.getId());
-                    }
-
-                    if (vh.embellishmentRef.needToBuy()) {
-                        stash.addEmbellishmentToShoppingList(vh.embellishmentRef.getId());
-                    }
+                    vh.embellishmentRef.decreaseOwned();
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.embellishmentRef.getNumberOwned()));
@@ -141,16 +126,8 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
                     Button increaseButton = (Button)v;
                     ViewHolder vh = (ViewHolder)increaseButton.getTag();
 
-                    if (vh.embellishmentRef.getNumberOwned() == 0) {
-                        stash.addEmbellishmentToStash(vh.embellishmentRef.getId());
-                    }
-
                     // increase the quantity of the thread for this pattern by 1
                     vh.embellishmentRef.increaseOwned();
-
-                    if (!vh.embellishmentRef.needToBuy()) {
-                        stash.removeEmbellishmentFromShoppingList(vh.embellishmentRef.getId());
-                    }
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.embellishmentRef.getNumberOwned()));
@@ -161,12 +138,12 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
         }
     }
 
-    static class ViewHolder {
-        TextView embellishmentInfo;
-        TextView quantity;
-        Button decreaseButton;
-        Button increaseButton;
-        StashEmbellishment embellishmentRef;
+    private static class ViewHolder {
+        public TextView embellishmentInfo;
+        public TextView quantity;
+        public Button decreaseButton;
+        public Button increaseButton;
+        public StashEmbellishment embellishmentRef;
     }
 
 }

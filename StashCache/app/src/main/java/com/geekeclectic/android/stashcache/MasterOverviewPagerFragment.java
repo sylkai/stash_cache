@@ -22,8 +22,7 @@ import java.util.Observer;
 
 public class MasterOverviewPagerFragment extends UpdateFragment {
 
-    static final int ITEMS = 4;
-    static final String TAG = "MasterOverview";
+    public static final String TAG = "MasterOverview";
 
     private ViewPager mViewPager;
     private StashOverviewPagerAdapter mAdapter;
@@ -62,6 +61,8 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        // exceptions handled because Java, not because they should ever be called
         try {
             mCallback = (OnTabSwipeListener) activity;
         } catch (ClassCastException e) {
@@ -91,26 +92,27 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
 
         @Override
         public int getCount() {
-            return ITEMS;
+            return StashConstants.STASH_CATEGORIES;
         }
 
         @Override
         public Fragment getItem(int i) {
             Fragment fragment;
             switch (i) {
-                case 1: // fabric list
-                    fragment = StashFabricListFragment.newInstance("master");
+                case StashConstants.FABRIC_VIEW: // fabric list
+                    fragment = StashFabricListFragment.newInstance(StashConstants.MASTER_TAB);
                     break;
-                case 2: // thread list
-                    fragment = StashThreadListFragment.newInstance("master");
+                case StashConstants.THREAD_VIEW: // thread list
+                    fragment = StashThreadListFragment.newInstance(StashConstants.MASTER_TAB);
                     break;
-                case 3: // embellishment list
-                    fragment = StashEmbellishmentListFragment.newInstance("master");
+                case StashConstants.EMBELLISHMENT_VIEW: // embellishment list
+                    fragment = StashEmbellishmentListFragment.newInstance(StashConstants.MASTER_TAB);
                     break;
                 default: // pattern list
-                    fragment = StashPatternListFragment.newInstance("master");
+                    fragment = StashPatternListFragment.newInstance(StashConstants.MASTER_TAB);
             }
 
+            // set up the observers so that actions can trigger a refresh of the displayed list
             if (fragment instanceof Observer) {
                 mObservers.addObserver((Observer) fragment);
             }
@@ -121,11 +123,11 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 1: // fabric list
+                case StashConstants.FABRIC_VIEW: // fabric list
                     return getString(R.string.fabric_list_title).toUpperCase();
-                case 2: // thread list
+                case StashConstants.THREAD_VIEW: // thread list
                     return getString(R.string.thread_list_title).toUpperCase();
-                case 3: // embellishment list
+                case StashConstants.EMBELLISHMENT_VIEW: // embellishment list
                     return getString(R.string.embellishment_list_title).toUpperCase();
                 default: // pattern list
                     return getString(R.string.pattern_list_title).toUpperCase();

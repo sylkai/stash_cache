@@ -26,7 +26,6 @@ public class StashImporter {
     private static HashMap<String, ArrayList<UUID>> threadMap;
     private static HashMap<String, ArrayList<UUID>> embellishmentMap;
     private static InputStream in;
-    private static int DEFAULT = 1;
     private static String UTF8 = "utf8";
     private Context mContext;
 
@@ -116,7 +115,7 @@ public class StashImporter {
                     try {
                         count = Integer.parseInt(line);
                     } catch (NumberFormatException e) {
-                        count = 0;
+                        count = StashConstants.INT_ZERO;
                         allNumbersFormatted = false;
                     }
                 }
@@ -128,7 +127,7 @@ public class StashImporter {
                     try {
                         height = Double.parseDouble(line);
                     } catch (NumberFormatException e) {
-                        height = 0.0;
+                        height = StashConstants.DOUBLE_ZERO;
                         allNumbersFormatted = false;
                     }
                 }
@@ -140,7 +139,7 @@ public class StashImporter {
                     try {
                         width = Double.parseDouble(line);
                     } catch (NumberFormatException e) {
-                        width = 0.0;
+                        width = StashConstants.DOUBLE_ZERO;
                         allNumbersFormatted = false;
                     }
                 }
@@ -193,7 +192,7 @@ public class StashImporter {
                     try {
                         width = Integer.parseInt(line);
                     } catch (NumberFormatException e) {
-                        width = 0;
+                        width = StashConstants.INT_ZERO;
                         allNumbersFormatted = false;
                     }
                 }
@@ -205,13 +204,13 @@ public class StashImporter {
                     try {
                         height = Integer.parseInt(line);
                     } catch (NumberFormatException e) {
-                        height = 0;
+                        height = StashConstants.INT_ZERO;
                         allNumbersFormatted = false;
                     }
                 }
 
                 // create pattern
-                StashPattern pattern = new StashPattern();
+                StashPattern pattern = new StashPattern(mContext);
                 pattern.setPatternName(title);
                 pattern.setSource(source);
                 pattern.setHeight(height);
@@ -245,7 +244,7 @@ public class StashImporter {
                         try {
                             count = Integer.parseInt(line);
                         } catch (NumberFormatException e) {
-                            count = 0;
+                            count = StashConstants.INT_ZERO;
                             allNumbersFormatted = false;
                         }
                     }
@@ -257,7 +256,7 @@ public class StashImporter {
                         try {
                             fabric_height = Double.parseDouble(line);
                         } catch (NumberFormatException e) {
-                            fabric_height = 0.0;
+                            fabric_height = StashConstants.DOUBLE_ZERO;
                             allNumbersFormatted = false;
                         }
                     }
@@ -269,7 +268,7 @@ public class StashImporter {
                         try {
                             fabric_width = Double.parseDouble(line);
                         } catch (NumberFormatException e) {
-                            fabric_width = 0.0;
+                            fabric_width = StashConstants.DOUBLE_ZERO;
                             allNumbersFormatted = false;
                         }
                     }
@@ -304,7 +303,7 @@ public class StashImporter {
                         StashThread thread = findOrAddThread(source, type, id, key, stash);
 
                         thread.usedInPattern(pattern);
-                        pattern.addThread(thread);
+                        pattern.increaseQuantity(thread);
                     }
 
                     if (line == null || line.equals("*")) {
@@ -329,7 +328,7 @@ public class StashImporter {
                         StashEmbellishment embellishment = findOrAddEmbellishment(source, type, id, stash);
 
                         embellishment.usedInPattern(pattern);
-                        pattern.addEmbellishment(embellishment);
+                        pattern.increaseQuantity(embellishment);
                     }
 
                     if (line == null || line.equals("---") || line.equals("***")) {
@@ -406,23 +405,23 @@ public class StashImporter {
             }
 
             if (fileFormattedCorrectly && allNumbersFormatted) {
-                return 0;
+                return StashConstants.FILE_IMPORT_ALL_CLEAR;
             } else if (fileFormattedCorrectly == false) {
-                return 1;
+                return StashConstants.FILE_INCORRECT_FORMAT;
             } else {
-                return 2;
+                return StashConstants.NUMBER_FORMAT_INCORRECT;
             }
         }
     }
 
     private StashThread createNewThread(String source, String type, String id, String key, StashData stash, boolean inStash) {
-        StashThread thread = new StashThread();
+        StashThread thread = new StashThread(mContext);
 
         thread.setSource(source);
         thread.setType(type);
         thread.setCode(id);
         if (inStash) {
-            thread.setSkeinsOwned(DEFAULT);
+            thread.increaseOwnedQuantity();
         }
 
         stash.addThread(thread);
@@ -440,14 +439,14 @@ public class StashImporter {
     }
 
     private StashFabric createNewFabric(String source, String type, String color, int count, Double height, Double width, StashData stash) {
-        StashFabric fabric = new StashFabric();
+        StashFabric fabric = new StashFabric(mContext);
 
         fabric.setSource(source);
         fabric.setType(type);
         fabric.setColor(color);
-        fabric.setCount(count, mContext);
-        fabric.setHeight(height, mContext);
-        fabric.setWidth(width, mContext);
+        fabric.setCount(count);
+        fabric.setHeight(height);
+        fabric.setWidth(width);
 
         stash.addFabric(fabric);
 
@@ -455,13 +454,13 @@ public class StashImporter {
     }
 
     private StashEmbellishment createNewEmbellishment(String source, String type, String id, StashData stash, boolean inStash) {
-        StashEmbellishment embellishment = new StashEmbellishment();
+        StashEmbellishment embellishment = new StashEmbellishment(mContext);
 
         embellishment.setSource(source);
         embellishment.setType(type);
         embellishment.setCode(id);
         if (inStash) {
-            embellishment.setNumberOwned(DEFAULT);
+            embellishment.increaseOwned();
         }
 
         stash.addEmbellishment(embellishment);

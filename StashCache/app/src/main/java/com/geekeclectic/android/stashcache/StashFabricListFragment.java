@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -40,7 +39,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
     private static final int FABRIC_GROUP_ID = R.id.fabric_context_menu;
     private static final String FABRIC_VIEW_ID = "com.geekeclectic.android.stashcache.fabric_view_id";
 
-    private int numericTab;
+    private int mViewCode;
 
     public StashFabricListFragment() {
         // required empty public constructor
@@ -52,15 +51,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         setHasOptionsMenu(true);
 
         // get the current list of fabrics to display
-        String viewCode = getArguments().getString(FABRIC_VIEW_ID);
-
-        if (viewCode.equals("master")) {
-            numericTab = 1;
-        } else if (viewCode.equals("stash")) {
-            numericTab = 0;
-        } else {
-            numericTab = 2;
-        }
+        mViewCode = getArguments().getInt(FABRIC_VIEW_ID);
 
         mFabrics = StashData.get(getActivity().getApplicationContext()).getFabricList();
 
@@ -69,9 +60,9 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         setListAdapter(adapter);
     }
 
-    public static StashFabricListFragment newInstance(String viewCode) {
+    public static StashFabricListFragment newInstance(int viewCode) {
         Bundle args = new Bundle();
-        args.putString(FABRIC_VIEW_ID, viewCode);
+        args.putInt(FABRIC_VIEW_ID, viewCode);
 
         StashFabricListFragment fragment = new StashFabricListFragment();
         fragment.setArguments(args);
@@ -150,6 +141,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
+        // exception handling should not be needed but required because Java
         try {
             mCallback = (UpdateListFragmentsListener) activity;
         } catch (ClassCastException e) {
@@ -161,7 +153,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setAppropriateEmptyMessage(getArguments().getString(FABRIC_VIEW_ID));
+        setAppropriateEmptyMessage();
     }
 
     @Override
@@ -181,13 +173,13 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         switch (item.getItemId()) {
             case R.id.menu_item_new_fabric:
                 // create a new fabric and add it to the stash
-                StashFabric fabric = new StashFabric();
+                StashFabric fabric = new StashFabric(getActivity().getApplicationContext());
                 StashData.get(getActivity().getApplicationContext()).addFabric(fabric);
 
                 // start StashFabricFragment with the new fabric
                 Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
                 i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabric.getId());
-                i.putExtra(StashFabricFragment.EXTRA_TAB_ID, numericTab);
+                i.putExtra(StashFabricFragment.EXTRA_TAB_ID, mViewCode);
                 startActivityForResult(i, 0);
                 return true;
             default:
@@ -232,7 +224,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         // start StashFabricPagerActivity
         Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
         i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabricId);
-        i.putExtra(StashFabricFragment.EXTRA_TAB_ID, numericTab);
+        i.putExtra(StashFabricFragment.EXTRA_TAB_ID, mViewCode);
         startActivity(i);
     }
 
@@ -241,8 +233,8 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
-    private void setAppropriateEmptyMessage(String viewCode) {
-        if (viewCode.equals("master")) {
+    private void setAppropriateEmptyMessage() {
+        if (mViewCode == StashConstants.MASTER_TAB) {
             setEmptyText("You have not entered any fabric.");
         } else {
             setEmptyText("There is no fabric in your stash.");
@@ -251,7 +243,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
 
     private class FabricAdapter extends ArrayAdapter<UUID> {
         public FabricAdapter(ArrayList<UUID> fabrics) {
-            super(getActivity().getApplicationContext(), 0, fabrics);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, fabrics);
         }
 
         @Override
@@ -259,23 +251,31 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
             // if we weren't given a view, inflate one
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_fabric, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.info = (TextView) convertView.findViewById(R.id.fabric_list_item_infoTextView);
+                vh.size = (TextView) convertView.findViewById(R.id.fabric_list_item_sizeTextView);
+                vh.assigned = (CheckBox) convertView.findViewById(R.id.fabric_list_item_assignedCheckBox);
+                convertView.setTag(vh);
             }
 
+            ViewHolder vh = (ViewHolder)convertView.getTag();
             // configure view for this fabric
             StashFabric fabric = StashData.get(getActivity().getApplicationContext()).getFabric(getItem(position));
 
-            TextView fabricInfoTextView = (TextView) convertView.findViewById(R.id.fabric_list_item_infoTextView);
-            fabricInfoTextView.setText(fabric.getInfo());
-
-            TextView fabricSizeTextView = (TextView) convertView.findViewById(R.id.fabric_list_item_sizeTextView);
-            fabricSizeTextView.setText(fabric.getSize());
-
-            CheckBox isAssignedCheckBox = (CheckBox) convertView.findViewById(R.id.fabric_list_item_assignedCheckBox);
-            isAssignedCheckBox.setChecked(fabric.isAssigned());
+            vh.info.setText(fabric.getInfo());
+            vh.size.setText(fabric.getSize());
+            vh.assigned.setChecked(fabric.isAssigned());
 
             return convertView;
         }
 
+    }
+
+    private static class ViewHolder {
+        TextView info;
+        TextView size;
+        CheckBox assigned;
     }
 
 }

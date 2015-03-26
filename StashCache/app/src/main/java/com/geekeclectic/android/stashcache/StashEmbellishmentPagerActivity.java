@@ -73,6 +73,8 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
         for (int i = 0; i < mEmbellishments.size(); i++) {
             if (mEmbellishments.get(i).equals(embellishmentId)) {
                 mViewPager.setCurrentItem(i);
+
+                // onPageSelected won't fire if the item up is the first one, so need to set that up separately
                 if (i == 0) {
                     StashEmbellishment embellishment = StashData.get(getApplicationContext()).getEmbellishment(mEmbellishments.get(i));
                     ActionBar actionBar = getActionBar();

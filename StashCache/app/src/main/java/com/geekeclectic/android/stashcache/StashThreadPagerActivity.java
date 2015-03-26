@@ -68,7 +68,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
             }
         });
 
-        callingTab = getIntent().getIntExtra(StashThreadFragment.EXTRA_TAB_ID, 0);
+        callingTab = getIntent().getIntExtra(StashThreadFragment.EXTRA_TAB_ID, StashConstants.STASH_TAB);
 
         // get the id for the desired thread and set the appropriate fragment as current
         UUID threadId = (UUID)getIntent().getSerializableExtra(StashThreadFragment.EXTRA_THREAD_ID);
@@ -76,6 +76,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
             if (mThreads.get(i).equals(threadId)) {
                 mViewPager.setCurrentItem(i);
 
+                // if the current item is the first one, onPageSelected doesn't fire, so set it manually
                 if (i == 0) {
                     StashThread thread = StashData.get(getApplicationContext()).getThread(mThreads.get(i));
                     ActionBar actionBar = getActionBar();

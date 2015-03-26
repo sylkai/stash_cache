@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -26,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 /**
  * Fragment to display list of patterns.  Long press allows user to select items to be deleted.
@@ -38,7 +35,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
     private static final String TAG = "PatternListFragment";
     private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
     private static final String PATTERN_VIEW_ID = "com.geekeclectic.android.stashcache.pattern_view_id";
-    private int numericTab;
+    private int mViewCode;
     private UpdateListFragmentsListener mCallback;
 
     private ArrayList<StashPattern> mPatterns;
@@ -52,25 +49,18 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        String viewCode = getArguments().getString(PATTERN_VIEW_ID);
-        if (viewCode.equals("master")) {
-            numericTab = 1;
-        } else if (viewCode.equals("stash")) {
-            numericTab = 0;
-        } else {
-            numericTab = 2;
-        }
+        mViewCode = getArguments().getInt(PATTERN_VIEW_ID);
 
-        mPatterns = getListFromStash(viewCode);
+        mPatterns = getListFromStash();
         Collections.sort(mPatterns, new StashPatternComparator());
 
         PatternAdapter adapter = new PatternAdapter(mPatterns);
         setListAdapter(adapter);
     }
 
-    public static StashPatternListFragment newInstance(String viewCode) {
+    public static StashPatternListFragment newInstance(int viewCode) {
         Bundle args = new Bundle();
-        args.putString(PATTERN_VIEW_ID, viewCode);
+        args.putInt(PATTERN_VIEW_ID, viewCode);
 
         StashPatternListFragment fragment = new StashPatternListFragment();
         fragment.setArguments(args);
@@ -150,7 +140,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setAppropriateEmptyMessage(getArguments().getString(PATTERN_VIEW_ID));
+        setAppropriateEmptyMessage();
     }
 
     @Override
@@ -164,6 +154,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
+        // required to make Android and Java not sad
         try {
             mCallback = (UpdateListFragmentsListener) activity;
         } catch (ClassCastException e) {
@@ -183,13 +174,13 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         switch (item.getItemId()) {
             case R.id.menu_item_new_pattern:
                 // create new pattern and add it to the stash
-                StashPattern pattern = new StashPattern();
+                StashPattern pattern = new StashPattern(getActivity().getApplicationContext());
                 StashData.get(getActivity().getApplicationContext()).addPattern(pattern);
 
                 // start pattern viewPager with the desired pattern fragment
                 Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
                 i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
-                i.putExtra(StashPatternFragment.EXTRA_TAB_ID, numericTab);
+                i.putExtra(StashPatternFragment.EXTRA_TAB_ID, mViewCode);
                 startActivityForResult(i, 0);
                 return true;
             default:
@@ -234,12 +225,12 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         // start StashPatternPagerActivity
         Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
         i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
-        i.putExtra(StashPatternFragment.EXTRA_TAB_ID, numericTab);
+        i.putExtra(StashPatternFragment.EXTRA_TAB_ID, mViewCode);
         startActivity(i);
     }
 
-    private ArrayList<StashPattern> getListFromStash(String viewCode) {
-        if (viewCode.equals("shopping")) {
+    private ArrayList<StashPattern> getListFromStash() {
+        if (mViewCode == StashConstants.SHOPPING_TAB) {
             return StashData.get(getActivity().getApplicationContext()).getFabricForList();
         } else {
             return StashData.get(getActivity().getApplicationContext()).getPatternData();
@@ -252,10 +243,10 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
-    private void setAppropriateEmptyMessage(String viewCode) {
-        if (viewCode.equals("master")) {
+    private void setAppropriateEmptyMessage() {
+        if (mViewCode == StashConstants.MASTER_TAB) {
             setEmptyText("You have not entered any patterns.");
-        } else if (viewCode.equals("stash")) {
+        } else if (mViewCode == StashConstants.STASH_TAB) {
             setEmptyText("There are no patterns in your stash.");
         } else {
             setEmptyText("You don't need fabric for any patterns in your stash.");
@@ -267,7 +258,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         private StashCreateShoppingList mShoppingList;
 
         public PatternAdapter(ArrayList<StashPattern> patterns) {
-            super(getActivity().getApplicationContext(), 0, patterns);
+            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, patterns);
             mShoppingList = new StashCreateShoppingList();
         }
 
@@ -292,7 +283,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
             vh.patternSource.setText(pattern.getSource());
 
             vh.patternKitted.setTag(pattern);
-            vh.patternKitted.setChecked(pattern.getKitted());
+            vh.patternKitted.setChecked(pattern.isKitted());
 
             vh.patternKitted.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -308,10 +299,10 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         }
     }
 
-    static class ViewHolder {
-        TextView patternName;
-        TextView patternSource;
-        CheckBox patternKitted;
+    private static class ViewHolder {
+        public TextView patternName;
+        public TextView patternSource;
+        public CheckBox patternKitted;
     }
 
 }

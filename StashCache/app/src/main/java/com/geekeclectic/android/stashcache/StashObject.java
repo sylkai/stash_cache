@@ -1,5 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
+import android.content.Context;
+
 import java.util.UUID;
 
 /**
@@ -9,6 +11,7 @@ import java.util.UUID;
 public class StashObject {
 
     private UUID mId;
+    private Context mContext;
     private String mSource;
     private StashPhoto mPhoto;
 
@@ -20,8 +23,16 @@ public class StashObject {
         mId = id;
     }
 
+    protected void setContext(Context context) {
+        mContext = context;
+    }
+
     public UUID getId() {
         return mId;
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     public String getKey() {

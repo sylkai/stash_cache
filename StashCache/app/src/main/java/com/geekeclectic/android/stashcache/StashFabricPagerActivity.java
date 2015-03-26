@@ -76,6 +76,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
             if (mFabrics.get(i).equals(fabricId)) {
                 mViewPager.setCurrentItem(i);
 
+                // onPageSelected won't fire if the item up is the first one, so need to set that up separately
                 if (i == 0) {
                     StashFabric fabric = StashData.get(getApplicationContext()).getFabric(mFabrics.get(i));
                     ActionBar actionBar = getActionBar();

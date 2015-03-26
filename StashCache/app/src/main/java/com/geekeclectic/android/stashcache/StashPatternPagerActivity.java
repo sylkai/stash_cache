@@ -72,7 +72,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
             }
         });
 
-        callingTab = getIntent().getIntExtra(StashPatternFragment.EXTRA_TAB_ID, 0);
+        callingTab = getIntent().getIntExtra(StashPatternFragment.EXTRA_TAB_ID, StashConstants.STASH_TAB);
 
         // pull the UUID from the desired fragment extra and iterate through the list to set it as
         // the current view
@@ -81,6 +81,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
             if (mPatterns.get(i).getId().equals(patternId)) {
                 mViewPager.setCurrentItem(i);
 
+                // if the first item, onPageSelected doesn't fire to set the Title, so done here
                 if (i == 0) {
                     StashPattern pattern = mPatterns.get(i);
                     ActionBar actionBar = getActionBar();
@@ -106,6 +107,8 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         // handling item selection
         switch (item.getItemId()) {
             case R.id.menu_item_export_pattern:
+                // the user wants to export just the information for this pattern, stripped of fabric
+                // data (for sharing with a friend, perhaps)
                 StashExporter exporter = new StashExporter();
 
                 try {

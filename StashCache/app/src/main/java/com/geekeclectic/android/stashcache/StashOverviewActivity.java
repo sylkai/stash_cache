@@ -36,9 +36,11 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     private static final int REQUEST_CHOOSE_STASH = 1;
     private static final int REQUEST_PREFERENCES_UPDATE = 2;
+
     public static final String TAG = "stash overview";
     public static final String EXTRA_FRAGMENT_ID = "com.geekeclectic.android.stashcache.active_fragment_id";
     public static final String EXTRA_VIEW_ID = "com.geekeclectic.android.stashcache.active_view_id";
+
     private static final String KEY_FRAGMENT_ID = "com.geekeclectic.android.stashcache.stored_fragment_id";
     private static final String KEY_VIEW_ID = "com.geekeclectic.android.stashcache.stored_view_id";
 
@@ -47,9 +49,9 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     private Menu menuRef;
 
     protected UpdateFragment createFragment(int currentTab) {
-        if (currentTab == 0) {
+        if (currentTab == StashConstants.STASH_TAB) {
             return new StashOverviewPagerFragment();
-        } else if (currentTab == 1) {
+        } else if (currentTab == StashConstants.MASTER_TAB) {
             return new MasterOverviewPagerFragment();
         } else {
             return new ShoppingOverviewPagerFragment();
@@ -106,7 +108,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 FragmentTransaction ft = fragmentManager.beginTransaction();
 
                 // get (or create) the appropriate fragment
-                if (selection.equals("Master List")) {
+                if (position == StashConstants.MASTER_TAB) {
                     if (fragmentManager.findFragmentByTag(selection) == null) {
                         fragment = new MasterOverviewPagerFragment();
                         ft.replace(R.id.fragmentContainer, fragment, selection);
@@ -114,7 +116,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                         fragment = (UpdateFragment) fragmentManager.findFragmentByTag(selection);
                         ft.replace(R.id.fragmentContainer, fragment, selection);
                     }
-                } else if (selection.equals("Shopping List")) {
+                } else if (position == StashConstants.SHOPPING_TAB) {
                     if (fragmentManager.findFragmentByTag(selection) == null) {
                         fragment = new ShoppingOverviewPagerFragment();
                         ft.replace(R.id.fragmentContainer, fragment, selection);
@@ -164,6 +166,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
 
+        // need to save the current fragment/view ID in order to show the proper menu on rotation
         savedInstanceState.putInt(KEY_FRAGMENT_ID, currentTab);
         savedInstanceState.putInt(KEY_VIEW_ID, currentView);
     }
@@ -258,13 +261,13 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     private void adjustViewsIfNeeded(int changeTabTo) {
         // current view is shopping list, so need to adjust to no fabric view by adding 1
-        if (currentTab == 2) {
-            if (currentView > 0) {
+        if (currentTab == StashConstants.SHOPPING_TAB) {
+            if (currentView > StashConstants.PATTERN_VIEW) {
                 currentView = currentView + 1;
             }
         // switching to shopping list, so adjust to no fabric view by subtracting 1
-        } else if (changeTabTo == 2) {
-            if (currentView > 0) {
+        } else if (changeTabTo == StashConstants.SHOPPING_TAB) {
+            if (currentView > StashConstants.PATTERN_VIEW) {
                 currentView = currentView - 1;
             }
         }
@@ -275,11 +278,11 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             menuRef.setGroupVisible(R.id.menu_add_edit, false);
         }
 
-        if (currentView == 0) {
+        if (currentView == StashConstants.PATTERN_VIEW) {
             menuRef.findItem(R.id.menu_item_new_pattern).setVisible(true);
-        } else if (currentTab < 2 && currentView == 1) {
+        } else if (currentTab < StashConstants.SHOPPING_TAB && currentView == StashConstants.FABRIC_VIEW) {
             menuRef.findItem(R.id.menu_item_new_fabric).setVisible(true);
-        } else if ((currentTab < 2 && currentView == 2) || (currentTab == 2 && currentView == 1)) {
+        } else if ((currentTab < StashConstants.SHOPPING_TAB && currentView == StashConstants.THREAD_VIEW) || (currentTab == StashConstants.SHOPPING_TAB && currentView == StashConstants.SHOPPING_THREAD_VIEW)) {
             menuRef.findItem(R.id.menu_item_edit_thread_stash).setVisible(true);
             menuRef.findItem(R.id.menu_item_new_thread).setVisible(true);
         } else {
@@ -357,9 +360,9 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
             String toastText;
 
-            if (resultId == 0) {
+            if (resultId == StashConstants.FILE_IMPORT_ALL_CLEAR) {
                 toastText = getString(R.string.successful_import);
-            } else if (resultId == 1) {
+            } else if (resultId == StashConstants.FILE_INCORRECT_FORMAT) {
                 toastText = getString(R.string.incorrect_file_format);
             } else {
                 toastText = getString(R.string.incorrect_number_format);
