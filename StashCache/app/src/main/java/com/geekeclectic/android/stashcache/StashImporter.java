@@ -217,8 +217,14 @@ public class StashImporter {
                 pattern.setWidth(width);
                 stash.addPattern(pattern);
 
-                // move forward one line to skip the first *
-                reader.readLine();
+                // if the next line is not a *, the pattern is marked as kitted
+                line = reader.readLine();
+                if (!line.equals("*")) {
+                    pattern.setKitted(true);
+
+                    // move forward one line to skip the first *
+                    reader.readLine();
+                }
 
                 // if fabric is entered, create a new fabric
                 if (!(line = reader.readLine()).equals("*")) {

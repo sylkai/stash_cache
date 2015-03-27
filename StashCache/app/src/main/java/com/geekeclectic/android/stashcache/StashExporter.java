@@ -543,6 +543,12 @@ public class StashExporter {
             sb.append(pattern.getHeight());
             sb.append(newline);
 
+            // if the pattern is kitted, mark it as such (no entry is assumed to not be kitted)
+            if (pattern.isKitted()) {
+                sb.append("kitted");
+                sb.append(newline);
+            }
+
             sb.append(patternCategories);
             sb.append(newline);
 
@@ -595,6 +601,8 @@ public class StashExporter {
         sb.append(newline);
         sb.append(pattern.getHeight());
         sb.append(newline);
+
+        // info if kitted would go here but is excluded from export of pattern for sharing
 
         sb.append(patternCategories);
         sb.append(newline);
