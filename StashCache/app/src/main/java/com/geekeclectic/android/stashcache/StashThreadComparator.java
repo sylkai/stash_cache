@@ -18,6 +18,8 @@ import java.util.UUID;
 public class StashThreadComparator implements Comparator<UUID> {
 
     private Context mContext;
+    private StashThread thread1;
+    private StashThread thread2;
 
     public StashThreadComparator(Context context) {
         mContext = context;
@@ -27,43 +29,71 @@ public class StashThreadComparator implements Comparator<UUID> {
     @Override
     public int compare(UUID threadId1, UUID threadId2) {
         StashData stash = StashData.get(mContext);
-        StashThread thread1 = stash.getThread(threadId1);
-        StashThread thread2 = stash.getThread(threadId2);
+        thread1 = stash.getThread(threadId1);
+        thread2 = stash.getThread(threadId2);
 
-        if (thread1.getSource() != null && thread2.getSource() != null && thread1.getSource().equals(thread2.getSource())) {
-            if (thread1.getType() != null && thread2.getType() != null && thread1.getType().equals(thread2.getType())) {
-                if (thread1.getCode() != null && thread2.getCode() != null) {
-                    if (thread1.getCode().matches("[0-9]+") && thread2.getCode().matches("[0-9]+")) {
-                        // just a number, sort by the number
-                        return Integer.parseInt(thread1.getCode()) - Integer.parseInt(thread2.getCode());
-                    } else if (thread1.getCode().matches("[0-9]+\\s.*") && thread2.getCode().matches("[0-9]+\\s.*")) {
-                        // if it is a number followed by other info (color, etc.), sort by the number
-                        return Integer.parseInt(thread1.getCode().split("\\s")[0]) - Integer.parseInt(thread2.getCode().split("\\s")[0]);
-                    } else {
-                        // just sort using the normal sorting, until I get fed up with Kreinik's behavior
-                        return thread1.getCode().compareTo(thread2.getCode());
-                    }
-                } else if (thread1.getCode() == null && thread2.getCode() == null) {
-                    return 0;
-                } else if (thread1.getCode() == null) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-            } else if (thread1.getType() != null && thread2.getType() != null) {
-                return thread1.getType().compareTo(thread2.getType());
-            } else if (thread1.getType() == null && thread2.getType() == null) {
-                return 0;
-            } else if (thread1.getType() == null) {
-                return 1;
+        String source1 = thread1.getSource();
+        String source2 = thread2.getSource();
+
+        // sources aren't null
+        if (source1 != null && source2 != null) {
+            // sources are equal
+            if (source1.equals(source2)) {
+                return compareType(thread1.getType(), thread2.getType());
+            // sources aren't equal, sort by source
             } else {
-                return -1;
+                return source1.compareTo(source2);
             }
-        } else if (thread1.getSource() != null && thread2.getSource() != null) {
-            return thread1.getSource().compareTo(thread2.getSource());
-        } else if (thread1.getSource() == null && thread2.getSource() == null) {
+
+        // sources are both null so see if something else can sort
+        } else if (source1 == null && source2 == null) {
+            return compareType(thread1.getType(), thread2.getType());
+        } else if (source1 == null) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    private int compareType(String type1, String type2) {
+        // types aren't null
+        if (type1 != null && type2 != null) {
+            // types are equal
+            if (type1.equals(type2)) {
+                return compareCode(thread1.getCode(), thread2.getCode());
+            } else {
+                // types aren't equal, sort by type
+                return type1.compareTo(type2);
+            }
+
+        // types are both null, so treat as equivalent and check codes
+        } else if (type1 == null && type2 == null) {
+            return compareCode(thread1.getCode(), thread2.getCode());
+        } else if (type1 == null) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    private int compareCode(String code1, String code2) {
+        // codes aren't null
+        if (code1 != null && code2 != null) {
+            if (code1.matches("[0-9]+") && code2.matches("[0-9]+")) {
+                // just a number, sort by the number
+                return Integer.parseInt(code1) - Integer.parseInt(code2);
+            } else if (code1.matches("[0-9]+\\s.*") && code2.matches("[0-9]+\\s.*")) {
+                // if it is a number followed by other info (color, etc.), sort by the number
+                return Integer.parseInt(code1.split("\\s")[0]) - Integer.parseInt(code2.split("\\s")[0]);
+            } else {
+                // just sort using the normal sorting, until I get fed up with Kreinik's behavior
+                return code1.compareTo(code2);
+            }
+
+        // both null so treat as equal
+        } else if (code1 == null && code2 == null) {
             return 0;
-        } else if (thread1.getSource() == null) {
+        } else if (code1 == null) {
             return 1;
         } else {
             return -1;

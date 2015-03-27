@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
@@ -54,6 +55,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         mViewCode = getArguments().getInt(FABRIC_VIEW_ID);
 
         mFabrics = StashData.get(getActivity().getApplicationContext()).getFabricList();
+        Collections.sort(mFabrics, new StashFabricComparator(getActivity().getApplicationContext()));
 
         // create and set list adapter using fabrics list
         adapter = new FabricAdapter(mFabrics);
@@ -230,6 +232,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
 
     @Override
     public void update(Observable observable, Object data) {
+        Collections.sort(mFabrics, new StashFabricComparator(getActivity().getApplicationContext()));
         ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
     }
 

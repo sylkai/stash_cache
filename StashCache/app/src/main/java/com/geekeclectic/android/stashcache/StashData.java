@@ -80,6 +80,7 @@ public class StashData {
         Collections.sort(mStashThreadsList, new StashThreadComparator(mAppContext));
         Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(mAppContext));
         Collections.sort(mStashEmbellishmentList, new StashEmbellishmentComparator(mAppContext));
+        Collections.sort(mFabricList, new StashFabricComparator(mAppContext));
         Collections.sort(mPatternsData, new StashPatternComparator());
     }
 

@@ -97,7 +97,7 @@ public class StashExporter {
         sb.append(newline);
 
         // build fabric stash
-        sb.append(fabricListString(stash, betweenItems));
+        sb.append(fabricListString(stash, betweenItems, context));
         sb.append(betweenCategories);
         sb.append(newline);
 
@@ -323,10 +323,11 @@ public class StashExporter {
         return sb.toString();
     }
 
-    private String fabricListString(StashData stash, String betweenItems) {
+    private String fabricListString(StashData stash, String betweenItems, Context context) {
         StringBuilder sb = new StringBuilder();
 
         ArrayList<UUID> fabricList = stash.getFabricList();
+        Collections.sort(fabricList, new StashFabricComparator(context));
 
         for (UUID fabricId : fabricList) {
             StashFabric fabric = stash.getFabric(fabricId);
