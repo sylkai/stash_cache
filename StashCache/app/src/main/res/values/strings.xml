@@ -22,17 +22,20 @@
     <string name="fabric">Fabric</string>
     <string name="thread">Thread</string>
 
-    <string name="border_setting">Width of fabric border</string>
-    <string name="border_summary">Fabric calculations are done with a border of %s inches.</string>
+    <string name="pref_pattern_fits">Other Defaults</string>
+    <string name="pref_fabric_defaults">Defaults For Fabric</string>
 
-    <string name="count_setting">Default fabric count</string>
-    <string name="count_summary">Fabric required is calculated using a default of %s count fabric.</string>
+    <string name="border_setting">Width of border</string>
+    <string name="border_summary">Calculations assume a border of %s inches.</string>
 
-    <string name="over_setting">Over Two</string>
-    <string name="over_summary">If checked, the default used for calculating how much fabric is required assumes stitching over 2. </string>
+    <string name="count_setting">Fabric count</string>
+    <string name="count_summary">Calculations assume %s count fabric.</string>
 
-    <string name="crossover_setting">Calculation crossover</string>
-    <string name="crossover_summary">When calculating if a piece of fabric will fit a pattern, fabric above %s count is assumed to be stitched over 2.</string>
+    <string name="over_setting">Over two</string>
+    <string name="over_summary">If checked, assumes stitching over 2. </string>
+
+    <string name="crossover_setting">Calculating fit</string>
+    <string name="crossover_summary">Fabric above %s count is assumed to be stitched over 2 when determining if a pattern will fit.</string>
 
     <string name="edit_thread_stash">Edit Quantities</string>
     <string name="thread_stashQuantity">Edit thread in stash</string>
