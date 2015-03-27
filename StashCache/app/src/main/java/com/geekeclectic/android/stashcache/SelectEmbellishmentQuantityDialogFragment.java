@@ -58,7 +58,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                 break;
             case Dialog.BUTTON_NEUTRAL:
                 // call back to let the pattern know to update the displayed embellishments (in case
-                // changes made before selecting "add new"
+                // changes made before selecting "add new")
                 mSelectEmbellishmentQuantityDialogCallback.onEmbellishmentQuantitiesUpdate();
 
                 // create a new embellishment
