@@ -1,13 +1,18 @@
 package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,19 +36,37 @@ public class StashDataJSONSerializer {
 
     private Context mContext;
     private String mFilename;
+    private String mBackupFile;
 
     public StashDataJSONSerializer(Context c, String f) {
         // appContext and filename provided by StashData
         mContext = c;
         mFilename = f;
+        mBackupFile = mFilename + "_backup";
+
     }
 
     public void loadStash(StashData stashData) throws IOException, JSONException {
         BufferedReader reader = null;
 
         try {
-            // open and read the file into a StringBuilder
-            InputStream in = mContext.openFileInput(mFilename);
+            String openFile;
+            InputStream in = null;
+
+            try {
+                in = mContext.openFileInput(mFilename);
+                openFile = mFilename;
+            } catch (FileNotFoundException e) {
+                openFile = mBackupFile;
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
+
+            in = mContext.openFileInput(mFilename);
+
+            //read the file into a StringBuilder
             reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder jsonString = new StringBuilder();
             String line = null;
@@ -80,6 +103,12 @@ public class StashDataJSONSerializer {
         // write the file to disk
         Writer writer = null;
         try {
+            // rename the previous save to backup
+            File backup = new File(mBackupFile);
+            File old_save = new File(mFilename);
+
+            old_save.renameTo(backup);
+
             OutputStream out = mContext.openFileOutput(mFilename, Context.MODE_PRIVATE);
             writer = new OutputStreamWriter(out);
             writer.write(array.toString());
