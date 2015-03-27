@@ -4,6 +4,7 @@ import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
@@ -55,6 +56,24 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                 // call back to let the pattern know to update the displayed embellishments
                 mSelectEmbellishmentQuantityDialogCallback.onEmbellishmentQuantitiesUpdate();
                 break;
+            case Dialog.BUTTON_NEUTRAL:
+                // call back to let the pattern know to update the displayed embellishments (in case
+                // changes made before selecting "add new"
+                mSelectEmbellishmentQuantityDialogCallback.onEmbellishmentQuantitiesUpdate();
+
+                // create a new embellishment
+                StashEmbellishment embellishment = new StashEmbellishment(getActivity().getApplicationContext());
+                StashData.get(getActivity().getApplicationContext()).addEmbellishment(embellishment);
+
+                // embellishment is presumably associated with this pattern
+                mPattern.increaseQuantity(embellishment);
+
+                // start StashEmbellishmentFragment with the new embellishment
+                Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
+                i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishment.getId());
+                i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, StashConstants.MASTER_TAB);
+                startActivityForResult(i, 0);
+                break;
             default:  // user is selecting an option
                 break;
         }
@@ -70,6 +89,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
         builder.setTitle(R.string.embellishment_selectQuantity);
         builder.setAdapter(mAdapter, this);
         builder.setPositiveButton(R.string.ok, this);
+        builder.setNeutralButton(R.string.add_new, this);
 
         return builder.create();
     }

@@ -4,6 +4,7 @@ import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
@@ -55,6 +56,24 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                 // let the pattern fragment know to update the displayed thread list
                 mSelectThreadQuantityDialogCallback.onThreadQuantitiesUpdate();
                 break;
+            case Dialog.BUTTON_NEUTRAL:
+                // let the pattern fragment know to update the displayed thread list (in case changes
+                // were made before selecting add new thread)
+                mSelectThreadQuantityDialogCallback.onThreadQuantitiesUpdate();
+
+                // create a new thread
+                StashThread thread = new StashThread(getActivity().getApplicationContext());
+                StashData.get(getActivity().getApplicationContext()).addThread(thread);
+
+                // thread is presumably associated with this pattern
+                mPattern.increaseQuantity(thread);
+
+                // start StashThreadFragment with the new thread
+                Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
+                i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
+                i.putExtra(StashThreadFragment.EXTRA_TAB_ID, StashConstants.MASTER_TAB);
+                startActivityForResult(i, 0);
+                break;
             default:  // user is selecting an option
                 break;
         }
@@ -70,6 +89,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
         builder.setTitle(R.string.thread_selectQuantity);
         builder.setAdapter(mAdapter, this);
         builder.setPositiveButton(R.string.ok, this);
+        builder.setNeutralButton(R.string.add_new, this);
 
         return builder.create();
     }

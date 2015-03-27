@@ -45,8 +45,14 @@ public class StashEmbellishment extends StashObject {
         mUsedIn = new ArrayList<StashPattern>();
         setContext(context);
 
-        setSource(json.getString(JSON_SOURCE));
-        mCode = json.getString(JSON_CODE);
+        if (json.has(JSON_SOURCE)) {
+            setSource(json.getString(JSON_SOURCE));
+        }
+
+        if (json.has(JSON_CODE)) {
+            mCode = json.getString(JSON_CODE);
+        }
+
         mNumberOwned = json.getInt(JSON_OWNED);
         mNumberNeeded = json.getInt(JSON_NEEDED);
         mNumberAdditional = json.getInt(JSON_ADDITIONAL);
@@ -60,8 +66,14 @@ public class StashEmbellishment extends StashObject {
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
 
-        json.put(JSON_SOURCE, getSource());
-        json.put(JSON_CODE, mCode);
+        if (getSource() != null) {
+            json.put(JSON_SOURCE, getSource());
+        }
+
+        if (mCode != null) {
+            json.put(JSON_CODE, mCode);
+        }
+
         json.put(JSON_OWNED, mNumberOwned);
         json.put(JSON_NEEDED, mNumberNeeded);
         json.put(JSON_ADDITIONAL, mNumberAdditional);
