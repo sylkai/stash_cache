@@ -17,6 +17,9 @@
     <string name="delete_stash_back">Cancel</string>
     <string name="send_file_to">Choose where to put the exported file:</string>
 
+    <string name="export_error_stash">There was an error writing the stash file.</string>
+    <string name="export_error_pattern">There was an error writing the pattern file.</string>
+
     <string name="embellishment">Embellishment</string>
     <string name="pattern">Pattern</string>
     <string name="fabric">Fabric</string>

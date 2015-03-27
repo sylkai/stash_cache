@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +124,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                     saveIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
                     startActivity(Intent.createChooser(saveIntent, getString(R.string.send_file_to)));
                 } catch (IOException e) {
-                    //
+                    Toast.makeText(StashPatternPagerActivity.this, getString(R.string.export_error_pattern), Toast.LENGTH_SHORT).show();
                 }
                 return super.onOptionsItemSelected(item);
             default:

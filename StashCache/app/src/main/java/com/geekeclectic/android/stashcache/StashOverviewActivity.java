@@ -77,12 +77,12 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             currentTab = savedInstanceState.getInt(KEY_FRAGMENT_ID);
         } else if (getIntent().getExtras() != null) {
             // get the tab / view pair from the intent
-            currentView = getIntent().getIntExtra(EXTRA_VIEW_ID, 0);
-            currentTab = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, 0);
+            currentView = getIntent().getIntExtra(EXTRA_VIEW_ID, StashConstants.PATTERN_VIEW);
+            currentTab = getIntent().getIntExtra(EXTRA_FRAGMENT_ID, StashConstants.STASH_TAB);
         } else {
             // default to stash / patterns view
-            currentTab = 0;
-            currentView = 0;
+            currentTab = StashConstants.STASH_TAB;
+            currentView = StashConstants.PATTERN_VIEW;
         }
 
         // if there's no fragment stored, create a new one
@@ -208,7 +208,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                     saveIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
                     startActivity(Intent.createChooser(saveIntent, getString(R.string.send_file_to)));
                 } catch (IOException e) {
-                    //
+                    Toast.makeText(StashOverviewActivity.this, getString(R.string.export_error_stash), Toast.LENGTH_SHORT).show();
                 }
                 return super.onOptionsItemSelected(item);
             case R.id.menu_item_delete_stash:
