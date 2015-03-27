@@ -42,7 +42,7 @@ public class StashDataJSONSerializer {
         // appContext and filename provided by StashData
         mContext = c;
         mFilename = f;
-        mBackupFile = mFilename + "_backup";
+        mBackupFile = "backup_" + mFilename;
 
     }
 
@@ -103,12 +103,19 @@ public class StashDataJSONSerializer {
         // write the file to disk
         Writer writer = null;
         try {
+            String dir = mContext.getFilesDir().getAbsolutePath();
             // rename the previous save to backup
-            File backup = new File(mBackupFile);
-            File old_save = new File(mFilename);
+            File backup = new File(dir, mBackupFile);
+            File old_save = new File(dir, mFilename);
+
+            // rename does not overwrite if the file exists, so delete the previous backup
+            if (backup.exists()) {
+                backup.delete();
+            }
 
             old_save.renameTo(backup);
 
+            // write out the new file
             OutputStream out = mContext.openFileOutput(mFilename, Context.MODE_PRIVATE);
             writer = new OutputStreamWriter(out);
             writer.write(array.toString());
