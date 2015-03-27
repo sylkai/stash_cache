@@ -64,7 +64,7 @@ public class StashDataJSONSerializer {
                 }
             }
 
-            in = mContext.openFileInput(mFilename);
+            in = mContext.openFileInput(openFile);
 
             //read the file into a StringBuilder
             reader = new BufferedReader(new InputStreamReader(in));
