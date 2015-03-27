@@ -31,6 +31,9 @@
     <string name="over_setting">Over Two</string>
     <string name="over_summary">If checked, the default used for calculating how much fabric is required assumes stitching over 2. </string>
 
+    <string name="crossover_setting">Calculation crossover</string>
+    <string name="crossover_summary">When calculating if a piece of fabric will fit a pattern, fabric above %s count is assumed to be stitched over 2.</string>
+
     <string name="edit_thread_stash">Edit Quantities</string>
     <string name="thread_stashQuantity">Edit thread in stash</string>
 

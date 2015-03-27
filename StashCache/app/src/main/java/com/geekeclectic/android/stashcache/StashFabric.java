@@ -49,12 +49,6 @@ public class StashFabric extends StashObject {
         mFabricCount = json.getInt(JSON_COUNT);
         setContext(context);
 
-        if (mFabricCount > StashConstants.OVER_TWO_DEFAULT) {
-            mOverCount = StashConstants.OVER_TWO;
-        } else {
-            mOverCount = StashConstants.OVER_ONE;
-        }
-
         mFabricWidth = json.getDouble(JSON_WIDTH);
         mFabricHeight = json.getDouble(JSON_HEIGHT);
         setId(UUID.fromString(json.getString(JSON_ID)));
@@ -128,12 +122,6 @@ public class StashFabric extends StashObject {
         // fabric count must be an integer, used to calculate stitchable area
         mFabricCount = count;
 
-        if (count > StashConstants.OVER_TWO_DEFAULT) {
-            mOverCount = StashConstants.OVER_TWO;
-        } else {
-            mOverCount = StashConstants.OVER_ONE;
-        }
-
         updateStitchableArea();
     }
 
@@ -187,6 +175,13 @@ public class StashFabric extends StashObject {
         // edge buffer for framing, updated every time height/width/count is changed
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         double edge_buffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));
+        int over_default = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_CROSSOVER, StashConstants.OVER_TWO_DEFAULT));
+
+        if (mFabricCount > over_default) {
+            mOverCount = StashConstants.OVER_TWO;
+        } else {
+            mOverCount = StashConstants.OVER_ONE;
+        }
 
         mStitchWidth = (mFabricWidth - edge_buffer * StashConstants.TWO_BORDERS) * mFabricCount / mOverCount;
         mStitchHeight = (mFabricHeight - edge_buffer * StashConstants.TWO_BORDERS) * mFabricCount / mOverCount;

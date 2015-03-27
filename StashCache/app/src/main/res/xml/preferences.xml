@@ -30,4 +30,12 @@
         android:inputType="number"
         android:numeric="integer" />
 
+    <com.geekeclectic.android.stashcache.SummaryEditTextPreference
+        android:key="pref_default_crossover"
+        android:title="@string/crossover_setting"
+        android:summary="@string/crossover_summary"
+        android:defaultValue="25"
+        android:inputType="number"
+        android:numeric="integer" />
+
 </PreferenceScreen>

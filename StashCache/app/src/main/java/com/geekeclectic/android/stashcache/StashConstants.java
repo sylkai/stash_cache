@@ -24,7 +24,6 @@ public class StashConstants {
 
     public static final int OVER_TWO = 2;
     public static final int OVER_ONE = 1;
-    public static final int OVER_TWO_DEFAULT = 25;
 
     public static final int FILE_IMPORT_ALL_CLEAR = 0;
     public static final int FILE_INCORRECT_FORMAT = 1;
@@ -38,6 +37,7 @@ public class StashConstants {
 
     public static final String DEFAULT_COUNT = "32";
     public static final String DEFAULT_BORDER = "3.0";
+    public static final String OVER_TWO_DEFAULT = "25";
 
     public static final int TWO_BORDERS = 2;
 
