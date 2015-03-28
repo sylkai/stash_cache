@@ -239,7 +239,14 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
 
     @Override
     public void update(Observable observable, Object data) {
-        Collections.sort(mPatterns, new StashPatternComparator());
+        if (mPatterns != getListFromStash()) {
+            mPatterns = getListFromStash();
+            Collections.sort(mPatterns, new StashPatternComparator());
+
+            PatternAdapter adapter = new PatternAdapter(mPatterns);
+            setListAdapter(adapter);
+        }
+
         ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
@@ -291,7 +298,9 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
                     CheckBox checkBox = (CheckBox) view;
                     StashPattern pattern = (StashPattern) checkBox.getTag();
                     pattern.setKitted(checkBox.isChecked());
+
                     mShoppingList.updateShoppingList(getActivity().getApplicationContext());
+                    mCallback.onListFragmentUpdate();
                 }
             });
 
