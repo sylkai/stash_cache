@@ -15,7 +15,7 @@ public class StashPatternComparator implements Comparator<StashPattern> {
         // designers aren't null
         if (source1 != null && source2 != null) {
             // designers are the same
-            if (source1.equals(source2)) {
+            if (source1.equalsIgnoreCase(source2)) {
                 return compareName(pattern1.getPatternName(), pattern2.getPatternName());
             // sort by designer
             } else {

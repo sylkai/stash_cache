@@ -35,7 +35,7 @@ public class StashEmbellishmentComparator implements Comparator<UUID> {
         // sources aren't null
         if (source1 != null && source2 != null) {
             // sources are equal
-            if (source1.equals(source2)) {
+            if (source1.equalsIgnoreCase(source2)) {
                 return compareType(embellishment1.getType(), embellishment2.getType());
             // sort by source
             } else {
@@ -56,7 +56,7 @@ public class StashEmbellishmentComparator implements Comparator<UUID> {
         // types aren't null
         if (type1 != null && type2 != null) {
             // types are equal
-            if(type1.equals(type2)) {
+            if(type1.equalsIgnoreCase(type2)) {
                 return compareCode(embellishment1.getCode(), embellishment2.getCode());
             // sort by type
             } else {

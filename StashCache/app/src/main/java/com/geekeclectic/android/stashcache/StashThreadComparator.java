@@ -38,11 +38,11 @@ public class StashThreadComparator implements Comparator<UUID> {
         // sources aren't null
         if (source1 != null && source2 != null) {
             // sources are equal
-            if (source1.equals(source2)) {
+            if (source1.equalsIgnoreCase(source2)) {
                 return compareType(thread1.getType(), thread2.getType());
             // sources aren't equal, sort by source
             } else {
-                return source1.compareTo(source2);
+                return source1.compareToIgnoreCase(source2);
             }
 
         // sources are both null so see if something else can sort
@@ -59,11 +59,11 @@ public class StashThreadComparator implements Comparator<UUID> {
         // types aren't null
         if (type1 != null && type2 != null) {
             // types are equal
-            if (type1.equals(type2)) {
+            if (type1.equalsIgnoreCase(type2)) {
                 return compareCode(thread1.getCode(), thread2.getCode());
             } else {
                 // types aren't equal, sort by type
-                return type1.compareTo(type2);
+                return type1.compareToIgnoreCase(type2);
             }
 
         // types are both null, so treat as equivalent and check codes
@@ -87,7 +87,7 @@ public class StashThreadComparator implements Comparator<UUID> {
                 return Integer.parseInt(code1.split("\\s")[0]) - Integer.parseInt(code2.split("\\s")[0]);
             } else {
                 // just sort using the normal sorting, until I get fed up with Kreinik's behavior
-                return code1.compareTo(code2);
+                return code1.compareToIgnoreCase(code2);
             }
 
         // both null so treat as equal

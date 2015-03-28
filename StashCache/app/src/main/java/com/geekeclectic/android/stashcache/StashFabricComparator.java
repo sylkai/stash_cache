@@ -32,7 +32,7 @@ public class StashFabricComparator implements Comparator<UUID> {
         // sources aren't null
         if (source1 != null && source2 != null) {
             // sources are equal
-            if (source1.equals(source2)) {
+            if (source1.equalsIgnoreCase(source2)) {
                 return compareType(fabric1.getType(), fabric2.getType());
 
             // sources aren't equal, sort by source
@@ -54,7 +54,7 @@ public class StashFabricComparator implements Comparator<UUID> {
         // types aren't null
         if (type1 != null && type2 != null) {
             // types are equal
-            if (type1.equals(type2)) {
+            if (type1.equalsIgnoreCase(type2)) {
                 return compareCount(fabric1.getCount(), fabric2.getCount());
 
             // sort by type
