@@ -370,7 +370,7 @@ public class StashImporter {
                     } else {
                         key = id;
                     }
-                    createNewThread(source, type, id, key, stash, false);
+                    findOrAddThread(source, type, id, key, stash);
                 }
 
                 if (line.equals("***")) {
@@ -395,7 +395,7 @@ public class StashImporter {
                     }
 
                     String id = line;
-                    createNewEmbellishment(source, type, id, stash, false);
+                    findOrAddEmbellishment(source, type, id, stash);
                 }
 
                 if (line.equals("***")) {
@@ -491,7 +491,7 @@ public class StashImporter {
             for (UUID threadId : threadList) {
                 thread = stash.getThread(threadId);
                 if (isSameThread(thread, source, type, id, key)) {
-                    if (!key.equals(id) && key.equals(thread.getCode())) {
+                    if (!key.equals(id) && key.equalsIgnoreCase(thread.getCode())) {
                         thread.setCode(id);
                     }
                     thread.increaseOwnedQuantity();
@@ -506,16 +506,18 @@ public class StashImporter {
     }
 
     private StashThread findOrAddThread(String source, String type, String id, String key, StashData stash) {
-        ArrayList<UUID> threadList = stash.getThreadList();
+        ArrayList<UUID> threadList = threadMap.get(key);
         StashThread thread;
 
-        for (int i = 0; i < threadList.size(); i++) {
-            thread = stash.getThread(threadList.get(i));
-            if (isSameThread(thread, source, type, key, id)) {
-                if (!key.equals(id) && key.equals(thread.getCode())) {
-                    thread.setCode(id);
+        if (threadList != null) {
+            for (UUID threadId : threadList) {
+                thread = stash.getThread(threadId);
+                if (isSameThread(thread, source, type, key, id)) {
+                    if (!key.equals(id) && key.equalsIgnoreCase(thread.getCode())) {
+                        thread.setCode(id);
+                    }
+                    return thread;
                 }
-                return thread;
             }
         }
 
@@ -531,7 +533,7 @@ public class StashImporter {
         if (embellishmentList != null) {
             for (UUID embellishmentId : embellishmentList) {
                 embellishment = stash.getEmbellishment(embellishmentId);
-                if (embellishment.getSource().equals(source) && embellishment.getType().equals(type) && embellishment.getCode().equals(id)) {
+                if (embellishment.getSource().equalsIgnoreCase(source) && embellishment.getType().equalsIgnoreCase(type) && embellishment.getCode().equalsIgnoreCase(id)) {
                     embellishment.increaseOwned();
                     return;
                 }
@@ -550,7 +552,7 @@ public class StashImporter {
         if (embellishmentList != null) {
             for (UUID embellishmentId : embellishmentList) {
                 embellishment = stash.getEmbellishment(embellishmentId);
-                if (embellishment.getSource().equals(source) && embellishment.getType().equals(type) && embellishment.getCode().equals(id)) {
+                if (embellishment.getSource().equalsIgnoreCase(source) && embellishment.getType().equalsIgnoreCase(type) && embellishment.getCode().equalsIgnoreCase(id)) {
                     return embellishment;
                 }
             }
@@ -621,14 +623,14 @@ public class StashImporter {
 
     // check to see if the thread is the same
     private boolean isSameThread(StashThread thread, String source, String type, String id, String key) {
-        if (thread.getSource() != null && thread.getSource().equals(source)) {
+        if (thread.getSource() != null && thread.getSource().equalsIgnoreCase(source)) {
             // same source
-            if (thread.getType() != null && thread.getType().equals(type)) {
+            if (thread.getType() != null && thread.getType().equalsIgnoreCase(type)) {
                 // same type
-                if (thread.getCode() != null && thread.getCode().equals(id)) {
+                if (thread.getCode() != null && thread.getCode().equalsIgnoreCase(id)) {
                     // same code, so the same
                     return true;
-                } else if (thread.getCode() != null && (thread.getCode().split("\\s")[0].equals(id) || key.equals(thread.getCode()))) {
+                } else if (thread.getCode() != null && (thread.getCode().split("\\s")[0].equalsIgnoreCase(id) || key.equalsIgnoreCase(thread.getCode()))) {
                     // check if the code has a bit (likely numeric) in front that matches the stored code (or vice versa)
                     return true;
                 }

@@ -11,9 +11,9 @@ import java.util.UUID;
 
 /**
  * StashData class is a singleton to serve as the "database" for the items in the stash.  Thread
- * and fabric are stored in hashmaps with the toString() representation of the UUID associated with
- * the fabric/thread as the key for fast lookup.  Patterns are stored in an ArrayList.  Based off
- * of example in BigNerdRanch Android Programming book.
+ * and fabric are stored in hashmaps with the UUID associated with the fabric/thread as the key for
+ * fast lookup.  Patterns are stored in an ArrayList.  Based off of example in BigNerdRanch Android
+ * Programming book.
  */
 
 public class StashData {
@@ -295,7 +295,7 @@ public class StashData {
         // adds a thread to the hashmap and to the list of IDs powering the adapter
         mThreadsData.put(thread.getId(), thread);
         mThreadsList.add(thread.getId());
-        if (thread.isOwned()) {
+        if (thread.isOwned() && !mStashThreadsList.contains(thread.getId())) {
             mStashThreadsList.add(thread.getId());
         }
     }
@@ -336,7 +336,7 @@ public class StashData {
         // adds an embellishment to the hashmap and to the list of IDs powering the adapter
         mEmbellishmentData.put(embellishment.getId(), embellishment);
         mEmbellishmentList.add(embellishment.getId());
-        if (embellishment.isOwned()) {
+        if (embellishment.isOwned() && !mStashEmbellishmentList.contains(embellishment.getId())) {
             mStashEmbellishmentList.add(embellishment.getId());
         }
     }

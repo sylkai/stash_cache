@@ -367,6 +367,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         updateThreadInfo();*/
 
         mThreadDisplayList = (ListView)v.findViewById(R.id.pattern_thread_list);
+        Collections.sort(mThreadList, new StashThreadComparator(getActivity()));
         ThreadAdapter adapter = new ThreadAdapter(mThreadList);
         mThreadDisplayList.setAdapter(adapter);
         mThreadDisplayList.setEmptyView(v.findViewById(R.id.pattern_thread_display));
@@ -398,6 +399,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         });
 
         mEmbellishmentDisplayList = (ListView)v.findViewById(R.id.pattern_embellishment_list);
+        Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(getActivity()));
         EmbellishmentAdapter adapter1 = new EmbellishmentAdapter(mEmbellishmentList);
         mEmbellishmentDisplayList.setAdapter(adapter1);
         mEmbellishmentDisplayList.setEmptyView(v.findViewById(R.id.pattern_embellishment_display));
@@ -545,14 +547,13 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     }*/
 
     public void onThreadQuantitiesUpdate() {
-        updateThreadInfo();
+        Collections.sort(mThreadList, new StashThreadComparator(getActivity()));
+        ((ThreadAdapter)mThreadDisplayList.getAdapter()).notifyDataSetChanged();
     }
 
     public void onEmbellishmentQuantitiesUpdate() {
-        if (mEmbellishmentList.size() > 0) {
-            Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(getActivity()));
-            ((EmbellishmentAdapter) mEmbellishmentDisplayList.getAdapter()).notifyDataSetChanged();
-        }
+        Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(getActivity()));
+        ((EmbellishmentAdapter) mEmbellishmentDisplayList.getAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -598,10 +599,6 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
             mFabricInfo.setText(String.format(getString(R.string.pattern_no_fabric), defaultCount, overCount, edgeBuffer, fabricWidth, fabricHeight));
         }
-    }
-
-    private void updateThreadInfo() {
-        ((ThreadAdapter)mThreadDisplayList.getAdapter()).notifyDataSetChanged();
     }
 
 /*    private void showPhoto() {
