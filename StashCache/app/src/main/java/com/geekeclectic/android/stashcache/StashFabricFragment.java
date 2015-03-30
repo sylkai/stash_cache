@@ -53,7 +53,7 @@ public class StashFabricFragment extends Fragment {
         // get the fabric id from the arguments bundle and use that to get the appropriate fabric
         UUID fabricId = (UUID)getArguments().getSerializable(EXTRA_FABRIC_ID);
         callingTab = getArguments().getInt(EXTRA_TAB_ID);
-        mFabric = StashData.get(getActivity().getApplicationContext()).getFabric(fabricId);
+        mFabric = StashData.get(getActivity()).getFabric(fabricId);
 
         mPattern = mFabric.usedFor();
     }
@@ -89,7 +89,7 @@ public class StashFabricFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        StashData.get(getActivity().getApplicationContext()).saveStash();
+        StashData.get(getActivity()).saveStash();
     }
 
     @TargetApi(11)

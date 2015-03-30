@@ -134,6 +134,17 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
             }
         }
 
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            Fragment fragment = (Fragment)object;
+
+            if (fragment instanceof Observer) {
+                mObservers.deleteObserver((Observer) fragment);
+            }
+
+            super.destroyItem(container, position, object);
+        }
+
         public void updateFragments() {
             mObservers.notifyObservers();
         }

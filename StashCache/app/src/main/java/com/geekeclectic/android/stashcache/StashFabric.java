@@ -41,7 +41,7 @@ public class StashFabric extends StashObject {
 
     public StashFabric(Context context) {
         // random UUID generated in parent class
-        setContext(context);
+        setContext(context.getApplicationContext());
         mFabricCount = StashConstants.INT_ZERO;
         mFabricWidth = StashConstants.DOUBLE_ZERO;
         mFabricHeight = StashConstants.DOUBLE_ZERO;
@@ -50,7 +50,7 @@ public class StashFabric extends StashObject {
     public StashFabric(JSONObject json, Context context) throws JSONException {
         // load fabricId and necessary numbers
         mFabricCount = json.getInt(JSON_COUNT);
-        setContext(context);
+        setContext(context.getApplicationContext());
 
         mFabricWidth = json.getDouble(JSON_WIDTH);
         mFabricHeight = json.getDouble(JSON_HEIGHT);

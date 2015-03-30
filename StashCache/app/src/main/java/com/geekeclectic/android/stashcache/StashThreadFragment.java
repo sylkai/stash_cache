@@ -69,7 +69,7 @@ public class StashThreadFragment extends Fragment {
         // get id for thread and pull up the appropriate thread from the stash
         UUID threadId = (UUID)getArguments().getSerializable(EXTRA_THREAD_ID);
         callingTab = getArguments().getInt(EXTRA_TAB_ID);
-        mThread = StashData.get(getActivity().getApplicationContext()).getThread(threadId);
+        mThread = StashData.get(getActivity()).getThread(threadId);
         mPatternList = mThread.getPatternsList();
     }
 
@@ -112,7 +112,7 @@ public class StashThreadFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        StashData.get(getActivity().getApplicationContext()).saveStash();
+        StashData.get(getActivity()).saveStash();
     }
 
     @TargetApi(11)
@@ -306,7 +306,7 @@ public class StashThreadFragment extends Fragment {
     private class PatternAdapter extends ArrayAdapter<StashPattern> {
 
         public PatternAdapter(ArrayList<StashPattern> patterns) {
-            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, patterns);
+            super(getActivity(), StashConstants.NO_RESOURCE, patterns);
         }
 
         @Override

@@ -42,14 +42,14 @@ public class StashThread extends StashObject {
         mSkeinsAdditional = 0;
         mUsedIn = new ArrayList<StashPattern>();
         mCalledFor = new HashMap<StashPattern, Integer>();
-        setContext(context);
+        setContext(context.getApplicationContext());
     }
 
     public StashThread(JSONObject json, Context context) throws JSONException {
         // initialize arraylist for patterns if creating from JSON object
         mUsedIn = new ArrayList<StashPattern>();
         mCalledFor = new HashMap<StashPattern, Integer>();
-        setContext(context);
+        setContext(context.getApplicationContext());
 
         if (json.has(JSON_SOURCE)) {
             setSource(json.getString(JSON_SOURCE));

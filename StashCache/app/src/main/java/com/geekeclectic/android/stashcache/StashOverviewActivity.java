@@ -150,7 +150,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         fragment.setCurrentView(currentView);
 
         StashCreateShoppingList shoppingList = new StashCreateShoppingList();
-        shoppingList.updateShoppingList(getApplicationContext());
+        shoppingList.updateShoppingList(this);
     }
 
     @Override
@@ -172,11 +172,21 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        StashData.get(this).saveStash();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
         UpdateFragment fragment = (UpdateFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         fragment.setCurrentView(currentView);
+
+        StashCreateShoppingList shoppingList = new StashCreateShoppingList();
+        shoppingList.updateShoppingList(this);
     }
 
     @Override
@@ -197,7 +207,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 StashExporter exporter = new StashExporter();
 
                 try {
-                    File file = exporter.exportStash(getApplicationContext());
+                    File file = exporter.exportStash(this);
 
                     Intent saveIntent = new Intent(Intent.ACTION_SEND);
 
@@ -222,7 +232,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // it was confirmed, so delete the stash and refresh fragments
-                        StashData.get(getApplicationContext()).deleteStash();
+                        StashData.get(getParent()).deleteStash();
                         fragment.stashChanged();
                     }
                 });
@@ -310,7 +320,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             }
         } else if (requestCode == REQUEST_PREFERENCES_UPDATE) {
             StashCreateShoppingList shoppingList = new StashCreateShoppingList();
-            shoppingList.updateShoppingList(getApplicationContext());
+            shoppingList.updateShoppingList(this);
 
             fragment.stashChanged();
         }
@@ -371,7 +381,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             Toast.makeText(StashOverviewActivity.this, toastText, Toast.LENGTH_SHORT).show();
 
             fragment.stashChanged();
-            StashData.get(getApplicationContext()).saveStash();
+            StashData.get(getParent()).saveStash();
         }
     }
 

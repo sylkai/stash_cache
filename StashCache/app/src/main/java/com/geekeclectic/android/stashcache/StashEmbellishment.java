@@ -37,13 +37,13 @@ public class StashEmbellishment extends StashObject {
         mNumberNeeded = 0;
         mNumberAdditional = 0;
         mUsedIn = new ArrayList<StashPattern>();
-        setContext(context);
+        setContext(context.getApplicationContext());
     }
 
     public StashEmbellishment(JSONObject json, Context context) throws JSONException {
         // initialize arraylist for patterns if creating from JSON object
         mUsedIn = new ArrayList<StashPattern>();
-        setContext(context);
+        setContext(context.getApplicationContext());
 
         if (json.has(JSON_SOURCE)) {
             setSource(json.getString(JSON_SOURCE));

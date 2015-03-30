@@ -42,7 +42,7 @@ public class SelectThreadDialogFragment extends DialogFragment implements Dialog
         mChecked = new boolean[mThreads.size()];
 
         for (UUID threadId : mThreads) {
-            StashThread thread = StashData.get(getActivity().getApplicationContext()).getThread(threadId);
+            StashThread thread = StashData.get(getActivity()).getThread(threadId);
 
             mStrings.add(thread.toString());
             mChecked[mThreads.indexOf(threadId)] = mSelectedThreads.contains(threadId);

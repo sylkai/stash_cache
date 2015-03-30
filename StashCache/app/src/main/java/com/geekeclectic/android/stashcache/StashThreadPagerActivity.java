@@ -60,7 +60,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
             public void onPageSelected(int currentThread) {
                 // keep track of which fragment is currently displayed and let the host activity know
-                StashThread thread = StashData.get(getApplicationContext()).getThread(mThreads.get(currentThread));
+                StashThread thread = StashData.get(getParent()).getThread(mThreads.get(currentThread));
                 ActionBar actionBar = getActionBar();
 
                 actionBar.setTitle(getString(R.string.thread));
@@ -78,7 +78,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
                 // if the current item is the first one, onPageSelected doesn't fire, so set it manually
                 if (i == 0) {
-                    StashThread thread = StashData.get(getApplicationContext()).getThread(mThreads.get(i));
+                    StashThread thread = StashData.get(this).getThread(mThreads.get(i));
                     ActionBar actionBar = getActionBar();
 
                     actionBar.setTitle(getString(R.string.thread));

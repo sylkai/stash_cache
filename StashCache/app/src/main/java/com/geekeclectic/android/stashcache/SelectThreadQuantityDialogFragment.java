@@ -62,8 +62,8 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                 mSelectThreadQuantityDialogCallback.onThreadQuantitiesUpdate();
 
                 // create a new thread
-                StashThread thread = new StashThread(getActivity().getApplicationContext());
-                StashData.get(getActivity().getApplicationContext()).addThread(thread);
+                StashThread thread = new StashThread(getActivity());
+                StashData.get(getActivity()).addThread(thread);
 
                 // thread is presumably associated with this pattern
                 mPattern.increaseQuantity(thread);
@@ -99,7 +99,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
         final StashPattern mPattern;
 
         public QuantityAdapter(ArrayList<UUID> threads, StashPattern pattern) {
-            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, threads);
+            super(getActivity(), StashConstants.NO_RESOURCE, threads);
 
             mPattern = pattern;
         }
@@ -122,7 +122,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
             // configure view for this thread - keep in mind view may be recycled and all fields must
             // be initialized again
             ViewHolder vh = (ViewHolder)convertView.getTag();
-            StashThread thread = StashData.get(getActivity().getApplicationContext()).getThread(getItem(position));
+            StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
             vh.threadRef = thread;
 
             vh.threadInfo.setText(thread.toString());

@@ -54,8 +54,8 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         // get the current list of fabrics to display
         mViewCode = getArguments().getInt(FABRIC_VIEW_ID);
 
-        mFabrics = StashData.get(getActivity().getApplicationContext()).getFabricList();
-        Collections.sort(mFabrics, new StashFabricComparator(getActivity().getApplicationContext()));
+        mFabrics = StashData.get(getActivity()).getFabricList();
+        Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
 
         // create and set list adapter using fabrics list
         adapter = new FabricAdapter(mFabrics);
@@ -105,7 +105,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
                         switch (item.getItemId()) {
                             case R.id.menu_item_delete_fabric:
                                 FabricAdapter adapter = (FabricAdapter)getListAdapter();
-                                StashData stash = StashData.get(getActivity().getApplicationContext());
+                                StashData stash = StashData.get(getActivity());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
                                         StashFabric fabric = stash.getFabric(adapter.getItem(i));
@@ -175,8 +175,8 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         switch (item.getItemId()) {
             case R.id.menu_item_new_fabric:
                 // create a new fabric and add it to the stash
-                StashFabric fabric = new StashFabric(getActivity().getApplicationContext());
-                StashData.get(getActivity().getApplicationContext()).addFabric(fabric);
+                StashFabric fabric = new StashFabric(getActivity());
+                StashData.get(getActivity()).addFabric(fabric);
 
                 // start StashFabricFragment with the new fabric
                 Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
@@ -199,7 +199,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         if (item.getGroupId() == FABRIC_GROUP_ID) {
             // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            StashData stash = StashData.get(getActivity().getApplicationContext());
+            StashData stash = StashData.get(getActivity());
             int position = info.position;
             FabricAdapter adapter = (FabricAdapter) getListAdapter();
             StashFabric fabric = stash.getFabric(adapter.getItem(position));
@@ -232,7 +232,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
 
     @Override
     public void update(Observable observable, Object data) {
-        Collections.sort(mFabrics, new StashFabricComparator(getActivity().getApplicationContext()));
+        Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
         ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
@@ -246,7 +246,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
 
     private class FabricAdapter extends ArrayAdapter<UUID> {
         public FabricAdapter(ArrayList<UUID> fabrics) {
-            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, fabrics);
+            super(getActivity(), StashConstants.NO_RESOURCE, fabrics);
         }
 
         @Override
@@ -264,7 +264,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
 
             ViewHolder vh = (ViewHolder)convertView.getTag();
             // configure view for this fabric
-            StashFabric fabric = StashData.get(getActivity().getApplicationContext()).getFabric(getItem(position));
+            StashFabric fabric = StashData.get(getActivity()).getFabric(getItem(position));
 
             vh.info.setText(fabric.getInfo());
             vh.size.setText(fabric.getSize());

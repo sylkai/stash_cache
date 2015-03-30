@@ -78,8 +78,8 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
         private StashData stash;
 
         public QuantityAdapter(ArrayList<UUID> threads) {
-            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, threads);
-            stash = StashData.get(getActivity().getApplicationContext());
+            super(getActivity(), StashConstants.NO_RESOURCE, threads);
+            stash = StashData.get(getActivity());
         }
 
         @Override

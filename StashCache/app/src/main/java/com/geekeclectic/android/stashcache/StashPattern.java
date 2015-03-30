@@ -49,12 +49,12 @@ public class StashPattern extends StashObject {
         mEmbellishments = new ArrayList<UUID>();
         mQuantities = new HashMap<UUID, Integer>();
         mIsKitted = false;
-        setContext(context);
+        setContext(context.getApplicationContext());
     }
 
     public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap, HashMap<String, StashEmbellishment> embellishmentMap, Context context) throws JSONException {
         setId(UUID.fromString(json.getString(JSON_PATTERN)));
-        setContext(context);
+        setContext(context.getApplicationContext());
         mIsKitted = json.getBoolean(JSON_KITTED);
 
         // because values are only stored if they exist, we need to check for the tag before

@@ -58,7 +58,7 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
 
             public void onPageSelected(int currentEmbellishment) {
                 // keep track of which fragment is currently displayed and let the host activity know
-                StashEmbellishment embellishment = StashData.get(getApplicationContext()).getEmbellishment(mEmbellishments.get(currentEmbellishment));
+                StashEmbellishment embellishment = StashData.get(getParent()).getEmbellishment(mEmbellishments.get(currentEmbellishment));
                 ActionBar actionBar = getActionBar();
 
                 actionBar.setTitle(getString(R.string.embellishment));
@@ -76,7 +76,7 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
 
                 // onPageSelected won't fire if the item up is the first one, so need to set that up separately
                 if (i == 0) {
-                    StashEmbellishment embellishment = StashData.get(getApplicationContext()).getEmbellishment(mEmbellishments.get(i));
+                    StashEmbellishment embellishment = StashData.get(this).getEmbellishment(mEmbellishments.get(i));
                     ActionBar actionBar = getActionBar();
 
                     actionBar.setTitle(getString(R.string.embellishment));

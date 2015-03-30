@@ -101,7 +101,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
                         switch (item.getItemId()) {
                             case R.id.menu_item_delete_pattern:
                                 PatternAdapter adapter = (PatternAdapter)getListAdapter();
-                                StashData stash = StashData.get(getActivity().getApplicationContext());
+                                StashData stash = StashData.get(getActivity());
 
                                 // iterate through the the items in the adapter - if the pattern is
                                 // checked, remove it from the stash
@@ -174,8 +174,8 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         switch (item.getItemId()) {
             case R.id.menu_item_new_pattern:
                 // create new pattern and add it to the stash
-                StashPattern pattern = new StashPattern(getActivity().getApplicationContext());
-                StashData.get(getActivity().getApplicationContext()).addPattern(pattern);
+                StashPattern pattern = new StashPattern(getActivity());
+                StashData.get(getActivity()).addPattern(pattern);
 
                 // start pattern viewPager with the desired pattern fragment
                 Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
@@ -198,7 +198,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         if (item.getGroupId() == PATTERN_GROUP_ID) {
             // if the requesting fragment was THIS ONE, get the info
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            StashData stash = StashData.get(getActivity().getApplicationContext());
+            StashData stash = StashData.get(getActivity());
             int position = info.position;
             PatternAdapter adapter = (PatternAdapter) getListAdapter();
             StashPattern pattern = adapter.getItem(position);
@@ -231,9 +231,9 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
 
     private ArrayList<StashPattern> getListFromStash() {
         if (mViewCode == StashConstants.SHOPPING_TAB) {
-            return StashData.get(getActivity().getApplicationContext()).getFabricForList();
+            return StashData.get(getActivity()).getFabricForList();
         } else {
-            return StashData.get(getActivity().getApplicationContext()).getPatternData();
+            return StashData.get(getActivity()).getPatternData();
         }
     }
 
@@ -265,7 +265,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         private StashCreateShoppingList mShoppingList;
 
         public PatternAdapter(ArrayList<StashPattern> patterns) {
-            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, patterns);
+            super(getActivity(), StashConstants.NO_RESOURCE, patterns);
             mShoppingList = new StashCreateShoppingList();
         }
 
@@ -299,7 +299,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
                     StashPattern pattern = (StashPattern) checkBox.getTag();
                     pattern.setKitted(checkBox.isChecked());
 
-                    mShoppingList.updateShoppingList(getActivity().getApplicationContext());
+                    mShoppingList.updateShoppingList(getActivity());
                     mCallback.onListFragmentUpdate();
                 }
             });

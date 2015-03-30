@@ -62,7 +62,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
             public void onPageSelected(int currentFabric) {
                 // keep track of which fragment is currently displayed and let the host activity know
-                StashFabric fabric = StashData.get(getApplicationContext()).getFabric(mFabrics.get(currentFabric));
+                StashFabric fabric = StashData.get(getParent()).getFabric(mFabrics.get(currentFabric));
                 ActionBar actionBar = getActionBar();
 
                 actionBar.setTitle(getString(R.string.fabric));
@@ -78,7 +78,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
                 // onPageSelected won't fire if the item up is the first one, so need to set that up separately
                 if (i == 0) {
-                    StashFabric fabric = StashData.get(getApplicationContext()).getFabric(mFabrics.get(i));
+                    StashFabric fabric = StashData.get(this).getFabric(mFabrics.get(i));
                     ActionBar actionBar = getActionBar();
 
                     actionBar.setTitle(getString(R.string.fabric));

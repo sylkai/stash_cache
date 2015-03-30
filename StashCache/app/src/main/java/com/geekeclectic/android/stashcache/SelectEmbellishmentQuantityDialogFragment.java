@@ -62,8 +62,8 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                 mSelectEmbellishmentQuantityDialogCallback.onEmbellishmentQuantitiesUpdate();
 
                 // create a new embellishment
-                StashEmbellishment embellishment = new StashEmbellishment(getActivity().getApplicationContext());
-                StashData.get(getActivity().getApplicationContext()).addEmbellishment(embellishment);
+                StashEmbellishment embellishment = new StashEmbellishment(getActivity());
+                StashData.get(getActivity()).addEmbellishment(embellishment);
 
                 // embellishment is presumably associated with this pattern
                 mPattern.increaseQuantity(embellishment);
@@ -99,7 +99,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
         private final StashPattern mPattern;
 
         public QuantityAdapter(ArrayList<UUID> embellishments, StashPattern pattern) {
-            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, embellishments);
+            super(getActivity(), StashConstants.NO_RESOURCE, embellishments);
 
             mPattern = pattern;
         }
@@ -122,7 +122,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
             // configure view for this thread - keep in mind view may be recycled and all fields must
             // be initialized again
             ViewHolder vh = (ViewHolder)convertView.getTag();
-            StashEmbellishment embellishment = StashData.get(getActivity().getApplicationContext()).getEmbellishment(getItem(position));
+            StashEmbellishment embellishment = StashData.get(getActivity()).getEmbellishment(getItem(position));
             vh.embellishmentRef = embellishment;
 
             vh.embellishmentInfo.setText(embellishment.toString());

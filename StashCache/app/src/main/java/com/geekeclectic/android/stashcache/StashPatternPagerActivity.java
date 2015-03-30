@@ -113,7 +113,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 StashExporter exporter = new StashExporter();
 
                 try {
-                    File file = exporter.exportPattern(mPatterns.get(mViewPager.getCurrentItem()), getApplicationContext());
+                    File file = exporter.exportPattern(mPatterns.get(mViewPager.getCurrentItem()), this);
 
                     Intent saveIntent = new Intent(Intent.ACTION_SEND);
 

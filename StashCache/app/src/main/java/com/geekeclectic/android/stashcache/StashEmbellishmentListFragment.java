@@ -52,7 +52,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         mViewCode = getArguments().getInt(EMBELLISHMENT_VIEW_ID, 0);
 
         mEmbellishments = getListFromStash();
-        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity().getApplicationContext()));
+        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
 
         // create and set adapter using embellishment list
         EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);
@@ -103,7 +103,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
                         switch (item.getItemId()) {
                             case R.id.menu_item_delete_embellishment:
                                 EmbellishmentAdapter adapter = (EmbellishmentAdapter)getListAdapter();
-                                StashData stash = StashData.get(getActivity().getApplicationContext());
+                                StashData stash = StashData.get(getActivity());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
                                         StashEmbellishment embellishment = stash.getEmbellishment(adapter.getItem(i));
@@ -171,8 +171,8 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         switch (item.getItemId()) {
             case R.id.menu_item_new_embellishment:
                 // create a new embellishment
-                StashEmbellishment embellishment = new StashEmbellishment(getActivity().getApplicationContext());
-                StashData.get(getActivity().getApplicationContext()).addEmbellishment(embellishment);
+                StashEmbellishment embellishment = new StashEmbellishment(getActivity());
+                StashData.get(getActivity()).addEmbellishment(embellishment);
 
                 // start StashEmbellishmentFragment with the new embellishment
                 Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
@@ -185,12 +185,12 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
 
                 ArrayList<UUID> embellishmentList;
                 if (mViewCode == 0) {
-                    embellishmentList = new ArrayList<UUID>(StashData.get(getActivity().getApplicationContext()).getEmbellishmentList());
+                    embellishmentList = new ArrayList<UUID>(StashData.get(getActivity()).getEmbellishmentList());
                 } else {
                     embellishmentList = new ArrayList<UUID>(mEmbellishments);
                 }
 
-                StashEmbellishmentQuantityDialogFragment dialog = StashEmbellishmentQuantityDialogFragment.newInstance(embellishmentList, getActivity().getApplicationContext());
+                StashEmbellishmentQuantityDialogFragment dialog = StashEmbellishmentQuantityDialogFragment.newInstance(embellishmentList, getActivity());
                 dialog.setStashEmbellishmentQuantityDialogCallback(this);
                 dialog.show(fm, EDIT_STASH_DIALOG);
                 return true;
@@ -209,7 +209,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         if (item.getGroupId() == EMBELLISHMENT_GROUP_ID) {
             // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            StashData stash = StashData.get(getActivity().getApplicationContext());
+            StashData stash = StashData.get(getActivity());
             int position = info.position;
             EmbellishmentAdapter adapter = (EmbellishmentAdapter) getListAdapter();
             StashEmbellishment embellishment = stash.getEmbellishment(adapter.getItem(position));
@@ -241,7 +241,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
 
     public void onEmbellishmentQuantitiesUpdate() {
         mEmbellishments = getListFromStash();
-        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity().getApplicationContext()));
+        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
 
         EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);
         setListAdapter(adapter);
@@ -251,11 +251,11 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
 
     private ArrayList<UUID> getListFromStash() {
         if (mViewCode == StashConstants.MASTER_TAB) {
-            return StashData.get(getActivity().getApplicationContext()).getEmbellishmentList();
+            return StashData.get(getActivity()).getEmbellishmentList();
         } else if (mViewCode == StashConstants.STASH_TAB) {
-            return StashData.get(getActivity().getApplicationContext()).getEmbellishmentStashList();
+            return StashData.get(getActivity()).getEmbellishmentStashList();
         } else {
-            return StashData.get(getActivity().getApplicationContext()).getEmbellishmentShoppingList();
+            return StashData.get(getActivity()).getEmbellishmentShoppingList();
         }
     }
 
@@ -278,7 +278,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     private class EmbellishmentAdapter extends ArrayAdapter<UUID> {
 
         public EmbellishmentAdapter(ArrayList<UUID> embellishments) {
-            super(getActivity().getApplicationContext(), 0, embellishments);
+            super(getActivity(), 0, embellishments);
         }
 
         @Override
@@ -295,7 +295,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
 
             ViewHolder vh = (ViewHolder)convertView.getTag();
             // configure the view for this embellishment
-            StashEmbellishment embellishment = StashData.get(getActivity().getApplicationContext()).getEmbellishment(getItem(position));
+            StashEmbellishment embellishment = StashData.get(getActivity()).getEmbellishment(getItem(position));
 
             vh.info.setText(embellishment.toString());
 

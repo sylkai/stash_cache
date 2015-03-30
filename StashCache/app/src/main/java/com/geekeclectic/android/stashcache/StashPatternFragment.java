@@ -100,7 +100,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         // get patternId and use it to get pattern
         mPatternId = (UUID)getArguments().getSerializable(EXTRA_PATTERN_ID);
         callingTab = getArguments().getInt(EXTRA_TAB_ID);
-        mPattern = StashData.get(getActivity().getApplicationContext()).getPattern(mPatternId);
+        mPattern = StashData.get(getActivity()).getPattern(mPatternId);
 
         // set reference to fragment for setting listeners
         mFragment = this;
@@ -170,7 +170,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     @Override
     public void onPause() {
         super.onPause();
-        StashData.get(getActivity().getApplicationContext()).saveStash();
+        StashData.get(getActivity()).saveStash();
     }
 
     @Override
@@ -285,7 +285,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             public void onClick(View v) {
                 boolean checked = ((CheckBox) v).isChecked();
                 mPattern.setKitted(checked);
-                mShoppingList.updateShoppingList(getActivity().getApplicationContext());
+                mShoppingList.updateShoppingList(getActivity());
             }
         });
 
@@ -357,7 +357,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
 
-                SelectThreadQuantityDialogFragment dialog = SelectThreadQuantityDialogFragment.newInstance(StashData.get(getActivity().getApplicationContext()).getThreadList(), mPattern, getActivity().getApplicationContext());
+                SelectThreadQuantityDialogFragment dialog = SelectThreadQuantityDialogFragment.newInstance(StashData.get(getActivity()).getThreadList(), mPattern, getActivity());
                 dialog.setSelectThreadQuantityDialogCallback(mFragment);
                 dialog.show(fm, DIALOG_THREAD);
             }
@@ -390,7 +390,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 FragmentManager fm = getActivity().getSupportFragmentManager();
 
                 // create a copy of the thread list to avoid modification errors
-                SelectEmbellishmentQuantityDialogFragment dialog = SelectEmbellishmentQuantityDialogFragment.newInstance(StashData.get(getActivity().getApplicationContext()).getEmbellishmentList(), mPattern, getActivity().getApplicationContext());
+                SelectEmbellishmentQuantityDialogFragment dialog = SelectEmbellishmentQuantityDialogFragment.newInstance(StashData.get(getActivity()).getEmbellishmentList(), mPattern, getActivity());
                 //dialog.setSelectThreadDialogListener(mFragment);
                 dialog.setSelectEmbellishmentQuantityDialogCallback(mFragment);
                 dialog.show(fm, DIALOG_THREAD);
@@ -426,13 +426,13 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             Log.d(TAG, "User chose to use existing fabric");
 
             // get list of all fabric
-            ArrayList<UUID> fabricStash = StashData.get(getActivity().getApplicationContext()).getFabricList();
+            ArrayList<UUID> fabricStash = StashData.get(getActivity()).getFabricList();
             ArrayList<UUID> possibleFabrics = new ArrayList<UUID>();
             int previousFabric;
 
             // if fabric can fit the pattern, add to list for the adapter
             for (UUID fabricId : fabricStash) {
-                StashFabric fabric = StashData.get(getActivity().getApplicationContext()).getFabric(fabricId);
+                StashFabric fabric = StashData.get(getActivity()).getFabric(fabricId);
                 if (fabric.willFit(mPattern.getWidth(), mPattern.getHeight())) {
                     possibleFabrics.add(fabricId);
                 }
@@ -468,8 +468,8 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
 
             // create new fabric
-            mFabric = new StashFabric(getActivity().getApplicationContext());
-            StashData.get(getActivity().getApplicationContext()).addFabric(mFabric);
+            mFabric = new StashFabric(getActivity());
+            StashData.get(getActivity()).addFabric(mFabric);
 
             // set links between fabric and pattern
             mFabric.setUsedFor(mPattern);
@@ -491,7 +491,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 mFabric.setUsedFor(null);
             }
 
-            mFabric = StashData.get(getActivity().getApplicationContext()).getFabric(fabricId);
+            mFabric = StashData.get(getActivity()).getFabric(fabricId);
 
             if (mFabric.usedFor() != null) {
                 // if the new fabric had a pattern associated with it, remove pattern link to fabric
@@ -550,7 +550,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     public void onEmbellishmentQuantitiesUpdate() {
         if (mEmbellishmentList.size() > 0) {
-            Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(getActivity().getApplicationContext()));
+            Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(getActivity()));
             ((EmbellishmentAdapter) mEmbellishmentDisplayList.getAdapter()).notifyDataSetChanged();
         }
     }
@@ -649,7 +649,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private class ThreadAdapter extends ArrayAdapter<UUID> {
 
         public ThreadAdapter(ArrayList<UUID> threads) {
-            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, threads);
+            super(getActivity(), StashConstants.NO_RESOURCE, threads);
         }
 
         @Override
@@ -667,7 +667,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             ViewHolder vh = (ViewHolder)convertView.getTag();
 
             // configure the view for this thread
-            StashThread thread = StashData.get(getActivity().getApplicationContext()).getThread(getItem(position));
+            StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
 
             vh.info.setText(thread.toString());
             vh.quantity.setText(Integer.toString(mPattern.getQuantity(thread)));
@@ -681,7 +681,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private class EmbellishmentAdapter extends ArrayAdapter<UUID> {
 
         public EmbellishmentAdapter(ArrayList<UUID> embellishments) {
-            super(getActivity().getApplicationContext(), StashConstants.NO_RESOURCE, embellishments);
+            super(getActivity(), StashConstants.NO_RESOURCE, embellishments);
         }
 
         @Override
@@ -699,7 +699,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             ViewHolder vh = (ViewHolder)convertView.getTag();
 
             // configure the view for this thread
-            StashEmbellishment embellishment = StashData.get(getActivity().getApplicationContext()).getEmbellishment(getItem(position));
+            StashEmbellishment embellishment = StashData.get(getActivity()).getEmbellishment(getItem(position));
 
             vh.info.setText(embellishment.toString());
             vh.quantity.setText(Integer.toString(mPattern.getQuantity(embellishment)));
