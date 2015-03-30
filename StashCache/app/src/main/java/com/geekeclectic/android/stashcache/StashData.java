@@ -27,9 +27,9 @@ public class StashData {
     private StashDataJSONSerializer mSerializer;
 
     private ArrayList<StashPattern> mPatternsData;
-    private HashMap<String, StashThread> mThreadsData;
-    private HashMap<String, StashFabric> mFabricData;
-    private HashMap<String, StashEmbellishment> mEmbellishmentData;
+    private HashMap<UUID, StashThread> mThreadsData;
+    private HashMap<UUID, StashFabric> mFabricData;
+    private HashMap<UUID, StashEmbellishment> mEmbellishmentData;
 
     private ArrayList<UUID> mFabricList;
     private ArrayList<StashPattern> mFabricForList;
@@ -45,9 +45,9 @@ public class StashData {
         mAppContext = appContext;
         mSerializer = new StashDataJSONSerializer(mAppContext, FILENAME);
 
-        mThreadsData = new HashMap<String, StashThread>();
-        mFabricData = new HashMap<String, StashFabric>();
-        mEmbellishmentData = new HashMap<String, StashEmbellishment>();
+        mThreadsData = new HashMap<UUID, StashThread>();
+        mFabricData = new HashMap<UUID, StashFabric>();
+        mEmbellishmentData = new HashMap<UUID, StashEmbellishment>();
         mPatternsData = new ArrayList<StashPattern>();
 
         mThreadsList = new ArrayList<UUID>();
@@ -67,11 +67,6 @@ public class StashData {
         } catch (Exception e) {
             Log.e(TAG, "error loading stash: ", e);
         }
-
-        // create initial thread/fabric lists from maps for use with list adapters
-        setThreadsList();
-        setFabricList();
-        setEmbellishmentList();
 
         // sort the lists, since reading them from the map means that the sorted order was not preserved
         // by doing an initial sort, there is not a long delay when calling a list for the first time
@@ -93,9 +88,11 @@ public class StashData {
         return sStash;
     }
 
-    public void setThreadData(HashMap<String, StashThread> threadMap) {
+    public void setThreadData(HashMap<UUID, StashThread> threadMap, ArrayList<UUID> threadList, ArrayList<UUID> stashList) {
         // set the loaded threadmap from JSON
         mThreadsData = threadMap;
+        mThreadsList = threadList;
+        mStashThreadsList = stashList;
     }
 
     public void setThreadShoppingList(ArrayList<UUID> shoppingList) {
@@ -103,7 +100,7 @@ public class StashData {
         mShoppingThreadsList = shoppingList;
     }
 
-    public HashMap<String, StashThread> getThreadData() {
+    public HashMap<UUID, StashThread> getThreadData() {
         // pass threadmap for saving stash/building links
         return mThreadsData;
     }
@@ -122,21 +119,6 @@ public class StashData {
         // pass the shopping threadlist for list adapters
         Collections.sort(mShoppingThreadsList, new StashThreadComparator(mAppContext));
         return mShoppingThreadsList;
-    }
-
-    public void setThreadsList() {
-        // to set the initial threadlist for adapters, iterate through map to add all threads
-        // to the list
-        if (mThreadsData.size() > 0) {
-            for (Map.Entry<String, StashThread> entry : mThreadsData.entrySet()) {
-                StashThread thread = entry.getValue();
-                mThreadsList.add(thread.getId());
-
-                if (thread.isOwned()) {
-                    mStashThreadsList.add(thread.getId());
-                }
-            }
-        }
     }
 
     public void addThreadToStash(UUID threadId) {
@@ -164,12 +146,14 @@ public class StashData {
 
     public StashThread getThread(UUID key) {
         // given a UUID key, look up the toString() and return thread object
-        return mThreadsData.get(key.toString());
+        return mThreadsData.get(key);
     }
 
-    public void setEmbellishmentData(HashMap<String, StashEmbellishment> embellishmentMap) {
+    public void setEmbellishmentData(HashMap<UUID, StashEmbellishment> embellishmentMap, ArrayList<UUID> embellishmentList, ArrayList<UUID> stashList) {
         // set the loaded embellishmentmap from JSON
         mEmbellishmentData = embellishmentMap;
+        mEmbellishmentList = embellishmentList;
+        mStashEmbellishmentList = stashList;
     }
 
     public void setEmbellishmentShoppingList(ArrayList<UUID> shoppingList) {
@@ -177,7 +161,7 @@ public class StashData {
         mShoppingEmbellishmentList = shoppingList;
     }
 
-    public HashMap<String, StashEmbellishment> getEmbellishmentData() {
+    public HashMap<UUID, StashEmbellishment> getEmbellishmentData() {
         // pass embellishmentmap for saving stash/building links
         return mEmbellishmentData;
     }
@@ -221,36 +205,22 @@ public class StashData {
         mShoppingEmbellishmentList.remove(embellishmentId);
     }
 
-    public void setEmbellishmentList() {
-        // to set the initial embellishmentlist for adapters, iterate through map to add all threads
-        // to the list
-        if (mEmbellishmentData.size() > 0) {
-            for (Map.Entry<String, StashEmbellishment> entry : mEmbellishmentData.entrySet()) {
-                StashEmbellishment embellishment = entry.getValue();
-                mEmbellishmentList.add(embellishment.getId());
-
-                if (embellishment.isOwned()) {
-                    mStashEmbellishmentList.add(embellishment.getId());
-                }
-            }
-        }
-    }
-
     public StashEmbellishment getEmbellishment(UUID key) {
         // given a UUID key, look up the toString() and return embellishment object
-        return mEmbellishmentData.get(key.toString());
+        return mEmbellishmentData.get(key);
     }
 
-    public void setFabricData(HashMap<String, StashFabric> fabricMap) {
+    public void setFabricData(HashMap<UUID, StashFabric> fabricMap, ArrayList<UUID> fabricList) {
         // set loaded fabricMap from JSON
         mFabricData = fabricMap;
+        mFabricList = fabricList;
     }
 
     public void setFabricForList(ArrayList<StashPattern> patternList) {
         mFabricForList = patternList;
     }
 
-    public HashMap<String, StashFabric> getFabricData() {
+    public HashMap<UUID, StashFabric> getFabricData() {
         // pass fabricmap for saving stash/building links
         return mFabricData;
     }
@@ -265,20 +235,9 @@ public class StashData {
         return mFabricForList;
     }
 
-    public void setFabricList() {
-        // to set the initial fabric list for adapters, iterate through map to add all fabrics to
-        // the list
-        if (mFabricData.size() > 0) {
-            for (Map.Entry<String, StashFabric> entry : mFabricData.entrySet()) {
-                StashFabric fabric = entry.getValue();
-                mFabricList.add(fabric.getId());
-            }
-        }
-    }
-
     public StashFabric getFabric(UUID key) {
         // given a UUID key, look up the toString() and return fabric object
-        return mFabricData.get(key.toString());
+        return mFabricData.get(key);
     }
 
     public void setPatternData(ArrayList<StashPattern> patternList) {
@@ -334,7 +293,7 @@ public class StashData {
 
     public void addThread(StashThread thread) {
         // adds a thread to the hashmap and to the list of IDs powering the adapter
-        mThreadsData.put(thread.getKey(), thread);
+        mThreadsData.put(thread.getId(), thread);
         mThreadsList.add(thread.getId());
         if (thread.isOwned()) {
             mStashThreadsList.add(thread.getId());
@@ -349,7 +308,7 @@ public class StashData {
         }
 
         // removes a thread from the hashmap and the lists powering the adapters
-        mThreadsData.remove(thread.getKey());
+        mThreadsData.remove(thread.getId());
         mThreadsList.remove(thread.getId());
         mStashThreadsList.remove(thread.getId());
         mShoppingThreadsList.remove(thread.getId());
@@ -357,7 +316,7 @@ public class StashData {
 
     public void addFabric(StashFabric fabric) {
         // adds fabric to the hashmap and to the list of IDs powering the adapter
-        mFabricData.put(fabric.getKey(), fabric);
+        mFabricData.put(fabric.getId(), fabric);
         mFabricList.add(fabric.getId());
     }
 
@@ -369,13 +328,13 @@ public class StashData {
         }
 
         // removes fabric from the hashmap and the list powering the adapter
-        mFabricData.remove(fabric.getKey());
+        mFabricData.remove(fabric.getId());
         mFabricList.remove(fabric.getId());
     }
 
     public void addEmbellishment(StashEmbellishment embellishment) {
         // adds an embellishment to the hashmap and to the list of IDs powering the adapter
-        mEmbellishmentData.put(embellishment.getKey(), embellishment);
+        mEmbellishmentData.put(embellishment.getId(), embellishment);
         mEmbellishmentList.add(embellishment.getId());
         if (embellishment.isOwned()) {
             mStashEmbellishmentList.add(embellishment.getId());
@@ -390,7 +349,7 @@ public class StashData {
         }
 
         // removes embellishment from the hashmap and the lists powering the adapters
-        mEmbellishmentData.remove(embellishment.getKey());
+        mEmbellishmentData.remove(embellishment.getId());
         mEmbellishmentList.remove(embellishment.getId());
         mStashEmbellishmentList.remove(embellishment.getId());
         mShoppingEmbellishmentList.remove(embellishment.getId());

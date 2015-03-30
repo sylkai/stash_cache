@@ -84,7 +84,7 @@ public class StashThread extends StashObject {
         json.put(JSON_OWNED, mSkeinsOwned);
         json.put(JSON_NEEDED, mSkeinsNeeded);
         json.put(JSON_ADDITIONAL, mSkeinsAdditional);
-        json.put(JSON_ID, getKey());
+        json.put(JSON_ID, getId().toString());
 
         if (mType != null) {
             json.put(JSON_TYPE, mType);

@@ -35,11 +35,6 @@ public class StashObject {
         return mContext;
     }
 
-    public String getKey() {
-        // UUID.toString() is used as hashmap key/JSON Object
-        return mId.toString();
-    }
-
     public void setSource(String source) {
         mSource = source;
     }

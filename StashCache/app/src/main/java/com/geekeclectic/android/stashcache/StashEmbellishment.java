@@ -77,7 +77,7 @@ public class StashEmbellishment extends StashObject {
         json.put(JSON_OWNED, mNumberOwned);
         json.put(JSON_NEEDED, mNumberNeeded);
         json.put(JSON_ADDITIONAL, mNumberAdditional);
-        json.put(JSON_ID, getKey());
+        json.put(JSON_ID, getId().toString());
 
         if (mType != null) {
             json.put(JSON_TYPE, mType);

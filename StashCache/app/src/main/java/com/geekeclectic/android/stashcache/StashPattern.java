@@ -52,7 +52,7 @@ public class StashPattern extends StashObject {
         setContext(context.getApplicationContext());
     }
 
-    public StashPattern(JSONObject json, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap, HashMap<String, StashEmbellishment> embellishmentMap, Context context) throws JSONException {
+    public StashPattern(JSONObject json, StashData stash, Context context) throws JSONException {
         setId(UUID.fromString(json.getString(JSON_PATTERN)));
         setContext(context.getApplicationContext());
         mIsKitted = json.getBoolean(JSON_KITTED);
@@ -81,7 +81,7 @@ public class StashPattern extends StashObject {
 
         if (json.has(JSON_FABRIC)) {
             // look up fabricId in fabricMap to get appropriate fabric object
-            mPatternFabric = fabricMap.get(json.getString(JSON_FABRIC));
+            mPatternFabric = stash.getFabric(UUID.fromString(json.getString(JSON_FABRIC)));
 
             // set link in fabric object to the pattern
             mPatternFabric.setUsedFor(this);
@@ -93,8 +93,9 @@ public class StashPattern extends StashObject {
             JSONArray array = json.getJSONArray(JSON_THREADS);
             for (int i = 0; i < array.length(); i++) {
                 // look up threadId in threadMap to get appropriate thread object
-                StashThread thread = threadMap.get(array.getString(i));
-                UUID threadId = thread.getId();
+                UUID threadId = UUID.fromString(array.getString(i));
+                StashThread thread = stash.getThread(threadId);
+
 
                 if (mThreads.contains(threadId)) {
                     mQuantities.put(threadId, mQuantities.get(threadId) + 1);
@@ -118,19 +119,20 @@ public class StashPattern extends StashObject {
             JSONArray array = json.getJSONArray(JSON_EMBELLISHMENTS);
             for (int i = 0; i < array.length(); i++) {
                 // look up embellishmentId in embellishmentMap to get appropriate object
-                StashEmbellishment embellishment = embellishmentMap.get(array.getString(i));
+                UUID embellishmentId = UUID.fromString(array.getString(i));
+                StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
 
-                if (mEmbellishments.contains(embellishment.getId())) {
-                    mQuantities.put(embellishment.getId(), mQuantities.get(embellishment.getId()) + 1);
+                if (mEmbellishments.contains(embellishmentId)) {
+                    mQuantities.put(embellishmentId, mQuantities.get(embellishmentId) + 1);
                 } else {
                     // set link in embellishment object to the pattern
                     embellishment.usedInPattern(this);
 
                     // add embellishmentId to list
-                    mEmbellishments.add(embellishment.getId());
+                    mEmbellishments.add(embellishmentId);
 
                     // add embellishment to quantities map
-                    mQuantities.put(embellishment.getId(), 1);
+                    mQuantities.put(embellishmentId, 1);
                 }
             }
         }
@@ -151,7 +153,7 @@ public class StashPattern extends StashObject {
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
-        json.put(JSON_PATTERN, getKey());
+        json.put(JSON_PATTERN, getId().toString());
         json.put(JSON_KITTED, mIsKitted);
 
         // values are only stored if they exist - nothing is stored if no value has been entered
@@ -177,7 +179,7 @@ public class StashPattern extends StashObject {
 
         if (mPatternFabric != null) {
             // store the fabricId as a string for lookup when loading
-            json.put(JSON_FABRIC, mPatternFabric.getKey());
+            json.put(JSON_FABRIC, mPatternFabric.getId().toString());
         }
 
         if (!mThreads.isEmpty()) {

@@ -14,6 +14,11 @@ public class StashConstants {
     public static final int THREAD_VIEW = 2;
     public static final int EMBELLISHMENT_VIEW = 3;
 
+    public static final int THREAD_JSON_ARRAY = 0;
+    public static final int FABRIC_JSON_ARRAY = 1;
+    public static final int EMBELLISHMENT_JSON_ARRAY = 2;
+    public static final int PATTERN_JSON_ARRAY = 3;
+
     public static final int SHOPPING_THREAD_VIEW = 1;
     public static final int SHOPPING_EMBELLISHMENT_VIEW = 2;
 

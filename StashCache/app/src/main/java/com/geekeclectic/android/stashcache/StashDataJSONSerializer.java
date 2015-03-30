@@ -21,6 +21,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Provided a stash, this will either read in (load, done when application is not in memory) or
@@ -79,10 +80,10 @@ public class StashDataJSONSerializer {
             // parse the JSON using the Tokener
             JSONArray array = (JSONArray) new JSONTokener(jsonString.toString()).nextValue();
 
-            stashData.setThreadData(fillThreadData(array.getJSONArray(0)));
-            stashData.setFabricData(fillFabricData(array.getJSONArray(1)));
-            stashData.setEmbellishmentData(fillEmbellishmentData(array.getJSONArray(2)));
-            stashData.setPatternData(fillPatternData(array.getJSONArray(3), stashData.getThreadData(), stashData.getFabricData(), stashData.getEmbellishmentData()));
+            fillThreadData(array.getJSONArray(StashConstants.THREAD_JSON_ARRAY), stashData);
+            fillFabricData(array.getJSONArray(StashConstants.FABRIC_JSON_ARRAY), stashData);
+            fillEmbellishmentData(array.getJSONArray(StashConstants.EMBELLISHMENT_JSON_ARRAY), stashData);
+            stashData.setPatternData(fillPatternData(array.getJSONArray(StashConstants.PATTERN_JSON_ARRAY), stashData));
         } catch (FileNotFoundException e) {
             // ignore because it happens when program is opened for the first time
         } finally {
@@ -95,9 +96,9 @@ public class StashDataJSONSerializer {
     public void saveStash(StashData stash) throws JSONException, IOException {
         // build the arrays in JSON
         JSONArray array = new JSONArray();
-        array.put(writeThreadData(stash.getThreadData()));
-        array.put(writeFabricData(stash.getFabricData()));
-        array.put(writeEmbellishmentData(stash.getEmbellishmentData()));
+        array.put(writeThreadData(stash.getThreadList(), stash));
+        array.put(writeFabricData(stash.getFabricList(), stash));
+        array.put(writeEmbellishmentData(stash.getEmbellishmentList(), stash));
         array.put(writePatternData(stash.getPatternData()));
 
         // write the file to disk
@@ -126,82 +127,101 @@ public class StashDataJSONSerializer {
         }
     }
 
-    private HashMap<String, StashThread> fillThreadData(JSONArray array) throws JSONException {
-        HashMap<String, StashThread> threadMap = new HashMap<String, StashThread>();
+    private void fillThreadData(JSONArray array, StashData stashData) throws JSONException {
+        HashMap<UUID, StashThread> threadMap = new HashMap<UUID, StashThread>();
+        ArrayList<UUID> threadList = new ArrayList<UUID>();
+        ArrayList<UUID> stashThreadList = new ArrayList<UUID>();
 
         // create thread object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
             StashThread thread = new StashThread(array.getJSONObject(i), mContext);
-            threadMap.put(thread.getKey(), thread);
+            threadMap.put(thread.getId(), thread);
+            threadList.add(thread.getId());
+
+            if (thread.isOwned()) {
+                stashThreadList.add(thread.getId());
+            }
         }
 
-        return threadMap;
+        stashData.setThreadData(threadMap, threadList, stashThreadList);
     }
 
-    private HashMap<String, StashFabric> fillFabricData(JSONArray array) throws JSONException {
-        HashMap<String, StashFabric> fabricMap = new HashMap<String, StashFabric>();
+    private void fillFabricData(JSONArray array, StashData stashData) throws JSONException {
+        HashMap<UUID, StashFabric> fabricMap = new HashMap<UUID, StashFabric>();
+        ArrayList<UUID> fabricList = new ArrayList<UUID>();
 
         // create fabric object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
             StashFabric fabric = new StashFabric(array.getJSONObject(i), mContext);
-            fabricMap.put(fabric.getKey(), fabric);
+            fabricMap.put(fabric.getId(), fabric);
+            fabricList.add(fabric.getId());
         }
 
-        return fabricMap;
+        stashData.setFabricData(fabricMap, fabricList);
     }
 
-    private HashMap<String, StashEmbellishment> fillEmbellishmentData(JSONArray array) throws JSONException {
-        HashMap<String, StashEmbellishment> embellishmentMap = new HashMap<String, StashEmbellishment>();
+    private void fillEmbellishmentData(JSONArray array, StashData stashData) throws JSONException {
+        HashMap<UUID, StashEmbellishment> embellishmentMap = new HashMap<UUID, StashEmbellishment>();
+        ArrayList<UUID> embellishmentList = new ArrayList<UUID>();
+        ArrayList<UUID> embellishmentStashList = new ArrayList<UUID>();
 
         // create thread object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
             StashEmbellishment embellishment = new StashEmbellishment(array.getJSONObject(i), mContext);
-            embellishmentMap.put(embellishment.getKey(), embellishment);
+            embellishmentMap.put(embellishment.getId(), embellishment);
+            embellishmentList.add(embellishment.getId());
+
+            if (embellishment.isOwned()) {
+                embellishmentStashList.add(embellishment.getId());
+            }
         }
 
-        return embellishmentMap;
+        stashData.setEmbellishmentData(embellishmentMap, embellishmentList, embellishmentStashList);
     }
 
-    private ArrayList<StashPattern> fillPatternData(JSONArray array, HashMap<String, StashThread> threadMap, HashMap<String, StashFabric> fabricMap, HashMap<String, StashEmbellishment> embellishmentMap) throws JSONException {
+    private ArrayList<StashPattern> fillPatternData(JSONArray array, StashData stash) throws JSONException {
         ArrayList<StashPattern> patternList = new ArrayList<StashPattern>();
 
         // create pattern object from each JSON object in the array (using threadMap and fabricMap
         // to create linkages) and add it to the list
         for (int i = 0; i < array.length(); i++) {
-            StashPattern pattern = new StashPattern(array.getJSONObject(i), threadMap, fabricMap, embellishmentMap, mContext);
+            StashPattern pattern = new StashPattern(array.getJSONObject(i), stash, mContext);
             patternList.add(pattern);
         }
 
         return patternList;
     }
 
-    private JSONArray writeThreadData(HashMap<String, StashThread> threadMap) throws JSONException {
+    private JSONArray writeThreadData(ArrayList<UUID> threadList, StashData stash) throws JSONException {
         JSONArray array = new JSONArray();
 
-        // iterate through the threadMap values, convert each to JSON object and add to the array
-        for (StashThread thread : threadMap.values()) {
+        // iterate through the threadlist, convert each to JSON object and add to the array
+        for (UUID threadId : threadList) {
+            StashThread thread = stash.getThread(threadId);
             array.put(thread.toJSON());
         }
 
         return array;
     }
 
-    private JSONArray writeFabricData(HashMap<String, StashFabric> fabricMap) throws JSONException {
+    private JSONArray writeFabricData(ArrayList<UUID> fabricList, StashData stash) throws JSONException {
         JSONArray array = new JSONArray();
 
-        // iterate through the fabricMap values, convert each to JSON object and add to the array
-        for (StashFabric fabric: fabricMap.values()) {
+        // iterate through the fabricList, convert each to JSON object and add to the array
+        for (UUID fabricId: fabricList) {
+            StashFabric fabric = stash.getFabric(fabricId);
             array.put(fabric.toJSON());
         }
 
         return array;
     }
 
-    private JSONArray writeEmbellishmentData(HashMap<String, StashEmbellishment> embellishmentMap) throws JSONException {
+    private JSONArray writeEmbellishmentData(ArrayList<UUID> embellishmentList, StashData stash) throws JSONException {
         JSONArray array = new JSONArray();
 
-        // iterate through the threadMap values, convert each to JSON object and add to the array
-        for (StashEmbellishment embellishment : embellishmentMap.values()) {
+        // iterate through the embellishmentList, convert each to JSON object and add to the array
+        for (UUID embellishmentId : embellishmentList) {
+            StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
             array.put(embellishment.toJSON());
         }
 
