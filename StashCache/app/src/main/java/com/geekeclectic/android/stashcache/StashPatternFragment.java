@@ -658,6 +658,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 ViewHolder vh = new ViewHolder();
                 vh.info = (TextView)convertView.findViewById(R.id.pattern_thread_item_description);
                 vh.quantity = (TextView)convertView.findViewById(R.id.pattern_thread_quantity);
+                vh.type = (TextView)convertView.findViewById(R.id.pattern_thread_item_type);
                 convertView.setTag(vh);
             }
 
@@ -666,7 +667,8 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             // configure the view for this thread
             StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
 
-            vh.info.setText(thread.toString());
+            vh.info.setText(thread.getSource() + " " + thread.getCode());
+            vh.type.setText(thread.getType());
             vh.quantity.setText(Integer.toString(mPattern.getQuantity(thread)));
             vh.itemId = thread.getId();
 
@@ -685,11 +687,11 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         public View getView(int position, View convertView, ViewGroup parent) {
             // if we weren't given a view, inflate one
             if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_pattern_thread, null);
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_pattern_embellishment, null);
 
                 ViewHolder vh = new ViewHolder();
-                vh.info = (TextView)convertView.findViewById(R.id.pattern_thread_item_description);
-                vh.quantity = (TextView)convertView.findViewById(R.id.pattern_thread_quantity);
+                vh.info = (TextView)convertView.findViewById(R.id.pattern_embellishment_item_description);
+                vh.quantity = (TextView)convertView.findViewById(R.id.pattern_embellishment_quantity);
                 convertView.setTag(vh);
             }
 
@@ -710,6 +712,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private static class ViewHolder {
         public TextView info;
         public TextView quantity;
+        public TextView type;
         public UUID itemId;
     }
 
