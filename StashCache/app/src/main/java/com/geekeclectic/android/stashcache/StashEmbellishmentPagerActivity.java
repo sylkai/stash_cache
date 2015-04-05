@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -84,6 +87,39 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
                 }
                 break;
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.embellishment_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_embellishment:
+                // create a new thread
+                StashEmbellishment embellishment = new StashEmbellishment(this);
+                StashData.get(this).addEmbellishment(embellishment);
+
+                // notify the adapter the dataset has changed
+                mViewPager.getAdapter().notifyDataSetChanged();
+
+                // switch view to the new embellishment
+                UUID embellishmentId = embellishment.getId();
+                for (int i = 0; i < mEmbellishments.size(); i++) {
+                    if (mEmbellishments.get(i).equals(embellishmentId)) {
+                        mViewPager.setCurrentItem(i);
+                        break;
+                    }
+                }
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

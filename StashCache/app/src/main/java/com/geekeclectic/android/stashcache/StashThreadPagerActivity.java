@@ -1,12 +1,16 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,6 +90,39 @@ public class StashThreadPagerActivity extends FragmentActivity {
                 }
                 break;
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.thread_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_thread:
+                // create a new thread
+                StashThread thread = new StashThread(this);
+                StashData.get(this).addThread(thread);
+
+                // notify the adapter the dataset has changed
+                mViewPager.getAdapter().notifyDataSetChanged();
+
+                // switch view to the new thread
+                UUID threadId = thread.getId();
+                for (int i = 0; i < mThreads.size(); i++) {
+                    if (mThreads.get(i).equals(threadId)) {
+                        mViewPager.setCurrentItem(i);
+                        break;
+                    }
+                }
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

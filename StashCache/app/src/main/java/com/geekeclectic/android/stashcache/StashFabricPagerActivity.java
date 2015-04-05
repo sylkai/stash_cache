@@ -1,12 +1,16 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -87,6 +91,38 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
                 break;
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.fabric_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_fabric:
+                // create a new fabric and add it to the stash
+                StashFabric fabric = new StashFabric(this);
+                StashData.get(this).addFabric(fabric);
+
+                // notify the adapter that the list has changed
+                mViewPager.getAdapter().notifyDataSetChanged();
+
+                // switch the current view to the new fabric
+                UUID fabricId = fabric.getId();
+                for (int i = 0; i < mFabrics.size(); i++) {
+                    if (mFabrics.get(i).equals(fabricId)) {
+                        mViewPager.setCurrentItem(i);
+                        break;
+                    }
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

@@ -107,6 +107,23 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
     public boolean onOptionsItemSelected(MenuItem item) {
         // handling item selection
         switch (item.getItemId()) {
+            case R.id.menu_item_pattern:
+                // create new pattern and add it to the stash
+                StashPattern pattern = new StashPattern(this);
+                StashData.get(this).addPattern(pattern);
+
+                // notify the adapter the list has changed
+                mViewPager.getAdapter().notifyDataSetChanged();
+
+                // find the new fragment and set it to the current view
+                UUID patternId = pattern.getId();
+                for (int i = 0; i < mPatterns.size(); i++) {
+                    if (mPatterns.get(i).getId().equals(patternId)) {
+                        mViewPager.setCurrentItem(i);
+                        break;
+                    }
+                }
+                return true;
             case R.id.menu_item_export_pattern:
                 // the user wants to export just the information for this pattern, stripped of fabric
                 // data (for sharing with a friend, perhaps)
