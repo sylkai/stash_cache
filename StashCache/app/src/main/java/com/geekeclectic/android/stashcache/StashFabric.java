@@ -30,6 +30,7 @@ public class StashFabric extends StashObject {
     private String mFabricType;
     private StashPattern mFabricFor;
     private boolean mUsed;
+    private boolean mComplete;
     private Date mStartDate;
     private Date mEndDate;
 
@@ -45,6 +46,7 @@ public class StashFabric extends StashObject {
     private static final String JSON_SOURCE = "fabric company";
     private static final String JSON_ID = "fabric id";
     private static final String JSON_USED = "in use";
+    private static final String JSON_FINISHED = "is finished";
     private static final String JSON_START_DATE = "start date";
     private static final String JSON_END_DATE = "end date";
 
@@ -55,6 +57,7 @@ public class StashFabric extends StashObject {
         mFabricWidth = StashConstants.DOUBLE_ZERO;
         mFabricHeight = StashConstants.DOUBLE_ZERO;
         mUsed = false;
+        mComplete = false;
     }
 
     public StashFabric(JSONObject json, Context context) throws JSONException {
@@ -66,6 +69,12 @@ public class StashFabric extends StashObject {
         mFabricHeight = json.getDouble(JSON_HEIGHT);
         setId(UUID.fromString(json.getString(JSON_ID)));
         mUsed = json.getBoolean(JSON_USED);
+
+        if (json.has(JSON_FINISHED)) {
+            mComplete = json.getBoolean(JSON_FINISHED);
+        } else {
+            mComplete = false;
+        }
 
         updateStitchableArea();
 
@@ -91,6 +100,7 @@ public class StashFabric extends StashObject {
         json.put(JSON_WIDTH, mFabricWidth);
         json.put(JSON_HEIGHT, mFabricHeight);
         json.put(JSON_USED, mUsed);
+        json.put(JSON_FINISHED, mComplete);
 
         // store remaining variables only if value assigned
         if (mFabricColor != null) {
@@ -191,6 +201,14 @@ public class StashFabric extends StashObject {
 
     public void setUse(boolean used) {
         mUsed = used;
+    }
+
+    public boolean isFinished() {
+        return mComplete;
+    }
+
+    public void setComplete(boolean complete) {
+        mComplete = complete;
     }
 
     private void updateStitchableArea() {

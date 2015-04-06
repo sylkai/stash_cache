@@ -2,6 +2,7 @@ package com.geekeclectic.android.stashcache;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,7 +55,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         // get the current list of fabrics to display
         mViewCode = getArguments().getInt(FABRIC_VIEW_ID);
 
-        mFabrics = StashData.get(getActivity()).getFabricList();
+        getAppropriateList();
         Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
 
         // create and set list adapter using fabrics list
@@ -244,6 +245,14 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         }
     }
 
+    private void getAppropriateList() {
+        if (mViewCode == StashConstants.MASTER_TAB) {
+            mFabrics = StashData.get(getActivity()).getFabricList();
+        } else {
+            mFabrics = StashData.get(getActivity()).getStashFabricList();
+        }
+    }
+
     private class FabricAdapter extends ArrayAdapter<UUID> {
         public FabricAdapter(ArrayList<UUID> fabrics) {
             super(getActivity(), StashConstants.NO_RESOURCE, fabrics);
@@ -269,6 +278,14 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
             vh.info.setText(fabric.getInfo());
             vh.size.setText(fabric.getSize());
             vh.assigned.setChecked(fabric.isAssigned());
+
+            if (fabric.isFinished()) {
+                vh.info.setTextColor(Color.GRAY);
+                vh.size.setTextColor(Color.GRAY);
+            } else {
+                vh.info.setTextColor(Color.BLACK);
+                vh.size.setTextColor(Color.BLACK);
+            }
 
             return convertView;
         }

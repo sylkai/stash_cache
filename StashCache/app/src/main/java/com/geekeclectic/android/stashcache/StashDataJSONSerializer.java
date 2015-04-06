@@ -149,15 +149,19 @@ public class StashDataJSONSerializer {
     private void fillFabricData(JSONArray array, StashData stashData) throws JSONException {
         HashMap<UUID, StashFabric> fabricMap = new HashMap<UUID, StashFabric>();
         ArrayList<UUID> fabricList = new ArrayList<UUID>();
+        ArrayList<UUID> stashFabricList = new ArrayList<UUID>();
 
         // create fabric object from each JSON object in the array and add it to the map
         for (int i = 0; i < array.length(); i++) {
             StashFabric fabric = new StashFabric(array.getJSONObject(i), mContext);
             fabricMap.put(fabric.getId(), fabric);
             fabricList.add(fabric.getId());
+            if (!fabric.isFinished()) {
+                stashFabricList.add(fabric.getId());
+            }
         }
 
-        stashData.setFabricData(fabricMap, fabricList);
+        stashData.setFabricData(fabricMap, fabricList, stashFabricList);
     }
 
     private void fillEmbellishmentData(JSONArray array, StashData stashData) throws JSONException {

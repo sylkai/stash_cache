@@ -32,6 +32,7 @@ public class StashData {
     private HashMap<UUID, StashEmbellishment> mEmbellishmentData;
 
     private ArrayList<UUID> mFabricList;
+    private ArrayList<UUID> mStashFabricList;
     private ArrayList<StashPattern> mFabricForList;
     private ArrayList<UUID> mThreadsList;
     private ArrayList<UUID> mStashThreadsList;
@@ -54,6 +55,7 @@ public class StashData {
         mStashThreadsList = new ArrayList<UUID>();
         mShoppingThreadsList = new ArrayList<UUID>();
         mFabricList = new ArrayList<UUID>();
+        mStashFabricList = new ArrayList<UUID>();
         mFabricForList = new ArrayList<StashPattern>();
         mEmbellishmentList = new ArrayList<UUID>();
         mStashEmbellishmentList = new ArrayList<UUID>();
@@ -210,10 +212,11 @@ public class StashData {
         return mEmbellishmentData.get(key);
     }
 
-    public void setFabricData(HashMap<UUID, StashFabric> fabricMap, ArrayList<UUID> fabricList) {
+    public void setFabricData(HashMap<UUID, StashFabric> fabricMap, ArrayList<UUID> fabricList, ArrayList<UUID> stashFabricList) {
         // set loaded fabricMap from JSON
         mFabricData = fabricMap;
         mFabricList = fabricList;
+        mStashFabricList = stashFabricList;
     }
 
     public void setFabricForList(ArrayList<StashPattern> patternList) {
@@ -223,6 +226,10 @@ public class StashData {
     public HashMap<UUID, StashFabric> getFabricData() {
         // pass fabricmap for saving stash/building links
         return mFabricData;
+    }
+
+    public ArrayList<UUID> getStashFabricList() {
+        return mStashFabricList;
     }
 
     public ArrayList<UUID> getFabricList() {
@@ -330,6 +337,7 @@ public class StashData {
         // removes fabric from the hashmap and the list powering the adapter
         mFabricData.remove(fabric.getId());
         mFabricList.remove(fabric.getId());
+        mStashFabricList.remove(fabric.getId());
     }
 
     public void addEmbellishment(StashEmbellishment embellishment) {
@@ -376,6 +384,7 @@ public class StashData {
 
         mFabricData.clear();
         mFabricList.clear();
+        mStashFabricList.clear();
 
         mThreadsData.clear();
         mThreadsList.clear();
