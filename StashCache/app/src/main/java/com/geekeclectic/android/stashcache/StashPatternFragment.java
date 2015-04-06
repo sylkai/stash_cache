@@ -69,6 +69,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private EditText mWidthField;
     private EditText mHeightField;
     private CheckBox mIsKitted;
+    private CheckBox mInProgress;
     private ImageView mViewPhoto;
     private ImageView mEditPhoto;
     private ImageView mEditFabric;
@@ -289,6 +290,20 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             }
         });
 
+        // checkbox to indicate whether a pattern is in progress or not
+        mInProgress = (CheckBox)v.findViewById(R.id.pattern_in_progress);
+        if (mFabric != null) {
+            mInProgress.setChecked(mFabric.inUse());
+            mInProgress.setEnabled(true);
+        }
+        mInProgress.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean checked = ((CheckBox) v).isChecked();
+                mFabric.setUse(checked);
+            }
+        });
+
         // editText for pattern width in stitches
         mWidthField = (EditText)v.findViewById(R.id.pattern_width);
         if (mPattern.getWidth() > 0) {
@@ -435,7 +450,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             // if fabric can fit the pattern, add to list for the adapter
             for (UUID fabricId : fabricStash) {
                 StashFabric fabric = StashData.get(getActivity()).getFabric(fabricId);
-                if (fabric.willFit(mPattern.getWidth(), mPattern.getHeight())) {
+                if (fabric.willFit(mPattern.getWidth(), mPattern.getHeight()) && !fabric.inUse()) {
                     possibleFabrics.add(fabricId);
                 }
             }
@@ -457,7 +472,9 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
             mPattern.setFabric(null);
             mFabric.setUsedFor(null);
+            mFabric.setUse(false);
             mFabric = null;
+            mInProgress.setEnabled(false);
 
             updateFabricInfo();
         } else {
@@ -506,6 +523,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
             updateFabricInfo();
             mCallback.updateFragments();
+            mInProgress.setEnabled(true);
         }
     }
 

@@ -283,7 +283,15 @@ public class StashImporter {
 
                     pattern.setFabric(fabric);
                     fabric.setUsedFor(pattern);
-                    reader.readLine();
+
+                    // if the next line is not a *, the fabric is marked as in use
+                    line = reader.readLine();
+                    if (!line.equals("*")) {
+                        fabric.setUse(true);
+
+                        // move forward one line to skip the first *
+                        reader.readLine();
+                    }
                 }
 
                 // if thread information is entered, check for thread in stash already and add it if not present

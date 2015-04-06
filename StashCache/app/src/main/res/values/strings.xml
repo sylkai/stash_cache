@@ -62,6 +62,7 @@
     <string name="pattern_thread_detail">No threads selected.</string>
     <string name="pattern_embellishment_detail">No embellishments selected.</string>
     <string name="is_kitted">Kitted?</string>
+    <string name="in_progress">In Progress?</string>
 
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>

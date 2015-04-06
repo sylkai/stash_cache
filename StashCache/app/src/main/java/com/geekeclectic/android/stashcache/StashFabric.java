@@ -7,6 +7,9 @@ import android.preference.PreferenceManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /*
@@ -26,6 +29,9 @@ public class StashFabric extends StashObject {
     private String mFabricColor;
     private String mFabricType;
     private StashPattern mFabricFor;
+    private boolean mUsed;
+    private Date mStartDate;
+    private Date mEndDate;
 
     private double mStitchWidth;
     private double mStitchHeight;
@@ -38,6 +44,9 @@ public class StashFabric extends StashObject {
     private static final String JSON_TYPE = "fabric type";
     private static final String JSON_SOURCE = "fabric company";
     private static final String JSON_ID = "fabric id";
+    private static final String JSON_USED = "in use";
+    private static final String JSON_START_DATE = "start date";
+    private static final String JSON_END_DATE = "end date";
 
     public StashFabric(Context context) {
         // random UUID generated in parent class
@@ -45,6 +54,7 @@ public class StashFabric extends StashObject {
         mFabricCount = StashConstants.INT_ZERO;
         mFabricWidth = StashConstants.DOUBLE_ZERO;
         mFabricHeight = StashConstants.DOUBLE_ZERO;
+        mUsed = false;
     }
 
     public StashFabric(JSONObject json, Context context) throws JSONException {
@@ -55,6 +65,7 @@ public class StashFabric extends StashObject {
         mFabricWidth = json.getDouble(JSON_WIDTH);
         mFabricHeight = json.getDouble(JSON_HEIGHT);
         setId(UUID.fromString(json.getString(JSON_ID)));
+        mUsed = json.getBoolean(JSON_USED);
 
         updateStitchableArea();
 
@@ -79,6 +90,7 @@ public class StashFabric extends StashObject {
         json.put(JSON_COUNT, mFabricCount);
         json.put(JSON_WIDTH, mFabricWidth);
         json.put(JSON_HEIGHT, mFabricHeight);
+        json.put(JSON_USED, mUsed);
 
         // store remaining variables only if value assigned
         if (mFabricColor != null) {
@@ -171,6 +183,14 @@ public class StashFabric extends StashObject {
     public boolean isAssigned() {
         // if fabric has been assigned to a pattern, returns true
         return (mFabricFor != null);
+    }
+
+    public boolean inUse() {
+        return mUsed;
+    }
+
+    public void setUse(boolean used) {
+        mUsed = used;
     }
 
     private void updateStitchableArea() {

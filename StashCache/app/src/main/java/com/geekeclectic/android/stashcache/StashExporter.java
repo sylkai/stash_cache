@@ -570,6 +570,11 @@ public class StashExporter {
                 sb.append(newline);
                 sb.append(fabric.getHeight());
                 sb.append(newline);
+
+                if (fabric.inUse()) {
+                    sb.append("in use");
+                    sb.append(newline);
+                }
             }
 
             sb.append(patternCategories);
