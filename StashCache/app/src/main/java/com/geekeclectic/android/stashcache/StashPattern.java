@@ -26,6 +26,7 @@ public class StashPattern extends StashObject {
     private String mPatternName;
     private StashFabric mPatternFabric;
     private boolean mIsKitted;
+    private ArrayList<UUID> mFinishes;
 
     private static final String JSON_NAME = "name";
     private static final String JSON_HEIGHT = "height";
@@ -40,6 +41,7 @@ public class StashPattern extends StashObject {
     private static final String JSON_QUANTITY_ID = "id code";
     private static final String JSON_QUANTITY_ENTRY = "number";
     private static final String JSON_KITTED = "kitted";
+    private static final String JSON_FINISHES = "finishes";
 
     public StashPattern(Context context) {
         // random ID generated in parent class
@@ -48,6 +50,7 @@ public class StashPattern extends StashObject {
         mThreads = new ArrayList<UUID>();
         mEmbellishments = new ArrayList<UUID>();
         mQuantities = new HashMap<UUID, Integer>();
+        mFinishes = new ArrayList<UUID>();
         mIsKitted = false;
         setContext(context.getApplicationContext());
     }

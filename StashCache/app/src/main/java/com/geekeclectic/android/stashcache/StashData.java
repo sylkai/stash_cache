@@ -247,6 +247,10 @@ public class StashData {
         return mFabricData.get(key);
     }
 
+    public void removeFabricFromStash(UUID key) {
+        mStashFabricList.remove(key);
+    }
+
     public void setPatternData(ArrayList<StashPattern> patternList) {
         // set the loaded patternlist from JSON
         mPatternsData = patternList;
@@ -325,6 +329,7 @@ public class StashData {
         // adds fabric to the hashmap and to the list of IDs powering the adapter
         mFabricData.put(fabric.getId(), fabric);
         mFabricList.add(fabric.getId());
+        mStashFabricList.add(fabric.getId());
     }
 
     public void deleteFabric(StashFabric fabric) {

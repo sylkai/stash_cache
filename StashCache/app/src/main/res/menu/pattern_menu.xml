@@ -8,6 +8,9 @@
 
     <group android:id="@+id/stash_context_menu">
 
+        <item android:id="@+id/menu_item_finish_project"
+            android:title="@string/finish_project" />
+
         <item android:id="@+id/menu_item_export_pattern"
             android:icon="@drawable/ic_menu_upload"
             android:title="@string/export_pattern" />

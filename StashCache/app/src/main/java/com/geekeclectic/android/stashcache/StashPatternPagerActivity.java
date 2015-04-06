@@ -124,6 +124,19 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                     }
                 }
                 return true;
+            case R.id.menu_item_finish_project:
+                // get current pattern to do things to
+                StashPattern finishPattern = mPatterns.get(mViewPager.getCurrentItem());
+                StashFabric finishedFabric = finishPattern.getFabric();
+
+                 if (finishedFabric != null && finishedFabric.inUse()) {
+                     finishedFabric.setComplete(true);
+                     StashData.get(this).removeFabricFromStash(finishedFabric.getId());
+                     finishPattern.setFabric(null);
+                     updateFragments();
+                 }
+
+                return true;
             case R.id.menu_item_export_pattern:
                 // the user wants to export just the information for this pattern, stripped of fabric
                 // data (for sharing with a friend, perhaps)
