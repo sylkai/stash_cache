@@ -27,6 +27,11 @@ public class StashImporter {
     private static HashMap<String, ArrayList<UUID>> embellishmentMap;
     private static InputStream in;
     private static String UTF8 = "utf8";
+    private static String stashBlockDivider = "***";
+    private static String stashTypeDivider = "---";
+    private static String patternBlockDivider = "*";
+    private static String patternTypeDivider = "-";
+    private static String lastRead;
     private Context mContext;
 
     public StashImporter(InputStream input) {
@@ -51,365 +56,16 @@ public class StashImporter {
 
             Log.d(TAG, "Reader successfully opened.");
 
-            String line = "";
+            lastRead = "";
 
-            // read in thread data; end of thread block is marked by *** and will break loop
-            while ((line = reader.readLine()) != null && !line.equals("***")) {
-                // store source and type information
-                String source = line;
-                String type = reader.readLine();
-                if (checkToContinue(type)) {
-                    break;
-                }
+            readStashThread(reader, stash);
+            readStashFabric(reader, stash);
+            readStashEmbellishment(reader, stash);
 
-                // iterate through to the end of the source/type block and create a new thread for each id
-                while ((line = reader.readLine()) != null) {
-                    if (line.equals("***") || line.equals("---")) {
-                        break;
-                    }
+            readPatterns(reader, stash);
 
-                    String id = line;
-                    String key;
-                    if (id.contains(" ")) {
-                        key = id.split("\\s")[0];
-                    } else {
-                        key = id;
-                    }
-                    incrementOrAddThread(source, type, id, key, stash);
-                }
-
-                if (line.equals("***")) {
-                    break;
-                }
-            }
-
-            // read in fabric data; end of the block is marked by *** and will break loop
-            while ((line = reader.readLine()) != null && !line.equals("***")) {
-                // skip a line if the current line marks the fabric delimiter ---
-                if (line.equals("---")) {
-                    line = reader.readLine();
-                    if (checkToContinue(line)) {
-                        break;
-                    }
-                }
-
-                String source = line;
-                String type = reader.readLine();
-                if (checkToContinue(type)) {
-                    break;
-                }
-
-                String color = reader.readLine();
-                if (checkToContinue(color)) {
-                    break;
-                }
-
-                line = reader.readLine();
-                int count;
-                Double height;
-                Double width;
-
-                if (checkToContinue(line)) {
-                    break;
-                } else {
-                    try {
-                        count = Integer.parseInt(line);
-                    } catch (NumberFormatException e) {
-                        count = StashConstants.INT_ZERO;
-                        allNumbersFormatted = false;
-                    }
-                }
-
-                line = reader.readLine();
-                if (checkToContinue(line)) {
-                    break;
-                } else {
-                    try {
-                        height = Double.parseDouble(line);
-                    } catch (NumberFormatException e) {
-                        height = StashConstants.DOUBLE_ZERO;
-                        allNumbersFormatted = false;
-                    }
-                }
-
-                line = reader.readLine();
-                if (checkToContinue(line)) {
-                    break;
-                } else {
-                    try {
-                        width = Double.parseDouble(line);
-                    } catch (NumberFormatException e) {
-                        width = StashConstants.DOUBLE_ZERO;
-                        allNumbersFormatted = false;
-                    }
-                }
-
-                createNewFabric(source, type, color, count, height, width, stash);
-            }
-
-            // read in embellishment data; end of the block is marked by *** and will break loop
-            while ((line = reader.readLine()) != null && !line.equals("***")) {
-                // store source and type information
-                String source = line;
-                String type = reader.readLine();
-                if (checkToContinue(type)) {
-                    break;
-                }
-
-                // iterate through to the end of the source/type block and create a new embellishment for each id
-                while ((line = reader.readLine()) != null) {
-                    if (line.equals("***") || line.equals("---")) {
-                        break;
-                    }
-
-                    String id = line;
-                    incrementOrAddEmbellishment(source, type, id, stash);
-                }
-
-                if (line.equals("***")) {
-                    break;
-                }
-            }
-
-            // read in pattern data; each pattern is separated by ---
-            // if fabric provided in pattern (under pattern info, separated by *), create new fabric
-            // check for existing threads/embellishments and create new if missing
-            while ((line = reader.readLine()) != null && !line.equals("***")) {
-                // read in pattern information
-                String title = line;
-                String source = reader.readLine();
-                if (checkToContinue(source)) {
-                    break;
-                }
-
-                int width;
-                int height;
-
-                line = reader.readLine();
-                if (checkToContinue(line)) {
-                    break;
-                } else {
-                    try {
-                        width = Integer.parseInt(line);
-                    } catch (NumberFormatException e) {
-                        width = StashConstants.INT_ZERO;
-                        allNumbersFormatted = false;
-                    }
-                }
-
-                line = reader.readLine();
-                if (checkToContinue(line)) {
-                    break;
-                } else {
-                    try {
-                        height = Integer.parseInt(line);
-                    } catch (NumberFormatException e) {
-                        height = StashConstants.INT_ZERO;
-                        allNumbersFormatted = false;
-                    }
-                }
-
-                // create pattern
-                StashPattern pattern = new StashPattern(mContext);
-                pattern.setPatternName(title);
-                pattern.setSource(source);
-                pattern.setHeight(height);
-                pattern.setWidth(width);
-                stash.addPattern(pattern);
-
-                // if the next line is not a *, the pattern is marked as kitted
-                line = reader.readLine();
-                if (!line.equals("*")) {
-                    pattern.setKitted(true);
-
-                    // move forward one line to skip the first *
-                    reader.readLine();
-                }
-
-                // if fabric is entered, create a new fabric
-                if (!(line = reader.readLine()).equals("*")) {
-                    source = line;
-                    String type = reader.readLine();
-                    if (checkToContinue(type)) {
-                        break;
-                    }
-
-                    String color = reader.readLine();
-                    if (checkToContinue(color)) {
-                        break;
-                    }
-
-                    int count;
-                    Double fabric_height;
-                    Double fabric_width;
-
-                    line = reader.readLine();
-                    if (checkToContinue(line)) {
-                        break;
-                    } else {
-                        try {
-                            count = Integer.parseInt(line);
-                        } catch (NumberFormatException e) {
-                            count = StashConstants.INT_ZERO;
-                            allNumbersFormatted = false;
-                        }
-                    }
-
-                    line = reader.readLine();
-                    if (checkToContinue(line)) {
-                        break;
-                    } else {
-                        try {
-                            fabric_height = Double.parseDouble(line);
-                        } catch (NumberFormatException e) {
-                            fabric_height = StashConstants.DOUBLE_ZERO;
-                            allNumbersFormatted = false;
-                        }
-                    }
-
-                    line = reader.readLine();
-                    if (checkToContinue(line)) {
-                        break;
-                    } else {
-                        try {
-                            fabric_width = Double.parseDouble(line);
-                        } catch (NumberFormatException e) {
-                            fabric_width = StashConstants.DOUBLE_ZERO;
-                            allNumbersFormatted = false;
-                        }
-                    }
-
-                    StashFabric fabric = createNewFabric(source, type, color, count, fabric_height, fabric_width, stash);
-
-                    pattern.setFabric(fabric);
-                    fabric.setUsedFor(pattern);
-
-                    // if the next line is not a *, the fabric is marked as in use
-                    line = reader.readLine();
-                    if (!line.equals("*")) {
-                        fabric.setUse(true);
-
-                        // move forward one line to skip the first *
-                        reader.readLine();
-                    }
-                }
-
-                // if thread information is entered, check for thread in stash already and add it if not present
-                while ((line = reader.readLine()) != null) {
-                    source = line;
-                    String type = reader.readLine();
-                    if (checkToContinue(type)) {
-                        break;
-                    }
-
-                    while ((line = reader.readLine()) != null) {
-                        if (line.equals("*") || line.equals("-")) {
-                            break;
-                        }
-
-                        String id = line;
-                        String key;
-                        if (id.contains(" ")) {
-                            key = id.split("\\s")[0];
-                        } else {
-                            key = id;
-                        }
-                        StashThread thread = findOrAddThread(source, type, id, key, stash);
-
-                        thread.usedInPattern(pattern);
-                        pattern.increaseQuantity(thread);
-                    }
-
-                    if (line == null || line.equals("*")) {
-                        break;
-                    }
-                }
-
-                // if embellishment information is entered, check for embellishment in stash already and add it if not present
-                while ((line = reader.readLine()) != null) {
-                    source = line;
-                    String type = reader.readLine();
-                    if (checkToContinue(type)) {
-                        break;
-                    }
-
-                    while ((line = reader.readLine()) != null && !line.equals("-")) {
-                        if (line.equals("*") || line.equals("---") || line.equals("***")) {
-                            break;
-                        }
-
-                        String id = line;
-                        StashEmbellishment embellishment = findOrAddEmbellishment(source, type, id, stash);
-
-                        embellishment.usedInPattern(pattern);
-                        pattern.increaseQuantity(embellishment);
-                    }
-
-                    if (line == null || line.equals("---") || line.equals("***")) {
-                        break;
-                    }
-                }
-
-                if (line.equals("***")) {
-                    break;
-                }
-
-            }
-
-            // read in thread data; end of thread block is marked by *** and will break loop
-            while ((line = reader.readLine()) != null && !line.equals("***")) {
-                // store source and type information
-                String source = line;
-                String type = reader.readLine();
-                if (checkToContinue(type)) {
-                    break;
-                }
-
-                // iterate through to the end of the source/type block and create a new thread for each id
-                while ((line = reader.readLine()) != null) {
-                    if (line.equals("***") || line.equals("---")) {
-                        break;
-                    }
-
-                    String id = line;
-                    String key;
-                    if (id.contains(" ")) {
-                        key = id.split("\\s")[0];
-                    } else {
-                        key = id;
-                    }
-                    findOrAddThread(source, type, id, key, stash);
-                }
-
-                if (line.equals("***")) {
-                    break;
-                }
-
-            }
-
-            // read in embellishment data; end of the block is marked by *** and will break loop
-            while ((line = reader.readLine()) != null && !line.equals("***")) {
-                // store source and type information
-                String source = line;
-                String type = reader.readLine();
-                if (checkToContinue(type)) {
-                    break;
-                }
-
-                // iterate through to the end of the source/type block and create a new embellishment for each id
-                while ((line = reader.readLine()) != null) {
-                    if (line.equals("***") || line.equals("---")) {
-                        break;
-                    }
-
-                    String id = line;
-                    findOrAddEmbellishment(source, type, id, stash);
-                }
-
-                if (line.equals("***")) {
-                    break;
-                }
-            }
+            readThread(reader, stash);
+            readEmbellishment(reader, stash);
 
         } catch (FileNotFoundException e) {
             // ignore because it happens when program is opened for the first time
@@ -417,13 +73,490 @@ public class StashImporter {
             if (reader != null) {
                 reader.close();
             }
+        }
 
-            if (fileFormattedCorrectly && allNumbersFormatted) {
-                return StashConstants.FILE_IMPORT_ALL_CLEAR;
-            } else if (fileFormattedCorrectly == false) {
-                return StashConstants.FILE_INCORRECT_FORMAT;
+        if (fileFormattedCorrectly && allNumbersFormatted) {
+            return StashConstants.FILE_IMPORT_ALL_CLEAR;
+        } else if (!fileFormattedCorrectly) {
+            return StashConstants.FILE_INCORRECT_FORMAT;
+        } else {
+            return StashConstants.NUMBER_FORMAT_INCORRECT;
+        }
+    }
+
+    private StashPattern readPatternInfo(BufferedReader reader, StashData stash) throws IOException {
+        // read in pattern information
+        String title = lastRead;
+        String source = reader.readLine();
+        if (checkToContinue(source)) {
+            lastRead = source;
+            return null;
+        }
+
+        int width;
+        int height;
+
+        lastRead = reader.readLine();
+        if (checkToContinue(lastRead)) {
+            return null;
+        } else {
+            try {
+                width = Integer.parseInt(lastRead);
+            } catch (NumberFormatException e) {
+                width = StashConstants.INT_ZERO;
+                allNumbersFormatted = false;
+            }
+        }
+
+        lastRead = reader.readLine();
+        if (checkToContinue(lastRead)) {
+            return null;
+        } else {
+            try {
+                height = Integer.parseInt(lastRead);
+            } catch (NumberFormatException e) {
+                height = StashConstants.INT_ZERO;
+                allNumbersFormatted = false;
+            }
+        }
+
+        // create pattern
+        StashPattern pattern = new StashPattern(mContext);
+        pattern.setPatternName(title);
+        pattern.setSource(source);
+        pattern.setHeight(height);
+        pattern.setWidth(width);
+        stash.addPattern(pattern);
+
+        // if the next line is not a *, the pattern is marked as kitted
+        lastRead = reader.readLine();
+        if (!lastRead.equals(patternBlockDivider)) {
+            pattern.setKitted(true);
+
+            // move forward one line to skip the first *
+            reader.readLine();
+        }
+
+        return pattern;
+    }
+
+    private void readPatterns(BufferedReader reader, StashData stash) throws IOException {
+        while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
+
+            StashPattern pattern = readPatternInfo(reader, stash);
+
+            if (!readPatternFabric(reader, stash, pattern)) {
+                break;
+            }
+
+            readPatternThread(reader, stash, pattern);
+            readPatternEmbellishment(reader, stash, pattern);
+
+            if (lastRead.equals(stashBlockDivider)) {
+                break;
+            }
+
+            readFinishes(reader, stash, pattern);
+
+            if (lastRead.equals(stashBlockDivider)) {
+                break;
+            }
+
+        }
+    }
+
+    private void readStashFabric(BufferedReader reader, StashData stash) throws IOException {
+
+        // read in fabric data; end of the block is marked by *** and will break loop
+        while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
+            // skip a line if the current line marks the fabric delimiter ---
+            if (lastRead.equals(stashTypeDivider)) {
+                lastRead = reader.readLine();
+                if (checkToContinue(lastRead)) {
+                    break;
+                }
+            }
+
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                break;
+            }
+
+            String color = reader.readLine();
+            if (checkToContinue(color)) {
+                lastRead = color;
+                break;
+            }
+
+            lastRead = reader.readLine();
+            int count;
+            Double height;
+            Double width;
+
+            if (checkToContinue(lastRead)) {
+                break;
             } else {
-                return StashConstants.NUMBER_FORMAT_INCORRECT;
+                try {
+                    count = Integer.parseInt(lastRead);
+                } catch (NumberFormatException e) {
+                    count = StashConstants.INT_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                break;
+            } else {
+                try {
+                    height = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    height = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                break;
+            } else {
+                try {
+                    width = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    width = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            createNewFabric(source, type, color, count, height, width, stash);
+        }
+    }
+
+    private boolean readPatternFabric(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException {
+        // if fabric is entered, create a new fabric
+        if (!(lastRead = reader.readLine()).equals(patternBlockDivider)) {
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                return false;
+            }
+
+            String color = reader.readLine();
+            if (checkToContinue(color)) {
+                lastRead = color;
+                return false;
+            }
+
+            int count;
+            Double fabric_height;
+            Double fabric_width;
+
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                return false;
+            } else {
+                try {
+                    count = Integer.parseInt(lastRead);
+                } catch (NumberFormatException e) {
+                    count = StashConstants.INT_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                return false;
+            } else {
+                try {
+                    fabric_height = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    fabric_height = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                return false;
+            } else {
+                try {
+                    fabric_width = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    fabric_width = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            StashFabric fabric = createNewFabric(source, type, color, count, fabric_height, fabric_width, stash);
+
+            pattern.setFabric(fabric);
+            fabric.setUsedFor(pattern);
+
+            // if the next line is not a *, the fabric is marked as in use
+            lastRead = reader.readLine();
+            if (!lastRead.equals(patternBlockDivider)) {
+                fabric.setUse(true);
+
+                // move forward one line to skip the first *
+                reader.readLine();
+            }
+        }
+
+        return true;
+    }
+
+    private void readFinishes(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException {
+
+        while (!lastRead.equals(stashTypeDivider) && (lastRead = reader.readLine()) != null) {
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                break;
+            }
+
+            String color = reader.readLine();
+            if (checkToContinue(color)) {
+                lastRead = color;
+                break;
+            }
+
+            int count;
+            Double fabric_height;
+            Double fabric_width;
+
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                break;
+            } else {
+                try {
+                    count = Integer.parseInt(lastRead);
+                } catch (NumberFormatException e) {
+                    count = StashConstants.INT_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                break;
+            } else {
+                try {
+                    fabric_height = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    fabric_height = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                break;
+            } else {
+                try {
+                    fabric_width = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    fabric_width = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            StashFabric fabric = createNewFabric(source, type, color, count, fabric_height, fabric_width, stash);
+
+            fabric.setUsedFor(pattern);
+            fabric.setComplete(true);
+
+            lastRead = reader.readLine();
+            if (lastRead.equals("***") || lastRead.equals("---")) {
+                break;
+            }
+        }
+    }
+
+    private void readStashThread(BufferedReader reader, StashData stash) throws IOException {
+
+        // read in thread data; end of thread block is marked by *** and will break loop
+        while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
+            // store source and type information
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                break;
+            }
+
+            // iterate through to the end of the source/type block and create a new thread for each id
+            while ((lastRead = reader.readLine()) != null) {
+                if (lastRead.equals(stashBlockDivider) || lastRead.equals(stashTypeDivider)) {
+                    break;
+                }
+
+                String key;
+                if (lastRead.contains(" ")) {
+                    key = lastRead.split("\\s")[0];
+                } else {
+                    key = lastRead;
+                }
+                incrementOrAddThread(source, type, lastRead, key, stash);
+            }
+
+            // if we broke out of the previous loop due to end of the block, break out of the larger
+            // loop before reading the next line
+            if (lastRead.equals(stashBlockDivider)) {
+                break;
+            }
+        }
+    }
+
+    private void readThread(BufferedReader reader, StashData stash) throws IOException {
+
+        // read in thread data; end of thread block is marked by *** and will break loop
+        while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
+            // store source and type information
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                break;
+            }
+
+            // iterate through to the end of the source/type block and create a new thread for each id
+            while ((lastRead = reader.readLine()) != null) {
+                if (lastRead.equals(stashBlockDivider) || lastRead.equals(stashTypeDivider)) {
+                    break;
+                }
+
+                String key;
+                if (lastRead.contains(" ")) {
+                    key = lastRead.split("\\s")[0];
+                } else {
+                    key = lastRead;
+                }
+                findOrAddThread(source, type, lastRead, key, stash);
+            }
+
+            if (lastRead == null || lastRead.equals(stashBlockDivider)) {
+                break;
+            }
+
+        }
+    }
+
+    private void readPatternThread(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException {
+
+        // if thread information is entered, check for thread in stash already and add it if not present
+        while ((lastRead = reader.readLine()) != null) {
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                break;
+            }
+
+            while ((lastRead = reader.readLine()) != null) {
+                if (lastRead.equals(patternBlockDivider) || lastRead.equals(patternTypeDivider)) {
+                    break;
+                }
+
+                String key;
+                if (lastRead.contains(" ")) {
+                    key = lastRead.split("\\s")[0];
+                } else {
+                    key = lastRead;
+                }
+                StashThread thread = findOrAddThread(source, type, lastRead, key, stash);
+
+                thread.usedInPattern(pattern);
+                pattern.increaseQuantity(thread);
+            }
+
+            if (lastRead == null || lastRead.equals(patternBlockDivider)) {
+                break;
+            }
+        }
+    }
+
+    private void readStashEmbellishment(BufferedReader reader, StashData stash) throws IOException{
+
+        // read in embellishment data; end of the block is marked by *** and will break loop
+        while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
+            // store source and type information
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                break;
+            }
+
+            // iterate through to the end of the source/type block and create a new embellishment for each id
+            while ((lastRead = reader.readLine()) != null) {
+                if (lastRead.equals(stashBlockDivider) || lastRead.equals(stashTypeDivider)) {
+                    break;
+                }
+
+                incrementOrAddEmbellishment(source, type, lastRead, stash);
+            }
+
+            if (lastRead.equals(stashBlockDivider)) {
+                break;
+            }
+        }
+    }
+
+    private void readEmbellishment(BufferedReader reader, StashData stash) throws IOException {
+
+        // read in embellishment data; end of the block is marked by *** and will break loop
+        while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
+            // store source and type information
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                break;
+            }
+
+            // iterate through to the end of the source/type block and create a new embellishment for each id
+            while ((lastRead = reader.readLine()) != null) {
+                if (lastRead.equals(stashBlockDivider) || lastRead.equals(stashTypeDivider)) {
+                    break;
+                }
+
+                findOrAddEmbellishment(source, type, lastRead, stash);
+            }
+
+            if (lastRead == null || lastRead.equals(stashBlockDivider)) {
+                break;
+            }
+        }
+    }
+
+    private void readPatternEmbellishment(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException {
+
+        // if embellishment information is entered, check for embellishment in stash already and add it if not present
+        while ((lastRead = reader.readLine()) != null) {
+            String source = lastRead;
+            String type = reader.readLine();
+            if (checkToContinue(type)) {
+                lastRead = type;
+                break;
+            }
+
+            while ((lastRead = reader.readLine()) != null) {
+                if (lastRead.equals(patternBlockDivider) || lastRead.equals(patternTypeDivider) || lastRead.equals(stashTypeDivider) || lastRead.equals(stashBlockDivider)) {
+                    break;
+                }
+
+                StashEmbellishment embellishment = findOrAddEmbellishment(source, type, lastRead, stash);
+
+                embellishment.usedInPattern(pattern);
+                pattern.increaseQuantity(embellishment);
+            }
+
+            if (lastRead == null || lastRead.equals(patternBlockDivider) || lastRead.equals(stashTypeDivider) || lastRead.equals(stashBlockDivider)) {
+                break;
             }
         }
     }
