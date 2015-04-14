@@ -127,11 +127,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
     }
 
     private void getFabricList() {
-        if (callingTab == StashConstants.MASTER_TAB) {
-            mFabrics = StashData.get(this).getFabricList();
-        } else {
-            mFabrics = StashData.get(this).getStashFabricList();
-        }
+        mFabrics = StashData.get(this).getStashFabricList();
     }
 
 }

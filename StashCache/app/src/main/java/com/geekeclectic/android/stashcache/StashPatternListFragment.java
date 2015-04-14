@@ -2,6 +2,7 @@ package com.geekeclectic.android.stashcache;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -293,6 +294,14 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
 
             vh.patternKitted.setTag(pattern);
             vh.patternKitted.setChecked(pattern.isKitted());
+
+            if (!pattern.inStash()) {
+                vh.patternName.setTextColor(Color.GRAY);
+                vh.patternSource.setTextColor(Color.GRAY);
+            } else {
+                vh.patternName.setTextColor(Color.BLACK);
+                vh.patternSource.setTextColor(Color.BLACK);
+            }
 
             vh.patternKitted.setOnClickListener(new View.OnClickListener() {
                 @Override

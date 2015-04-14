@@ -124,11 +124,7 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
     }
 
     private void setEmbellishmentList() {
-        if (callingTab == StashConstants.SHOPPING_TAB) {
-            mEmbellishments = StashData.get(this).getEmbellishmentShoppingList();
-        } else {
-            mEmbellishments = StashData.get(this).getEmbellishmentList();
-        }
+        mEmbellishments = StashData.get(this).getEmbellishmentList();
     }
 
 }

@@ -127,11 +127,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
     }
 
     private void setThreadList() {
-        if (callingTab == StashConstants.SHOPPING_TAB) {
-            mThreads = StashData.get(this).getThreadShoppingList();
-        } else {
-            mThreads = StashData.get(this).getThreadList();
-        }
+        mThreads = StashData.get(this).getThreadList();
     }
 
 }

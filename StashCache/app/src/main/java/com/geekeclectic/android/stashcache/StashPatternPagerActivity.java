@@ -201,11 +201,8 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
     }
 
     private void setPatternList() {
-        if (callingTab == StashConstants.SHOPPING_TAB) {
-            mPatterns = StashData.get(this).getFabricForList();
-        } else {
-            mPatterns = StashData.get(this).getPatternData();
-        }
+        mPatterns = StashData.get(this).getPatternData();
+
     }
 
     public void updateFragments() {
