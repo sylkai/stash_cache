@@ -232,6 +232,8 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
     private ArrayList<StashPattern> getListFromStash() {
         if (mViewCode == StashConstants.SHOPPING_TAB) {
             return StashData.get(getActivity()).getFabricForList();
+        } else if (mViewCode == StashConstants.STASH_TAB) {
+            return StashData.get(getActivity()).getStashPatterns();
         } else {
             return StashData.get(getActivity()).getPatternData();
         }

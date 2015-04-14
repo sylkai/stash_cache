@@ -33,8 +33,10 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
         mViewPager.setId(R.id.embellishmentViewPager);
         setContentView(mViewPager);
 
+        callingTab = getIntent().getIntExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, StashConstants.STASH_TAB);
+
         // get list of embellishments
-        mEmbellishments = StashData.get(this).getEmbellishmentList();
+        setEmbellishmentList();
 
         // create and set fragment manager to return appropriate fragments
         FragmentManager fm = getSupportFragmentManager();
@@ -68,8 +70,6 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
                 actionBar.setSubtitle(embellishment.toString());
             }
         });
-
-        callingTab = getIntent().getIntExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, 0);
 
         // get the id for the desired embellishment and set the appropriate fragment as current
         UUID embellishmentId = (UUID)getIntent().getSerializableExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID);
@@ -120,6 +120,14 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void setEmbellishmentList() {
+        if (callingTab == StashConstants.SHOPPING_TAB) {
+            mEmbellishments = StashData.get(this).getEmbellishmentShoppingList();
+        } else {
+            mEmbellishments = StashData.get(this).getEmbellishmentList();
         }
     }
 

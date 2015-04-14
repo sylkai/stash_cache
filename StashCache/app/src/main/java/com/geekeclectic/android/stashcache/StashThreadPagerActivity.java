@@ -35,8 +35,10 @@ public class StashThreadPagerActivity extends FragmentActivity {
         mViewPager.setId(R.id.threadViewPager);
         setContentView(mViewPager);
 
+        callingTab = getIntent().getIntExtra(StashThreadFragment.EXTRA_TAB_ID, StashConstants.STASH_TAB);
+
         // get list of threads
-        mThreads = StashData.get(this).getThreadList();
+        setThreadList();
         Collections.sort(mThreads, new StashThreadComparator(this));
 
         // create and set fragment manager to return appropriate fragments
@@ -71,8 +73,6 @@ public class StashThreadPagerActivity extends FragmentActivity {
                 actionBar.setSubtitle(thread.toString());
             }
         });
-
-        callingTab = getIntent().getIntExtra(StashThreadFragment.EXTRA_TAB_ID, StashConstants.STASH_TAB);
 
         // get the id for the desired thread and set the appropriate fragment as current
         UUID threadId = (UUID)getIntent().getSerializableExtra(StashThreadFragment.EXTRA_THREAD_ID);
@@ -123,6 +123,14 @@ public class StashThreadPagerActivity extends FragmentActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void setThreadList() {
+        if (callingTab == StashConstants.SHOPPING_TAB) {
+            mThreads = StashData.get(this).getThreadShoppingList();
+        } else {
+            mThreads = StashData.get(this).getThreadList();
         }
     }
 

@@ -83,7 +83,7 @@ public class StashDataJSONSerializer {
             fillThreadData(array.getJSONArray(StashConstants.THREAD_JSON_ARRAY), stashData);
             fillFabricData(array.getJSONArray(StashConstants.FABRIC_JSON_ARRAY), stashData);
             fillEmbellishmentData(array.getJSONArray(StashConstants.EMBELLISHMENT_JSON_ARRAY), stashData);
-            stashData.setPatternData(fillPatternData(array.getJSONArray(StashConstants.PATTERN_JSON_ARRAY), stashData));
+            fillPatternData(array.getJSONArray(StashConstants.PATTERN_JSON_ARRAY), stashData);
         } catch (FileNotFoundException e) {
             // ignore because it happens when program is opened for the first time
         } finally {
@@ -183,17 +183,22 @@ public class StashDataJSONSerializer {
         stashData.setEmbellishmentData(embellishmentMap, embellishmentList, embellishmentStashList);
     }
 
-    private ArrayList<StashPattern> fillPatternData(JSONArray array, StashData stash) throws JSONException {
+    private void fillPatternData(JSONArray array, StashData stash) throws JSONException {
         ArrayList<StashPattern> patternList = new ArrayList<StashPattern>();
+        ArrayList<StashPattern> stashPatternList = new ArrayList<StashPattern>();
 
         // create pattern object from each JSON object in the array (using threadMap and fabricMap
         // to create linkages) and add it to the list
         for (int i = 0; i < array.length(); i++) {
             StashPattern pattern = new StashPattern(array.getJSONObject(i), stash, mContext);
             patternList.add(pattern);
+
+            if (pattern.inStash()) {
+                stashPatternList.add(pattern);
+            }
         }
 
-        return patternList;
+        stash.setPatternData(patternList, stashPatternList);
     }
 
     private JSONArray writeThreadData(ArrayList<UUID> threadList, StashData stash) throws JSONException {

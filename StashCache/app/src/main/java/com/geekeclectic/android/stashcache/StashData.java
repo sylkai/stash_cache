@@ -31,6 +31,7 @@ public class StashData {
     private HashMap<UUID, StashFabric> mFabricData;
     private HashMap<UUID, StashEmbellishment> mEmbellishmentData;
 
+    private ArrayList<StashPattern> mStashPatterns;
     private ArrayList<UUID> mFabricList;
     private ArrayList<UUID> mStashFabricList;
     private ArrayList<StashPattern> mFabricForList;
@@ -120,6 +121,7 @@ public class StashData {
         mShoppingThreadsList.clear();
 
         mPatternsData.clear();
+        mStashPatterns.clear();
         mFabricForList.clear();
 
         saveStash();
@@ -127,14 +129,19 @@ public class StashData {
 
 
     // pattern-specific stash functions
-    public void setPatternData(ArrayList<StashPattern> patternList) {
+    public void setPatternData(ArrayList<StashPattern> patternList, ArrayList<StashPattern> stashPatternList) {
         // set the loaded patternlist from JSON
         mPatternsData = patternList;
+        mStashPatterns = stashPatternList;
     }
 
     public ArrayList<StashPattern> getPatternData() {
         // pass patternlist for saving stash
         return mPatternsData;
+    }
+
+    public ArrayList<StashPattern> getStashPatterns() {
+        return mStashPatterns;
     }
 
     public StashPattern getPattern(UUID key) {
@@ -149,9 +156,20 @@ public class StashData {
         return null;
     }
 
+    public void addPatternToStash(StashPattern pattern) {
+        if (!mStashPatterns.contains(pattern)) {
+            mStashPatterns.add(pattern);
+        }
+    }
+
+    public void removePatternFromStash(StashPattern pattern) {
+        mStashPatterns.remove(pattern);
+    }
+
     public void addPattern(StashPattern pattern) {
         // adds a pattern to the database
         mPatternsData.add(pattern);
+        mStashPatterns.add(pattern);
     }
 
     public void deletePattern(StashPattern pattern) {
@@ -175,6 +193,7 @@ public class StashData {
 
         // removes the pattern from the database
         mPatternsData.remove(pattern);
+        mStashPatterns.remove(pattern);
         mFabricForList.remove(pattern);
     }
 

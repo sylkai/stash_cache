@@ -54,7 +54,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         mViewCode = getArguments().getInt(THREAD_VIEW_ID);
 
         mThreads = getListFromStash();
-        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+        // Collections.sort(mThreads, new StashThreadComparator(getActivity()));
 
         // create and set adapter using thread list
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
@@ -157,7 +157,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         }
     }
 
-    @Override
+    /*@Override
     public void onResume() {
         super.onResume();
 
@@ -167,7 +167,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
 
         //remind the adapter to get the updated list
         ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
-    }
+    }*/
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

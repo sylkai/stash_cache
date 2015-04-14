@@ -64,6 +64,8 @@
     <string name="is_kitted">Kitted?</string>
     <string name="in_progress">In Progress?</string>
     <string name="finish_project">Mark As Complete</string>
+    <string name="remove_stash">Remove Pattern</string>
+    <string name="add_stash">Add To Stash</string>
 
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>

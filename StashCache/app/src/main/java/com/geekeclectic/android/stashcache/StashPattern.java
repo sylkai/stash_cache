@@ -26,6 +26,7 @@ public class StashPattern extends StashObject {
     private String mPatternName;
     private StashFabric mPatternFabric;
     private boolean mIsKitted;
+    private boolean mInStash;
     private ArrayList<UUID> mFinishes;
 
     private static final String JSON_NAME = "name";
@@ -41,6 +42,7 @@ public class StashPattern extends StashObject {
     private static final String JSON_QUANTITY_ID = "id code";
     private static final String JSON_QUANTITY_ENTRY = "number";
     private static final String JSON_KITTED = "kitted";
+    private static final String JSON_STASH = "in stash";
     private static final String JSON_FINISHES = "finishes";
 
     public StashPattern(Context context) {
@@ -52,6 +54,7 @@ public class StashPattern extends StashObject {
         mQuantities = new HashMap<UUID, Integer>();
         mFinishes = new ArrayList<UUID>();
         mIsKitted = false;
+        mInStash = true;
         setContext(context.getApplicationContext());
     }
 
@@ -88,6 +91,12 @@ public class StashPattern extends StashObject {
 
             // set link in fabric object to the pattern
             mPatternFabric.setUsedFor(this);
+        }
+
+        if (json.has(JSON_STASH)) {
+            mInStash = json.getBoolean(JSON_STASH);
+        } else {
+            mInStash = true;
         }
 
         mQuantities = new HashMap<UUID, Integer>();
@@ -141,23 +150,25 @@ public class StashPattern extends StashObject {
         }
 
 
-        /*if (json.has(JSON_QUANTITIES)) {
-            JSONArray array = json.getJSONArray(JSON_QUANTITIES);
+        mFinishes = new ArrayList<UUID>();
+        if (json.has(JSON_FINISHES)) {
+            JSONArray array = json.getJSONArray(JSON_FINISHES);
             for (int i = 0; i < array.length(); i++) {
-                // read the UUID/quantity pairs from the JSONObject
-                JSONObject entry = array.getJSONObject(i);
-                UUID id = UUID.fromString(entry.getString(JSON_QUANTITY_ID));
-                int number = entry.getInt(JSON_QUANTITY_ENTRY);
+                // look up fabricId in fabricMap to get appropriate fabric
+                UUID fabricId = UUID.fromString(array.getString(i));
+                StashFabric fabric = stash.getFabric(fabricId);
 
-                mQuantities.put(id, number);
+                fabric.setUsedFor(this);
+                mFinishes.add(fabricId);
             }
-        }*/
+        }
     }
 
     public JSONObject toJSON() throws JSONException {
         JSONObject json = new JSONObject();
         json.put(JSON_PATTERN, getId().toString());
         json.put(JSON_KITTED, mIsKitted);
+        json.put(JSON_STASH, mInStash);
 
         // values are only stored if they exist - nothing is stored if no value has been entered
         if (mPatternName != null) {
@@ -214,16 +225,14 @@ public class StashPattern extends StashObject {
             json.put(JSON_EMBELLISHMENTS, array);
         }
 
-        /*if (!mQuantities.isEmpty()) {
-            // store the UUID/quantity pairs in objects in an array for later retrieval
+        if (!mFinishes.isEmpty()) {
             JSONArray array = new JSONArray();
-            for(UUID id : mQuantities.keySet()) {
-                JSONObject entry = new JSONObject();
-                entry.put(JSON_QUANTITY_ID, id.toString());
-                entry.put(JSON_QUANTITY_ENTRY, mQuantities.get(id));
-                array.put(entry);
+            for (UUID fabricId : mFinishes) {
+                array.put(fabricId.toString());
             }
-        }*/
+
+            json.put(JSON_FINISHES, array);
+        }
 
         return json;
     }
@@ -369,6 +378,27 @@ public class StashPattern extends StashObject {
 
     public boolean isKitted() {
         return mIsKitted;
+    }
+
+    public void setInStash(boolean inStash) {
+        mInStash = inStash;
+    }
+
+    public boolean inStash() {
+        return mInStash;
+    }
+
+    public void patternCompleted() {
+        mFinishes.add(mPatternFabric.getId());
+        mPatternFabric = null;
+    }
+
+    public void addFinish(StashFabric fabric) {
+        mFinishes.add(fabric.getId());
+    }
+
+    public void removeFinish(StashFabric fabric) {
+        mFinishes.remove(fabric);
     }
 
     @Override

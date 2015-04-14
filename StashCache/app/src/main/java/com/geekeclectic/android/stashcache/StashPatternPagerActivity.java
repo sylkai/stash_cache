@@ -10,10 +10,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -47,8 +49,10 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         mViewPager.setId(R.id.patternViewPager);
         setContentView(mViewPager);
 
+        callingTab = getIntent().getIntExtra(StashPatternFragment.EXTRA_TAB_ID, StashConstants.STASH_TAB);
+
         // get list of patterns for the viewPager
-        mPatterns = StashData.get(this).getPatternData();
+        setPatternList();
 
         // set viewPager adapter
         FragmentManager fm = getSupportFragmentManager();
@@ -72,8 +76,6 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 actionBar.setSubtitle(pattern.toString());
             }
         });
-
-        callingTab = getIntent().getIntExtra(StashPatternFragment.EXTRA_TAB_ID, StashConstants.STASH_TAB);
 
         // pull the UUID from the desired fragment extra and iterate through the list to set it as
         // the current view
@@ -104,6 +106,28 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        StashPattern pattern = mPatterns.get((mViewPager.getCurrentItem()));
+        MenuItem removeStash = menu.findItem(R.id.menu_item_pattern_remove_stash);
+        MenuItem addStash = menu.findItem(R.id.menu_item_pattern_add_stash);
+
+        if (callingTab != StashConstants.SHOPPING_TAB) {
+            if (pattern.inStash()) {
+                removeStash.setVisible(true);
+                addStash.setVisible(false);
+            } else {
+                removeStash.setVisible(false);
+                addStash.setVisible(true);
+            }
+        } else {
+            removeStash.setVisible(false);
+            addStash.setVisible(false);
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handling item selection
         switch (item.getItemId()) {
@@ -124,6 +148,20 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                     }
                 }
                 return true;
+            case R.id.menu_item_pattern_remove_stash:
+                StashPattern removePattern = mPatterns.get(mViewPager.getCurrentItem());
+
+                StashData.get(this).removePatternFromStash(removePattern);
+                removePattern.setInStash(false);
+
+                return true;
+            case R.id.menu_item_pattern_add_stash:
+                StashPattern addPattern = mPatterns.get(mViewPager.getCurrentItem());
+
+                StashData.get(this).addPatternToStash(addPattern);
+                addPattern.setInStash(true);
+
+                return true;
             case R.id.menu_item_finish_project:
                 // get current pattern to do things to
                 StashPattern finishPattern = mPatterns.get(mViewPager.getCurrentItem());
@@ -132,7 +170,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                  if (finishedFabric != null && finishedFabric.inUse()) {
                      finishedFabric.setComplete(true);
                      StashData.get(this).removeFabricFromStash(finishedFabric.getId());
-                     finishPattern.setFabric(null);
+                     finishPattern.patternCompleted();
                      updateFragments();
                  }
 
@@ -159,6 +197,14 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 return super.onOptionsItemSelected(item);
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void setPatternList() {
+        if (callingTab == StashConstants.SHOPPING_TAB) {
+            mPatterns = StashData.get(this).getFabricForList();
+        } else {
+            mPatterns = StashData.get(this).getPatternData();
         }
     }
 

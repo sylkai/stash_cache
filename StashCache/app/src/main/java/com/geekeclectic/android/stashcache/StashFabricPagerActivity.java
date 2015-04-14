@@ -36,10 +36,10 @@ public class StashFabricPagerActivity extends FragmentActivity {
         mViewPager.setId(R.id.fabricViewPager);
         setContentView(mViewPager);
 
-        // get list of fabrics for viewPager
-        mFabrics = StashData.get(this).getFabricList();
+        callingTab = getIntent().getIntExtra(StashFabricFragment.EXTRA_TAB_ID, StashConstants.STASH_TAB);
 
-        callingTab = getIntent().getIntExtra(StashFabricFragment.EXTRA_TAB_ID, 0);
+        // get list of fabrics for viewPager
+        getFabricList();
 
         // set fragment manager to display fragments
         FragmentManager fm = getSupportFragmentManager();
@@ -123,6 +123,14 @@ public class StashFabricPagerActivity extends FragmentActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void getFabricList() {
+        if (callingTab == StashConstants.MASTER_TAB) {
+            mFabrics = StashData.get(this).getFabricList();
+        } else {
+            mFabrics = StashData.get(this).getStashFabricList();
         }
     }
 
