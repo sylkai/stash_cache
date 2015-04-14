@@ -391,6 +391,7 @@ public class StashPattern extends StashObject {
     public void patternCompleted() {
         mFinishes.add(mPatternFabric.getId());
         mPatternFabric = null;
+        mIsKitted = false;
     }
 
     public void addFinish(StashFabric fabric) {

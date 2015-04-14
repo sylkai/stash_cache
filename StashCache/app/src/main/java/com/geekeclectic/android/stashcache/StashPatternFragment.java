@@ -594,12 +594,16 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         // update the display
         updateFabricInfo();
+
+        // update other display bits
+        mIsKitted.setChecked(mPattern.isKitted());
     }
 
     private void updateFabricInfo() {
         if (mFabric != null) {
             mFabricInfo.setText(mFabric.getInfo() + "\n");
             mFabricInfo.append(mFabric.getSize());
+            mInProgress.setChecked(mFabric.inUse());
         } else {
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             double edgeBuffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));
@@ -616,6 +620,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             double fabricHeight = mPattern.getHeight() / ((double) defaultCount / overCount) + StashConstants.TWO_BORDERS * edgeBuffer;
 
             mFabricInfo.setText(String.format(getString(R.string.pattern_no_fabric), defaultCount, overCount, edgeBuffer, fabricWidth, fabricHeight));
+            mInProgress.setChecked(false);
         }
     }
 

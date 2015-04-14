@@ -127,7 +127,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
     }
 
     private void getFabricList() {
-        mFabrics = StashData.get(this).getStashFabricList();
+        mFabrics = StashData.get(this).getFabricList();
     }
 
 }
