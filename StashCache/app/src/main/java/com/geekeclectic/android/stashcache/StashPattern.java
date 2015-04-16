@@ -402,6 +402,10 @@ public class StashPattern extends StashObject {
         mFinishes.remove(fabric);
     }
 
+    public ArrayList<UUID> getFinishes() {
+        return mFinishes;
+    }
+
     @Override
     public String toString() {
         return mPatternName;

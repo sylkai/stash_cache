@@ -27,6 +27,7 @@ public class StashExporter {
     public static final String TAG = "StashExporter";
     private static ArrayList<UUID> mOrphanThread;
     private static ArrayList<UUID> mOrphanEmbellishments;
+    private static ArrayList<StashPattern> mPatternsNotInStash;
 
     public StashExporter() {
         // newline = System.getProperty("line.separator") would be the proper way to do that but
@@ -85,6 +86,7 @@ public class StashExporter {
         StashData stash = StashData.get(context);
         mOrphanThread = new ArrayList<UUID>(stash.getThreadList());
         mOrphanEmbellishments = new ArrayList<UUID>(stash.getEmbellishmentList());
+        mPatternsNotInStash = new ArrayList<StashPattern>(stash.getPatternData());
 
         StringBuilder sb = new StringBuilder();
 
@@ -107,7 +109,7 @@ public class StashExporter {
         sb.append(newline);
 
         // build pattern stash
-        sb.append(patternListString(betweenItems, stash, context));
+        sb.append(patternListString(betweenItems, stash, context, true));
         sb.append(betweenCategories);
         sb.append(newline);
 
@@ -124,13 +126,19 @@ public class StashExporter {
             sb.append(orphanEmbellishmentListString(mOrphanEmbellishments, betweenItems, stash, context));
         }
 
+        sb.append(betweenCategories);
+        sb.append(newline);
+
+        // if there is data for patterns no longer in the stash, append them now
+        if (!mPatternsNotInStash.isEmpty()) {
+            sb.append(patternListString(betweenItems, stash, context, false));
+        }
+
         return sb.toString();
     }
 
     private String buildPatternString(StashPattern pattern, Context context) {
         StashData stash = StashData.get(context);
-        mOrphanThread = new ArrayList<UUID>(stash.getThreadList());
-        mOrphanEmbellishments = new ArrayList<UUID>(stash.getEmbellishmentList());
 
         StringBuilder sb = new StringBuilder();
 
@@ -358,6 +366,38 @@ public class StashExporter {
         return sb.toString();
     }
 
+    // for fabrics associated with completions for a particular pattern
+    private String completedFabricString(ArrayList<UUID> fabricList, StashData stash, String betweenItems, Context context) {
+        StringBuilder sb = new StringBuilder();
+        Collections.sort(fabricList, new StashFabricComparator(context));
+
+        for (UUID fabricId : fabricList) {
+            // not the first trip through, so add the divider
+            if(sb.length() != 0) {
+                sb.append(betweenItems);
+                sb.append(newline);
+            }
+
+            StashFabric fabric = stash.getFabric(fabricId);
+
+            sb.append(fabric.getSource());
+            sb.append(newline);
+            sb.append(fabric.getType());
+            sb.append(newline);
+            sb.append(fabric.getColor());
+            sb.append(newline);
+
+            sb.append(fabric.getCount());
+            sb.append(newline);
+            sb.append(fabric.getWidth());
+            sb.append(newline);
+            sb.append(fabric.getHeight());
+            sb.append(newline);
+        }
+
+        return sb.toString();
+    }
+
     // for embellishments in stash
     private String embellishmentListString(ArrayList<UUID> embellishmentList, String betweenItems, StashData stash, Context context) {
         StringBuilder sb = new StringBuilder();
@@ -518,7 +558,7 @@ public class StashExporter {
         return sb.toString();
     }
 
-    private String patternListString(String betweenItems, StashData stash, Context context) {
+    private String patternListString(String betweenItems, StashData stash, Context context, boolean inStash) {
         StringBuilder sb = new StringBuilder();
 
         String patternItems = "-";
@@ -528,65 +568,75 @@ public class StashExporter {
         Collections.sort(patternList, new StashPatternComparator());
 
         for (StashPattern pattern : patternList) {
-            if (sb.length() != 0) {
-                // not the first thing entered into the string, so add the divider
-                sb.append(betweenItems);
-                sb.append(newline);
-            }
-
-            sb.append(pattern.getPatternName());
-            sb.append(newline);
-            sb.append(pattern.getSource());
-            sb.append(newline);
-
-            sb.append(pattern.getWidth());
-            sb.append(newline);
-            sb.append(pattern.getHeight());
-            sb.append(newline);
-
-            // if the pattern is kitted, mark it as such (no entry is assumed to not be kitted)
-            if (pattern.isKitted()) {
-                sb.append("kitted");
-                sb.append(newline);
-            }
-
-            sb.append(patternCategories);
-            sb.append(newline);
-
-            // if there is a fabric associated with this pattern, this is where it goes
-            if (pattern.getFabric() != null) {
-                StashFabric fabric = pattern.getFabric();
-
-                sb.append(fabric.getSource());
-                sb.append(newline);
-                sb.append(fabric.getType());
-                sb.append(newline);
-                sb.append(fabric.getColor());
-                sb.append(newline);
-
-                sb.append(fabric.getCount());
-                sb.append(newline);
-                sb.append(fabric.getWidth());
-                sb.append(newline);
-                sb.append(fabric.getHeight());
-                sb.append(newline);
-
-                if (fabric.inUse()) {
-                    sb.append("in use");
+            if (pattern.inStash() == inStash) {
+                mPatternsNotInStash.remove(pattern);
+                if (sb.length() != 0) {
+                    // not the first thing entered into the string, so add the divider
+                    sb.append(betweenItems);
                     sb.append(newline);
                 }
+
+                sb.append(pattern.getPatternName());
+                sb.append(newline);
+                sb.append(pattern.getSource());
+                sb.append(newline);
+
+                sb.append(pattern.getWidth());
+                sb.append(newline);
+                sb.append(pattern.getHeight());
+                sb.append(newline);
+
+                // if the pattern is kitted, mark it as such (no entry is assumed to not be kitted)
+                if (pattern.isKitted()) {
+                    sb.append("kitted");
+                    sb.append(newline);
+                }
+
+                sb.append(patternCategories);
+                sb.append(newline);
+
+                // if there is a fabric associated with this pattern, this is where it goes
+                if (pattern.getFabric() != null) {
+                    StashFabric fabric = pattern.getFabric();
+
+                    sb.append(fabric.getSource());
+                    sb.append(newline);
+                    sb.append(fabric.getType());
+                    sb.append(newline);
+                    sb.append(fabric.getColor());
+                    sb.append(newline);
+
+                    sb.append(fabric.getCount());
+                    sb.append(newline);
+                    sb.append(fabric.getWidth());
+                    sb.append(newline);
+                    sb.append(fabric.getHeight());
+                    sb.append(newline);
+
+                    if (fabric.inUse()) {
+                        sb.append("in use");
+                        sb.append(newline);
+                    }
+                }
+
+                sb.append(patternCategories);
+                sb.append(newline);
+
+                // add the info for the strings in the pattern
+                sb.append(threadListString(pattern.getThreadList(), patternItems, stash, context, pattern));
+                sb.append(patternCategories);
+                sb.append(newline);
+
+                // add the info for the embellishments in the pattern
+                sb.append(embellishmentListString(pattern.getEmbellishmentList(), patternItems, stash, context, pattern));
+
+                // add info for any previous completions, if any
+                if (!pattern.getFinishes().isEmpty()) {
+                    sb.append(patternCategories);
+                    sb.append(newline);
+                    sb.append(completedFabricString(pattern.getFinishes(), stash, patternItems, context));
+                }
             }
-
-            sb.append(patternCategories);
-            sb.append(newline);
-
-            // add the info for the strings in the pattern
-            sb.append(threadListString(pattern.getThreadList(), patternItems, stash, context, pattern));
-            sb.append(patternCategories);
-            sb.append(newline);
-
-            // add the info for the embellishments in the pattern
-            sb.append(embellishmentListString(pattern.getEmbellishmentList(), patternItems, stash, context, pattern));
         }
 
         return sb.toString();

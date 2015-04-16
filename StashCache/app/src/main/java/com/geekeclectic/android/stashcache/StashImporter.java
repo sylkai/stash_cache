@@ -62,10 +62,12 @@ public class StashImporter {
             readStashFabric(reader, stash);
             readStashEmbellishment(reader, stash);
 
-            readPatterns(reader, stash);
+            readPatterns(reader, stash, true);
 
             readThread(reader, stash);
             readEmbellishment(reader, stash);
+
+            readPatterns(reader, stash, false);
 
         } catch (FileNotFoundException e) {
             // ignore because it happens when program is opened for the first time
@@ -140,10 +142,16 @@ public class StashImporter {
         return pattern;
     }
 
-    private void readPatterns(BufferedReader reader, StashData stash) throws IOException {
+    private void readPatterns(BufferedReader reader, StashData stash, boolean inStash) throws IOException {
         while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
 
             StashPattern pattern = readPatternInfo(reader, stash);
+
+            pattern.setInStash(inStash);
+
+            if (!inStash) {
+                stash.removePatternFromStash(pattern);
+            }
 
             if (!readPatternFabric(reader, stash, pattern)) {
                 break;
@@ -152,13 +160,13 @@ public class StashImporter {
             readPatternThread(reader, stash, pattern);
             readPatternEmbellishment(reader, stash, pattern);
 
-            if (lastRead.equals(stashBlockDivider)) {
+            if (lastRead == null || lastRead.equals(stashBlockDivider)) {
                 break;
             }
 
             readFinishes(reader, stash, pattern);
 
-            if (lastRead.equals(stashBlockDivider)) {
+            if (lastRead == null || lastRead.equals(stashBlockDivider)) {
                 break;
             }
 
@@ -370,7 +378,7 @@ public class StashImporter {
             fabric.setComplete(true);
 
             lastRead = reader.readLine();
-            if (lastRead.equals("***") || lastRead.equals("---")) {
+            if (lastRead == null || lastRead.equals("***") || lastRead.equals("---")) {
                 break;
             }
         }
