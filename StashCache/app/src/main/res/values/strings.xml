@@ -38,6 +38,9 @@
     <string name="over_setting">Over two</string>
     <string name="over_summary">If checked, assumes stitching over 2. </string>
 
+    <string name="update_stash">Update stash on finish</string>
+    <string name="update_stash_summary">Remove the supplies used from the stash when marking a pattern as complete. If using full skeins, full skeins will be removed. </string>
+
     <string name="crossover_setting">Calculating fit</string>
     <string name="crossover_summary">Fabric above %s count is assumed to be stitched over 2 when determining if a pattern will fit.</string>
 

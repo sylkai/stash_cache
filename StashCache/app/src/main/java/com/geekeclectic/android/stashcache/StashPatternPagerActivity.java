@@ -4,8 +4,10 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -167,12 +169,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 StashPattern finishPattern = mPatterns.get(mViewPager.getCurrentItem());
                 StashFabric finishedFabric = finishPattern.getFabric();
 
-                 if (finishedFabric != null && finishedFabric.inUse()) {
-                     finishedFabric.setComplete(true);
-                     StashData.get(this).removeFabricFromStash(finishedFabric.getId());
-                     finishPattern.patternCompleted();
-                     updateFragments();
-                 }
+                 markPatternAsComplete(finishPattern, finishedFabric);
 
                 return true;
             case R.id.menu_item_export_pattern:
@@ -203,6 +200,52 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
     private void setPatternList() {
         mPatterns = StashData.get(this).getPatternData();
 
+    }
+
+    private void markPatternAsComplete(StashPattern pattern, StashFabric fabric) {
+        if (fabric != null) {
+            fabric.setComplete(true);
+            StashData.get(this).removeFabricFromStash(fabric.getId());
+        }
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean updateStash = sharedPreferences.getBoolean(StashPreferencesActivity.KEY_UPDATE_STASH, false);
+        boolean overlapNotAllowed = sharedPreferences.getBoolean(StashPreferencesActivity.KEY_NEW_SKEIN_FOR_EACH, false);
+
+        if (updateStash) {
+            ArrayList <UUID> threadList = pattern.getThreadList();
+            for (UUID threadId : threadList) {
+                StashThread thread = StashData.get(this).getThread(threadId);
+
+                int decreaseBy;
+                if (overlapNotAllowed) {
+                    // user wants fresh skeins for each pattern, so remove all skeins used (they can re-add excess)
+                    decreaseBy = pattern.getQuantity(thread);
+                } else {
+                    // assume overlap on the last one, don't remove it from the stash
+                    decreaseBy = pattern.getQuantity(thread) - 1;
+                }
+
+                for (int i = 0; i < decreaseBy; i++) {
+                    thread.decreaseOwnedQuantity();
+                }
+            }
+
+            ArrayList <UUID> embellishmentList = pattern.getEmbellishmentList();
+            for (UUID embellishmentId : embellishmentList) {
+                StashEmbellishment embellishment = StashData.get(this).getEmbellishment(embellishmentId);
+
+                // treated the same way embellishments are treated when creating the shopping list
+                int decreaseBy = pattern.getQuantity(embellishment);
+
+                for (int i = 0; i < decreaseBy; i++) {
+                    embellishment.decreaseOwned();
+                }
+            }
+        }
+
+        pattern.patternCompleted();
+        updateFragments();
     }
 
     public void updateFragments() {

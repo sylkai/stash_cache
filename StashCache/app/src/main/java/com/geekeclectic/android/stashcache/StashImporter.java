@@ -376,6 +376,8 @@ public class StashImporter {
 
             fabric.setUsedFor(pattern);
             fabric.setComplete(true);
+            pattern.addFinish(fabric);
+            stash.removeFabricFromStash(fabric.getId());
 
             lastRead = reader.readLine();
             if (lastRead == null || lastRead.equals("***") || lastRead.equals("---")) {

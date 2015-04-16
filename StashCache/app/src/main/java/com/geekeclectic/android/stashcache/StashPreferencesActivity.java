@@ -20,6 +20,7 @@ public class StashPreferencesActivity extends PreferenceActivity implements Shar
     public static final String KEY_COUNT_SETTING = "pref_default_count";
     public static final String KEY_OVER_SETTING = "pref_default_over";
     public static final String KEY_CROSSOVER = "pref_default_crossover";
+    public static final String KEY_UPDATE_STASH = "pref_update_stash";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
