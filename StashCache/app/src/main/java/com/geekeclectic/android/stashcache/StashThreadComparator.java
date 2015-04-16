@@ -85,6 +85,10 @@ public class StashThreadComparator implements Comparator<UUID> {
             } else if (code1.matches("[0-9]+\\s.*") && code2.matches("[0-9]+\\s.*")) {
                 // if it is a number followed by other info (color, etc.), sort by the number
                 return Integer.parseInt(code1.split("\\s")[0]) - Integer.parseInt(code2.split("\\s")[0]);
+            } else if (code1.matches("[0-9]+") && code2.matches("[0-9]+\\s.*")) {
+                return Integer.parseInt(code1) - Integer.parseInt(code2.split("\\s")[0]);
+            } else if (code1.matches("[0-9]+\\s.*") && code2.matches("[0-9]+")) {
+                return Integer.parseInt(code1.split("\\s")[0]) - Integer.parseInt(code2);
             } else {
                 // just sort using the normal sorting, until I get fed up with Kreinik's behavior
                 return code1.compareToIgnoreCase(code2);
