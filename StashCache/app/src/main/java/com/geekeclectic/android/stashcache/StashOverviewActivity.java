@@ -325,6 +325,8 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             fragment.stashChanged();
         }
 
+        // required to have the activity call this method on the current fragments as well (see http://stackoverflow.com/a/6147919
+        // for reference)
         super.onActivityResult(requestCode, resultCode, data);
     }
 

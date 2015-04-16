@@ -160,12 +160,6 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_fabric_list, menu);
@@ -183,7 +177,10 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
                 Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
                 i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabric.getId());
                 i.putExtra(StashFabricFragment.EXTRA_TAB_ID, mViewCode);
-                startActivityForResult(i, 0);
+
+                // be sure that the parent fragment will have its onActivityResult called (see
+                // http://stackoverflow.com/questions/6147884/onactivityresult-not-being-called-in-fragment?rq=1#comment27590801_6147919)
+                getParentFragment().startActivityForResult(i, 0);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -229,6 +226,16 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabricId);
         i.putExtra(StashFabricFragment.EXTRA_TAB_ID, mViewCode);
         startActivity(i);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // sort the list in case anything changed
+        Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
+
+        // make sure the adapter is notified that the data set may have changed
+        FabricAdapter adapter = (FabricAdapter)getListAdapter();
+        adapter.notifyDataSetChanged();
     }
 
     @Override

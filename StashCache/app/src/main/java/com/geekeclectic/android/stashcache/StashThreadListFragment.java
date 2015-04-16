@@ -54,13 +54,11 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         mViewCode = getArguments().getInt(THREAD_VIEW_ID);
 
         mThreads = getListFromStash();
-        // Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
 
         // create and set adapter using thread list
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
         setListAdapter(adapter);
-
-        // new InitialThreadListSortTask().execute();
     }
 
     public static StashThreadListFragment newInstance(int viewCode) {
@@ -157,18 +155,6 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         }
     }
 
-    /*@Override
-    public void onResume() {
-        super.onResume();
-
-        // re-sort the list to make sure everything is where it should be
-        mThreads = getListFromStash();
-        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
-
-        //remind the adapter to get the updated list
-        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
-    }*/
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -187,7 +173,10 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
                 Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
                 i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
                 i.putExtra(StashThreadFragment.EXTRA_TAB_ID, mViewCode);
-                startActivityForResult(i, 0);
+
+                // be sure that the parent fragment will have its onActivityResult called (see
+                // http://stackoverflow.com/questions/6147884/onactivityresult-not-being-called-in-fragment?rq=1#comment27590801_6147919)
+                getParentFragment().startActivityForResult(i, 0);
                 return true;
             case R.id.menu_item_edit_thread_stash:
                 FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -279,6 +268,16 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         } else {
             setEmptyText("There are no threads on your shopping list.");
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // sort the list in case anything changed
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
+        // make sure the adapter is notified that the data set may have changed
+        ThreadAdapter adapter = (ThreadAdapter)getListAdapter();
+        adapter.notifyDataSetChanged();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.ref.WeakReference;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -82,9 +84,25 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
         mAdapter.updateFragments();
     }
 
+    // it turns out Android only calls onActivityResult down one layer, not two, so with nested fragments
+    // needing the call I need to do it manually (see http://stackoverflow.com/a/16449850 for reference)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        Fragment fragment = mAdapter.getCurrentFragment(mViewPager.getCurrentItem());
+
+        if (fragment != null) {
+            fragment.onActivityResult(requestCode, resultCode, intent);
+        }
+    }
+
     public class StashOverviewPagerAdapter extends FragmentStatePagerAdapter {
 
         private Observable mObservers = new FragmentObserver();
+        private WeakReference<Fragment> fabricList;
+        private WeakReference<Fragment> threadList;
+        private WeakReference<Fragment> embellishmentList;
+        private WeakReference<Fragment> patternList;
 
         public StashOverviewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -120,6 +138,32 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
             return fragment;
         }
 
+        // I need a reference for the currently active fragments so that I can return the fragment
+        // to call the onActivityResult method, so need to store the references here because getItem
+        // is called on item creation only, not when recreating from saved state (see http://stackoverflow.com/a/29287415
+        // for reference, using weak references since this is FragmentStatePagerAdapter)
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+
+            // save the appropriate reference depending on the position
+            switch (position) {
+                case StashConstants.FABRIC_VIEW: // fabric list
+                    fabricList = new WeakReference<Fragment>(createdFragment);
+                    break;
+                case StashConstants.THREAD_VIEW: // thread list
+                    threadList = new WeakReference<Fragment>(createdFragment);
+                    break;
+                case StashConstants.EMBELLISHMENT_VIEW: // embellishment list
+                    embellishmentList = new WeakReference<Fragment>(createdFragment);
+                    break;
+                default: // pattern list
+                    patternList = new WeakReference<Fragment>(createdFragment);
+            }
+
+            return createdFragment;
+        }
+
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
@@ -147,6 +191,25 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
 
         public void updateFragments() {
             mObservers.notifyObservers();
+        }
+
+        // returns the current fragment for that position, if it exists
+        public Fragment getCurrentFragment(int position) {
+            Fragment fragment;
+            switch (position) {
+                case StashConstants.FABRIC_VIEW: // fabric list
+                    fragment = fabricList.get();
+                    return fragment;
+                case StashConstants.THREAD_VIEW: // thread list
+                    fragment = threadList.get();
+                    return fragment;
+                case StashConstants.EMBELLISHMENT_VIEW: // embellishment list
+                    fragment = embellishmentList.get();
+                    return fragment;
+                default: // pattern list
+                    fragment = patternList.get();
+                    return fragment;
+            }
         }
     }
 

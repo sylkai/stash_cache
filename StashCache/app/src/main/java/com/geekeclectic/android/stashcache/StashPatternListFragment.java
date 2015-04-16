@@ -145,13 +145,6 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        // always check on load to see if data set needs updating
-        ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
-    }
-
-    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
@@ -182,7 +175,10 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
                 Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
                 i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
                 i.putExtra(StashPatternFragment.EXTRA_TAB_ID, mViewCode);
-                startActivityForResult(i, 0);
+
+                // be sure that the parent fragment will have its onActivityResult called (see
+                // http://stackoverflow.com/questions/6147884/onactivityresult-not-being-called-in-fragment?rq=1#comment27590801_6147919)
+                getParentFragment().startActivityForResult(i, 0);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -238,6 +234,16 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         } else {
             return StashData.get(getActivity()).getPatternData();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // sort the list in case anything changed
+        Collections.sort(mPatterns, new StashPatternComparator());
+
+        // make sure the adapter is notified that the data set may have changed
+        PatternAdapter adapter = (PatternAdapter)getListAdapter();
+        adapter.notifyDataSetChanged();
     }
 
     @Override

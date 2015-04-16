@@ -155,12 +155,6 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((EmbellishmentAdapter)getListAdapter()).notifyDataSetChanged();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_embellishment_list, menu);
@@ -178,7 +172,10 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
                 Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
                 i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishment.getId());
                 i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, mViewCode);
-                startActivityForResult(i, 0);
+
+                // be sure that the parent fragment will have its onActivityResult called (see
+                // http://stackoverflow.com/questions/6147884/onactivityresult-not-being-called-in-fragment?rq=1#comment27590801_6147919)
+                getParentFragment().startActivityForResult(i, 0);
                 return true;
             case R.id.menu_item_edit_embellishment_stash:
                 FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -268,6 +265,16 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         } else {
             setEmptyText("There are no embellishments on your shopping list.");
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // sort the list in case anything changed
+        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
+
+        // make sure the adapter is notified that the data set may have changed
+        EmbellishmentAdapter adapter = (EmbellishmentAdapter)getListAdapter();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
