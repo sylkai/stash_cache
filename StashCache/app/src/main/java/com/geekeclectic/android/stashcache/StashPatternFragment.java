@@ -63,6 +63,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private StashFabric mFabric;
     private ArrayList<UUID> mThreadList;
     private ArrayList<UUID> mEmbellishmentList;
+    private ArrayList<UUID> mFinishesList;
     private UUID mPatternId;
     private EditText mTitleField;
     private EditText mSourceField;
@@ -78,6 +79,8 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private TextView mFabricInfo;
     private ListView mThreadDisplayList;
     private ListView mEmbellishmentDisplayList;
+    private ListView mFinishList;
+    private TextView mFinishTitle;
     private StashCreateShoppingList mShoppingList;
 
     private ChangedFragmentListener mCallback;
@@ -109,6 +112,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mFabric = mPattern.getFabric();
         mThreadList = mPattern.getThreadList();
         mEmbellishmentList = mPattern.getEmbellishmentList();
+        mFinishesList = mPattern.getFinishes();
 
         mShoppingList = new StashCreateShoppingList();
     }
@@ -421,7 +425,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mEmbellishmentDisplayList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ViewHolder vh = (ViewHolder)view.getTag();
+                ViewHolder vh = (ViewHolder) view.getTag();
 
                 // start StashThreadPagerActivity
                 Intent intent = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
@@ -430,6 +434,30 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 startActivity(intent);
             }
         });
+
+        mFinishTitle = (TextView)v.findViewById(R.id.pattern_finish_list_title);
+        mFinishList = (ListView) v.findViewById(R.id.pattern_finish_list);
+        Collections.sort(mFinishesList, new StashFabricComparator(getActivity()));
+        FabricAdapter adapter2 = new FabricAdapter(mFinishesList);
+        mFinishList.setAdapter(adapter2);
+        mFinishList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ViewHolder vh = (ViewHolder) view.getTag();
+
+                // start StashFabricPagerActivity
+                Intent intent = new Intent(getActivity(), StashFabricPagerActivity.class);
+                intent.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, vh.itemId);
+                intent.putExtra(StashFabricFragment.EXTRA_TAB_ID, callingTab);
+                startActivity(intent);
+            }
+        });
+
+        if (!mFinishesList.isEmpty()) {
+            mFinishTitle.setVisibility(View.VISIBLE);
+            mFinishList.setVisibility(View.VISIBLE);
+            setListViewHeightBasedOnChildren(mFinishList);
+        }
 
         setListViewHeightBasedOnChildren(mThreadDisplayList);
         setListViewHeightBasedOnChildren(mEmbellishmentDisplayList);
@@ -597,6 +625,18 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
         // update other display bits
         mIsKitted.setChecked(mPattern.isKitted());
+
+        FabricAdapter adapter = (FabricAdapter)mFinishList.getAdapter();
+        adapter.notifyDataSetChanged();
+        if (!mFinishesList.isEmpty()) {
+            mFinishTitle.setVisibility(View.VISIBLE);
+            mFinishList.setVisibility(View.VISIBLE);
+            setListViewHeightBasedOnChildren(mFinishList);
+        } else {
+            mFinishTitle.setVisibility(View.INVISIBLE);
+            mFinishList.setVisibility(View.INVISIBLE);
+            setListViewHeightBasedOnChildren(mFinishList);
+        }
     }
 
     private void updateFabricInfo() {
@@ -730,6 +770,36 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             return convertView;
         }
 
+    }
+
+    private class FabricAdapter extends ArrayAdapter<UUID> {
+        public FabricAdapter(ArrayList<UUID> fabrics) {
+            super(getActivity(), StashConstants.NO_RESOURCE, fabrics);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // if we weren't given a view, inflate one
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_pattern_fabric, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.info = (TextView)convertView.findViewById(R.id.pattern_fabric_list_item_infoTextView);
+                vh.type = (TextView)convertView.findViewById(R.id.pattern_fabric_list_item_sizeTextView);
+                convertView.setTag(vh);
+            }
+
+            ViewHolder vh = (ViewHolder)convertView.getTag();
+
+            // configure the view for this fabric
+            StashFabric fabric = StashData.get(getActivity()).getFabric(getItem(position));
+
+            vh.info.setText(fabric.getInfo());
+            vh.type.setText(fabric.getSize());
+            vh.itemId = fabric.getId();
+
+            return convertView;
+        }
     }
 
     private static class ViewHolder {

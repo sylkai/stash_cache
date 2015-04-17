@@ -278,6 +278,12 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         updateFragments();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateFragments();
+    }
+
     public void updateFragments() {
         ((ObservedAdapter)mViewPager.getAdapter()).updateFragments();
     }

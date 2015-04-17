@@ -398,11 +398,13 @@ public class StashPattern extends StashObject {
     }
 
     public void addFinish(StashFabric fabric) {
-        mFinishes.add(fabric.getId());
+        if (!mFinishes.contains(fabric.getId())) {
+            mFinishes.add(fabric.getId());
+        }
     }
 
     public void removeFinish(StashFabric fabric) {
-        mFinishes.remove(fabric);
+        mFinishes.remove(fabric.getId());
     }
 
     public ArrayList<UUID> getFinishes() {

@@ -76,6 +76,7 @@
     <string name="pattern_finish_does_nothing">You\'ve said you don\'t want the stash to update automatically, and there\'s no fabric associated with this pattern, so this button really just offers you congratulations! If you want to adjust the quantities of items in your stash, you need to do it manually.</string>
     <string name="thanks">Thanks!</string>
     <string name="oops">Oops, I didn\'t finish yet!</string>
+    <string name="finish_list">Finishes</string>
 
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>
