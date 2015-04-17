@@ -88,7 +88,9 @@ public class StashEmbellishment extends StashObject {
 
     public void usedInPattern(StashPattern pattern) {
         // add link to pattern object where embellishment is used to the list
-        mUsedIn.add(pattern);
+        if (!mUsedIn.contains(pattern)) {
+            mUsedIn.add(pattern);
+        }
     }
 
     public void removePattern(StashPattern pattern) {
