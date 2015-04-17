@@ -121,6 +121,18 @@ public class StashFabricPagerActivity extends FragmentActivity {
                     }
                 }
                 return true;
+            case R.id.menu_item_fabric_remove_finish:
+                StashFabric removeFinish = StashData.get(this).getFabric(mFabrics.get(mViewPager.getCurrentItem()));
+                StashPattern pattern = removeFinish.usedFor();
+
+                removeFinish.setComplete(false);
+                pattern.removeFinish(removeFinish);
+
+                if (pattern.getFabric() == null) {
+                    pattern.setFabric(removeFinish);
+                }
+
+                StashData.get(this).addFabricToStash(removeFinish.getId());
             default:
                 return super.onOptionsItemSelected(item);
         }

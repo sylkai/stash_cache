@@ -166,10 +166,40 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 return true;
             case R.id.menu_item_finish_project:
                 // get current pattern to do things to
-                StashPattern finishPattern = mPatterns.get(mViewPager.getCurrentItem());
-                StashFabric finishedFabric = finishPattern.getFabric();
+                final StashPattern finishPattern = mPatterns.get(mViewPager.getCurrentItem());
+                final StashFabric finishedFabric = finishPattern.getFabric();
 
-                 markPatternAsComplete(finishPattern, finishedFabric);
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                boolean updateStash = sharedPreferences.getBoolean(StashPreferencesActivity.KEY_UPDATE_STASH, false);
+                boolean overlapNotAllowed = sharedPreferences.getBoolean(StashPreferencesActivity.KEY_NEW_SKEIN_FOR_EACH, false);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.pattern_finish_title);
+                if (updateStash && overlapNotAllowed) {
+                    builder.setMessage(R.string.pattern_finish_no_overlap);
+                } else if (updateStash) {
+                    builder.setMessage(R.string.pattern_finish_overlap);
+                } else if (finishedFabric != null){
+                    builder.setMessage(R.string.pattern_finish_no_update);
+                } else {
+                    builder.setMessage(R.string.pattern_finish_does_nothing);
+                }
+
+                builder.setPositiveButton(R.string.thanks, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        markPatternAsComplete(finishPattern, finishedFabric);
+                    }
+                });
+
+                builder.setNegativeButton(R.string.oops, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //
+                    }
+                });
+
+                builder.show();
 
                 return true;
             case R.id.menu_item_export_pattern:

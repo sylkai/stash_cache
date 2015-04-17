@@ -69,6 +69,13 @@
     <string name="finish_project">Mark As Complete</string>
     <string name="remove_stash">Remove Pattern</string>
     <string name="add_stash">Add To Stash</string>
+    <string name="pattern_finish_title">Congratulations on a finish!</string>
+    <string name="pattern_finish_no_overlap">If you confirm this, the stash will update to remove ALL the floss and embellishments called for by this pattern. If you still have some left to keep in the stash, you will have to update them manually.</string>
+    <string name="pattern_finish_overlap">If you confirm this, the stash will update to remove ALL embellishments and any skeins of thread over the first. If you want to adjust any quantities beyond this, you will have to update them manually.</string>
+    <string name="pattern_finish_no_update">If you confirm this, the stash will move the fabric associated with this pattern to the completion list, but will not edit the quantity of other materials. If you want to adjust those, you will have to update them manually.</string>
+    <string name="pattern_finish_does_nothing">You\'ve said you don\'t want the stash to update automatically, and there\'s no fabric associated with this pattern, so this button really just offers you congratulations! If you want to adjust the quantities of items in your stash, you need to do it manually.</string>
+    <string name="thanks">Thanks!</string>
+    <string name="oops">Oops, I didn\'t finish yet!</string>
 
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>
@@ -106,6 +113,7 @@
     <string name="fabric_height_label">Height</string>
     <string name="fabric_pattern_info">Used For</string>
     <string name="fabric_pattern_detail">Not associated with any patterns.</string>
+    <string name="remove_finish">Undo Finish</string>
 
     <string name="fabric_list_title">Fabric</string>
     <string name="thread_list_title">Threads</string>

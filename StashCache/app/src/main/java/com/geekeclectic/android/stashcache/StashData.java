@@ -229,6 +229,12 @@ public class StashData {
         return mFabricData.get(key);
     }
 
+    public void addFabricToStash(UUID key) {
+        if (!mStashFabricList.contains(key)) {
+            mStashFabricList.add(key);
+        }
+    }
+
     public void removeFabricFromStash(UUID key) {
         mStashFabricList.remove(key);
     }
