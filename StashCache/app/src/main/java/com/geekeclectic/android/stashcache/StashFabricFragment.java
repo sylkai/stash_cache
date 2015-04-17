@@ -13,9 +13,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -30,13 +36,14 @@ public class StashFabricFragment extends Fragment {
     private static final int VIEW_ID = StashConstants.FABRIC_VIEW;
 
     private StashFabric mFabric;
-    private StashPattern mPattern;
+    private ArrayList<StashPattern> mPattern;
     private EditText mFabricSource;
     private EditText mFabricType;
     private EditText mFabricColor;
     private EditText mFabricCount;
     private EditText mFabricWidth;
     private EditText mFabricHeight;
+    private ListView mPatternDisplay;
     private TextView mPatternInfo;
 
     private int callingTab;
@@ -55,7 +62,10 @@ public class StashFabricFragment extends Fragment {
         callingTab = getArguments().getInt(EXTRA_TAB_ID);
         mFabric = StashData.get(getActivity()).getFabric(fabricId);
 
-        mPattern = mFabric.usedFor();
+        mPattern = new ArrayList<StashPattern>();
+        if (mFabric.usedFor() != null) {
+            mPattern.add(mFabric.usedFor());
+        }
     }
 
     public static StashFabricFragment newInstance(UUID patternId, int tab) {
@@ -225,12 +235,98 @@ public class StashFabricFragment extends Fragment {
             }
         });
 
+        mPatternDisplay = (ListView)v.findViewById(R.id.fabric_pattern_list);
         mPatternInfo = (TextView)v.findViewById(R.id.fabric_pattern_display);
-        if (mPattern != null) {
-            mPatternInfo.setText(mPattern.getPatternName());
-        }
+
+        PatternAdapter adapter = new PatternAdapter(mPattern);
+        mPatternDisplay.setAdapter(adapter);
+        mPatternDisplay.setEmptyView(mPatternInfo);
+        mPatternDisplay.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ViewHolder vh = (ViewHolder) view.getTag();
+
+                // start StashThreadPagerActivity
+                Intent intent = new Intent(getActivity(), StashPatternPagerActivity.class);
+                intent.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, vh.itemId);
+                intent.putExtra(StashPatternFragment.EXTRA_TAB_ID, callingTab);
+                startActivity(intent);
+            }
+        });
+
+        setListViewHeightBasedOnChildren(mPatternDisplay);
 
         return v;
+    }
+
+    private void setListViewHeightBasedOnChildren(ListView listView) {
+        // method modified from an answer here: http://stackoverflow.com/questions/3495890/how-can-i-put-a-listview-into-a-scrollview-without-it-collapsing/3495908#3495908
+        // to set the height based on a maximum number of items on the listView
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            return;
+        }
+
+        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+        if (listAdapter.getCount() > StashConstants.DISPLAY_LIST_ITEMS) {
+            for (int i = 0; i < StashConstants.DISPLAY_LIST_ITEMS; i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                if (listItem instanceof ViewGroup)
+                    listItem.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+        } else {
+            for (int i = 0; i < listAdapter.getCount(); i++) {
+                View listItem = listAdapter.getView(i, null, listView);
+                if (listItem instanceof ViewGroup)
+                    listItem.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT));
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+    }
+
+    private class PatternAdapter extends ArrayAdapter<StashPattern> {
+
+        public PatternAdapter(ArrayList<StashPattern> patterns) {
+            super(getActivity(), StashConstants.NO_RESOURCE, patterns);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // if we weren't given a view, inflate one
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_fabric_pattern, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.name = (TextView)convertView.findViewById(R.id.fabric_pattern_list_item_nameTextView);
+                vh.source = (TextView)convertView.findViewById(R.id.fabric_pattern_list_item_sourceTextView);
+                convertView.setTag(vh);
+            }
+
+            ViewHolder vh =  (ViewHolder)convertView.getTag();
+
+            // configure the view for this thread
+            StashPattern pattern = getItem(position);
+
+            vh.name.setText(pattern.getPatternName());
+            vh.source.setText(pattern.getSource());
+            vh.itemId = pattern.getId();
+
+            return convertView;
+        }
+
+    }
+
+    private static class ViewHolder {
+        public TextView name;
+        public TextView source;
+        public UUID itemId;
     }
 
 }
