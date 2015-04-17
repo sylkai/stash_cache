@@ -44,6 +44,7 @@ public class StashEmbellishmentFragment extends Fragment{
     private Button mOwnedDecrease;
     private Button mOwnedIncrease;
 
+    private TextView mTotalNeeded;
     private TextView mNumberNeeded;
 
     private TextView mNumberToBuy;
@@ -190,6 +191,9 @@ public class StashEmbellishmentFragment extends Fragment{
 
         mNumberOwned = (TextView)v.findViewById(R.id.embellishment_stash_quantity);
         mNumberOwned.setText(Integer.toString(mEmbellishment.getNumberOwned()));
+
+        mTotalNeeded = (TextView)v.findViewById(R.id.embellishment_total_quantity_needed);
+        mTotalNeeded.setText(Integer.toString(mEmbellishment.getTotalNeeded()));
 
         mNumberNeeded = (TextView)v.findViewById(R.id.embellishment_quantity_needed);
         mNumberNeeded.setText(Integer.toString(mEmbellishment.getNumberNeeded()));

@@ -113,6 +113,55 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/total_skeins_label"
+                android:layout_weight="1"
+                android:layout_marginLeft="4dp"
+                android:layout_gravity="center_vertical" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:visibility="invisible"
+                android:text="-" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/thread_total_quantity_needed"
+                android:text="0"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:padding="4dp" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:visibility="invisible"
+                android:text="+" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/skeins_needed_label"
                 android:layout_weight="1"
                 android:layout_marginLeft="4dp"

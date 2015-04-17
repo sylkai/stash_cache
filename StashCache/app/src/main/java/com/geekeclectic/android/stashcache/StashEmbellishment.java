@@ -212,6 +212,10 @@ public class StashEmbellishment extends StashObject {
         }
     }
 
+    public int getTotalNeeded() {
+        return mNumberNeeded;
+    }
+
     /*
     * This method increases the number of additional to buy (as set by the user) and if necessary,
     * adds it to the shopping list.

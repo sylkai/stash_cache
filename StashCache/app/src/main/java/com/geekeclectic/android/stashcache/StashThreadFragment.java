@@ -44,6 +44,7 @@ public class StashThreadFragment extends Fragment {
     private TextView mSkeinsOwned;
     private Button mOwnedIncrease;
 
+    private TextView mTotalKitted;
     private TextView mKittedSkeins;
 
     private Button mToBuyDecrease;
@@ -190,6 +191,9 @@ public class StashThreadFragment extends Fragment {
 
         mSkeinsOwned = (TextView)v.findViewById(R.id.thread_stash_quantity);
         mSkeinsOwned.setText(Integer.toString(mThread.getSkeinsOwned()));
+
+        mTotalKitted = (TextView)v.findViewById(R.id.thread_total_quantity_needed);
+        mTotalKitted.setText(Integer.toString(mThread.getTotalNeeded()));
 
         mKittedSkeins = (TextView)v.findViewById(R.id.thread_quantity_needed);
         mKittedSkeins.setText(Integer.toString(mThread.getSkeinsNeeded()));
