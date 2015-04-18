@@ -117,6 +117,8 @@
     <string name="fabric_pattern_info">Used For</string>
     <string name="fabric_pattern_detail">Not associated with any patterns.</string>
     <string name="remove_finish">Undo Finish</string>
+    <string name="fabric_notes">Notes</string>
+    <string name="fabric_notes_hint">Miscellaneous notes.</string>
 
     <string name="fabric_list_title">Fabric</string>
     <string name="thread_list_title">Threads</string>

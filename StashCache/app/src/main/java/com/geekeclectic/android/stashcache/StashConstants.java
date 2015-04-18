@@ -44,6 +44,8 @@ public class StashConstants {
     public static final String DEFAULT_BORDER = "3.0";
     public static final String OVER_TWO_DEFAULT = "25";
 
+    public static final String IN_USE = "in use";
+
     public static final int TWO_BORDERS = 2;
 
     public static final int DISPLAY_LIST_ITEMS = 4;

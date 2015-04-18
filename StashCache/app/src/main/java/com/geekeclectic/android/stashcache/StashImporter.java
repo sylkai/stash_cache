@@ -238,7 +238,26 @@ public class StashImporter {
                 }
             }
 
-            createNewFabric(source, type, color, count, height, width, stash);
+            StashFabric fabric = createNewFabric(source, type, color, count, height, width, stash);
+
+            lastRead = reader.readLine();
+
+            if (!lastRead.equals(stashBlockDivider) && !lastRead.equals(stashTypeDivider)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(lastRead);
+                sb.append(System.getProperty("line.separator"));
+
+                while (!(lastRead = reader.readLine()).equals(stashBlockDivider) && !lastRead.equals(stashTypeDivider)) {
+                    sb.append(lastRead);
+                    sb.append(System.getProperty("line.separator"));
+                }
+
+                fabric.setNotes(sb.toString());
+            }
+
+            if (lastRead.equals(stashBlockDivider)) {
+                break;
+            }
         }
     }
 
@@ -305,11 +324,24 @@ public class StashImporter {
 
             // if the next line is not a *, the fabric is marked as in use
             lastRead = reader.readLine();
-            if (!lastRead.equals(patternBlockDivider)) {
+            if (lastRead.equals(StashConstants.IN_USE)) {
                 fabric.setUse(true);
 
                 // move forward one line to skip the first *
-                reader.readLine();
+                lastRead = reader.readLine();
+            }
+
+            if (!lastRead.equals(patternBlockDivider)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(lastRead);
+                sb.append(System.getProperty("line.separator"));
+
+                while (!(lastRead = reader.readLine()).equals(patternBlockDivider) && !lastRead.equals(patternTypeDivider)) {
+                    sb.append(lastRead);
+                    sb.append(System.getProperty("line.separator"));
+                }
+
+                fabric.setNotes(sb.toString());
             }
         }
 
@@ -380,6 +412,20 @@ public class StashImporter {
             stash.removeFabricFromStash(fabric.getId());
 
             lastRead = reader.readLine();
+
+            if (!lastRead.equals(patternBlockDivider)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(lastRead);
+                sb.append(System.getProperty("line.separator"));
+
+                while ((lastRead = reader.readLine()) != null && (!lastRead.equals(patternBlockDivider) && !lastRead.equals(patternTypeDivider) && !lastRead.equals("---"))) {
+                    sb.append(lastRead);
+                    sb.append(System.getProperty("line.separator"));
+                }
+
+                fabric.setNotes(sb.toString());
+            }
+
             if (lastRead == null || lastRead.equals("***") || lastRead.equals("---")) {
                 break;
             }

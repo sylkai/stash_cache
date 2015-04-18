@@ -102,6 +102,20 @@ public class StashFabricPagerActivity extends FragmentActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        StashFabric fabric = StashData.get(this).getFabric(mFabrics.get((mViewPager.getCurrentItem())));
+        MenuItem removeFinish = menu.findItem(R.id.menu_item_fabric_remove_finish);
+
+        if (fabric.isFinished()) {
+            removeFinish.setVisible(true);
+        } else {
+            removeFinish.setVisible(false);
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_fabric:

@@ -7,9 +7,7 @@ import android.preference.PreferenceManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.UUID;
 
 /*
@@ -28,11 +26,12 @@ public class StashFabric extends StashObject {
     private double mFabricHeight;
     private String mFabricColor;
     private String mFabricType;
+    private String mNotes;
     private StashPattern mFabricFor;
     private boolean mUsed;
     private boolean mComplete;
-    private Date mStartDate;
-    private Date mEndDate;
+    private Calendar mStartDate;
+    private Calendar mEndDate;
 
     private double mStitchWidth;
     private double mStitchHeight;
@@ -47,6 +46,7 @@ public class StashFabric extends StashObject {
     private static final String JSON_ID = "fabric id";
     private static final String JSON_USED = "in use";
     private static final String JSON_FINISHED = "is finished";
+    private static final String JSON_NOTES = "notes";
     private static final String JSON_START_DATE = "start date";
     private static final String JSON_END_DATE = "end date";
 
@@ -91,6 +91,10 @@ public class StashFabric extends StashObject {
         if (json.has(JSON_SOURCE)) {
             setSource(json.getString(JSON_SOURCE));
         }
+
+        if (json.has(JSON_NOTES)) {
+            mNotes = json.getString(JSON_NOTES);
+        }
     }
 
     public JSONObject toJSON() throws JSONException {
@@ -113,6 +117,10 @@ public class StashFabric extends StashObject {
 
         if (getSource() != null) {
             json.put(JSON_SOURCE, getSource());
+        }
+
+        if (mNotes != null) {
+            json.put(JSON_NOTES, mNotes);
         }
 
         return json;
@@ -193,6 +201,14 @@ public class StashFabric extends StashObject {
     public boolean isAssigned() {
         // if fabric has been assigned to a pattern, returns true
         return (mFabricFor != null);
+    }
+
+    public void setNotes(String notes) {
+        mNotes = notes;
+    }
+
+    public String getNotes() {
+        return mNotes;
     }
 
     public boolean inUse() {

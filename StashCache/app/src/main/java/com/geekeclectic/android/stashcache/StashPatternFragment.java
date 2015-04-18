@@ -677,7 +677,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         FabricAdapter adapter = (FabricAdapter)mFabricDisplay.getAdapter();
         adapter.notifyDataSetChanged();
         setListViewHeightBasedOnChildren(mFabricDisplay);
-        
+
         if (mFabric == null) {
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             double edgeBuffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));

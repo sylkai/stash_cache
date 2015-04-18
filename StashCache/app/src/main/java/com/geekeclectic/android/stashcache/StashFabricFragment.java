@@ -45,6 +45,7 @@ public class StashFabricFragment extends Fragment {
     private EditText mFabricHeight;
     private ListView mPatternDisplay;
     private TextView mPatternInfo;
+    private EditText mNotes;
 
     private int callingTab;
 
@@ -255,6 +256,22 @@ public class StashFabricFragment extends Fragment {
         });
 
         setListViewHeightBasedOnChildren(mPatternDisplay);
+
+        mNotes = (EditText)v.findViewById(R.id.fabric_notes);
+        mNotes.setText(mFabric.getNotes());
+        mNotes.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence c, int start, int before, int count) {
+                mFabric.setNotes(c.toString());
+            }
+
+            public void beforeTextChanged(CharSequence c, int start, int count, int after) {
+                // intentionally left blank
+            }
+
+            public void afterTextChanged(Editable c) {
+                // intentionally left blank
+            }
+        });
 
         return v;
     }

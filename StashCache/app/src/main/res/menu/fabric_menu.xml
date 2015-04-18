@@ -7,6 +7,7 @@
         android:showAsAction="ifRoom|withText" />
 
     <item android:id="@+id/menu_item_fabric_remove_finish"
-        android:title="@string/remove_finish" />
+        android:title="@string/remove_finish"
+        android:visible="false" />
 
 </menu>

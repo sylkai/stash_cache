@@ -127,6 +127,23 @@
             android:visibility="gone"
             android:text="@string/fabric_pattern_detail" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fabric_notes"
+            android:layout_marginBottom="4dp"
+            style="?android:listSeparatorTextViewStyle" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:background="@null"
+            android:padding="4dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:hint="@string/fabric_notes_hint"
+            android:id="@+id/fabric_notes" />
+
     </LinearLayout>
 
 </ScrollView>

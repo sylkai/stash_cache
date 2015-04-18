@@ -360,6 +360,11 @@ public class StashExporter {
                 sb.append(newline);
                 sb.append(fabric.getHeight());
                 sb.append(newline);
+
+                if (fabric.getNotes() != null) {
+                    sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline));
+                    sb.append(newline);
+                }
             }
         }
 
@@ -393,6 +398,11 @@ public class StashExporter {
             sb.append(newline);
             sb.append(fabric.getHeight());
             sb.append(newline);
+
+            if (fabric.getNotes() != null) {
+                sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline));
+                sb.append(newline);
+            }
         }
 
         return sb.toString();
@@ -614,7 +624,12 @@ public class StashExporter {
                     sb.append(newline);
 
                     if (fabric.inUse()) {
-                        sb.append("in use");
+                        sb.append(StashConstants.IN_USE);
+                        sb.append(newline);
+                    }
+
+                    if (fabric.getNotes() != null) {
+                        sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline));
                         sb.append(newline);
                     }
                 }
