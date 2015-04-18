@@ -414,7 +414,7 @@ public class StashExporter {
             }
 
             if (fabric.getNotes() != null && !fabric.getNotes().equals("")) {
-                sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline).trim());
+                sb.append(cleanUpNotes(fabric.getNotes()));
                 sb.append(newline);
             }
         }
@@ -713,6 +713,14 @@ public class StashExporter {
         sb.append(embellishmentListString(pattern.getEmbellishmentList(), patternItems, stash, context, pattern));
 
         return sb.toString();
+    }
+
+    private String cleanUpNotes(String notes) {
+        notes = notes.replace(System.getProperty("line.separator"), newline);
+        notes = notes.replace("*", " * ");
+        notes = notes.replace("-", " - ");
+
+        return notes;
     }
 
 }
