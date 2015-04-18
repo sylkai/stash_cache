@@ -362,7 +362,7 @@ public class StashExporter {
                 sb.append(newline);
 
                 if (fabric.getNotes() != null) {
-                    sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline));
+                    sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline).trim());
                     sb.append(newline);
                 }
             }
@@ -399,8 +399,22 @@ public class StashExporter {
             sb.append(fabric.getHeight());
             sb.append(newline);
 
-            if (fabric.getNotes() != null) {
-                sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline));
+            if (fabric.getStartDate() != null) {
+                sb.append(ISO8601.fromCalendar(fabric.getStartDate()));
+                sb.append(newline);
+            } else {
+                sb.append(newline);
+            }
+
+            if (fabric.getEndDate() != null) {
+                sb.append(ISO8601.fromCalendar(fabric.getEndDate()));
+                sb.append(newline);
+            } else {
+                sb.append(newline);
+            }
+
+            if (fabric.getNotes() != null && !fabric.getNotes().equals("")) {
+                sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline).trim());
                 sb.append(newline);
             }
         }
@@ -626,10 +640,17 @@ public class StashExporter {
                     if (fabric.inUse()) {
                         sb.append(StashConstants.IN_USE);
                         sb.append(newline);
+
+                        if (fabric.getStartDate() != null) {
+                            sb.append(ISO8601.fromCalendar(fabric.getStartDate()));
+                            sb.append(newline);
+                        } else {
+                            sb.append(newline);
+                        }
                     }
 
                     if (fabric.getNotes() != null) {
-                        sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline));
+                        sb.append(fabric.getNotes().replace(System.getProperty("line.separator"), newline).trim());
                         sb.append(newline);
                     }
                 }

@@ -135,9 +135,13 @@ public class StashFabricPagerActivity extends FragmentActivity {
                 removeFinish.setComplete(false);
                 pattern.removeFinish(removeFinish);
 
-                if (pattern.getFabric() == null) {
-                    pattern.setFabric(removeFinish);
+                // remove current fabric if one exists and clear its inUse flag
+                if (pattern.getFabric() != null) {
+                    pattern.getFabric().setUse(false);
+                    pattern.getFabric().setUsedFor(null);
                 }
+
+                pattern.setFabric(removeFinish);
 
                 StashData.get(this).addFabricToStash(removeFinish.getId());
                 updateFragments();

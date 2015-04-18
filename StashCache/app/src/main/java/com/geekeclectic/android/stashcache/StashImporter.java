@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -71,6 +72,8 @@ public class StashImporter {
 
         } catch (FileNotFoundException e) {
             // ignore because it happens when program is opened for the first time
+        } catch (ParseException e) {
+            // only happens if the user screws something up
         } finally {
             if (reader != null) {
                 reader.close();
@@ -142,7 +145,7 @@ public class StashImporter {
         return pattern;
     }
 
-    private void readPatterns(BufferedReader reader, StashData stash, boolean inStash) throws IOException {
+    private void readPatterns(BufferedReader reader, StashData stash, boolean inStash) throws IOException, ParseException {
         while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
 
             StashPattern pattern = readPatternInfo(reader, stash);
@@ -261,7 +264,7 @@ public class StashImporter {
         }
     }
 
-    private boolean readPatternFabric(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException {
+    private boolean readPatternFabric(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException, ParseException {
         // if fabric is entered, create a new fabric
         if (!(lastRead = reader.readLine()).equals(patternBlockDivider)) {
             String source = lastRead;
@@ -327,6 +330,11 @@ public class StashImporter {
             if (lastRead.equals(StashConstants.IN_USE)) {
                 fabric.setUse(true);
 
+                lastRead = reader.readLine();
+                if (!lastRead.equals("")) {
+                    fabric.setStartDate(ISO8601.toCalendar(lastRead));
+                }
+
                 // move forward one line to skip the first *
                 lastRead = reader.readLine();
             }
@@ -348,7 +356,7 @@ public class StashImporter {
         return true;
     }
 
-    private void readFinishes(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException {
+    private void readFinishes(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException, ParseException {
 
         while (!lastRead.equals(stashTypeDivider) && (lastRead = reader.readLine()) != null) {
             String source = lastRead;
@@ -412,8 +420,18 @@ public class StashImporter {
             stash.removeFabricFromStash(fabric.getId());
 
             lastRead = reader.readLine();
+            if (!lastRead.equals("")) {
+                fabric.setStartDate(ISO8601.toCalendar(lastRead));
+            }
 
-            if (!lastRead.equals(patternBlockDivider)) {
+            lastRead = reader.readLine();
+            if (!lastRead.equals("")) {
+                fabric.setEndDate(ISO8601.toCalendar(lastRead));
+            }
+
+            lastRead = reader.readLine();
+
+            if (!lastRead.equals(patternBlockDivider) && !lastRead.equals(stashTypeDivider)) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(lastRead);
                 sb.append(System.getProperty("line.separator"));
