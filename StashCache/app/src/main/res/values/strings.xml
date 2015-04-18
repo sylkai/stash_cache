@@ -78,6 +78,9 @@
     <string name="oops">Oops, I didn\'t finish yet!</string>
     <string name="finish_list">Finishes</string>
 
+    <string name="start_date_info">Started</string>
+    <string name="finish_date_info">Finished</string>
+
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>
     <string name="thread_type_hint">Floss Type</string>

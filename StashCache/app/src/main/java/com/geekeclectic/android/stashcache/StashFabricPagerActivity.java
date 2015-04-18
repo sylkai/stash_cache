@@ -11,8 +11,11 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
 /**
@@ -43,17 +46,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
         // set fragment manager to display fragments
         FragmentManager fm = getSupportFragmentManager();
-        mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
-            @Override
-            public int getCount() {
-                return mFabrics.size();
-            }
-
-            @Override
-            public Fragment getItem(int pos) {
-                return StashFabricFragment.newInstance(mFabrics.get(pos), callingTab);
-            }
-        });
+        mViewPager.setAdapter(new ObservedAdapter(fm));
 
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             public void onPageScrollStateChanged(int arg0) {
@@ -147,6 +140,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
                 }
 
                 StashData.get(this).addFabricToStash(removeFinish.getId());
+                updateFragments();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -154,6 +148,52 @@ public class StashFabricPagerActivity extends FragmentActivity {
 
     private void getFabricList() {
         mFabrics = StashData.get(this).getFabricList();
+    }
+
+    public void updateFragments() {
+        ((ObservedAdapter)mViewPager.getAdapter()).updateFragments();
+    }
+
+    private class ObservedAdapter extends FragmentStatePagerAdapter {
+        private Observable mObservers = new FragmentObserver();
+
+        public ObservedAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public int getCount() {
+            return mFabrics.size();
+        }
+
+        @Override
+        public Fragment getItem(int pos) {
+            // get pattern for the fragment and create fragment
+            UUID fabricId = mFabrics.get(pos);
+            Fragment fragment = StashFabricFragment.newInstance(fabricId, callingTab);
+
+            // add fragment to the list of observers
+            if (fragment instanceof Observer) {
+                mObservers.addObserver((Observer) fragment);
+            }
+
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            // if fragment is being removed from memory, remove it from list of observers
+            if (object instanceof Observer) {
+                mObservers.deleteObserver((Observer) object);
+            }
+
+            super.destroyItem(container, position, object);
+        }
+
+        public void updateFragments() {
+            // tell the observers to trigger their refresh
+            mObservers.notifyObservers();
+        }
     }
 
 }

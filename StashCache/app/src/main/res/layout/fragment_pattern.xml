@@ -186,6 +186,60 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:id="@+id/pattern_start_group"
+            android:visibility="gone"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/ic_menu_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pattern_start_date_edit"
+                android:clickable="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/start_date_info"
+                android:layout_marginBottom="4dp"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                android:id="@+id/pattern_start"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_centerInParent="true" />
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_centerInParent="true"
+                android:layout_toLeftOf="@id/pattern_start_date_edit"
+                android:layout_toStartOf="@id/pattern_start_date_edit"
+                android:layout_toRightOf="@id/pattern_start"
+                android:layout_toEndOf="@id/pattern_start">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:text="to be replaced"
+                    android:id="@+id/pattern_start_date"
+                    android:textAllCaps="true"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center" />
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView

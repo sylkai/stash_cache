@@ -84,6 +84,9 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
     private ListView mFinishList;
     private TextView mFinishTitle;
     private StashCreateShoppingList mShoppingList;
+    private View mStartDateGroup;
+    private ImageView mEditStartDate;
+    private TextView mStartDate;
 
     private ChangedFragmentListener mCallback;
     private int callingTab;
@@ -312,6 +315,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             public void onClick(View v) {
                 boolean checked = ((CheckBox) v).isChecked();
                 mFabric.setUse(checked);
+                updateFabricInfo();
             }
         });
 
@@ -392,6 +396,17 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
                 startActivity(intent);
             }
         });
+
+        mStartDateGroup = v.findViewById(R.id.pattern_start_group);
+
+        mEditStartDate = (ImageView)v.findViewById(R.id.pattern_start_date_edit);
+        mEditStartDate.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+
+            }
+        });
+
+        mStartDate = (TextView)v.findViewById(R.id.pattern_start_date);
 
         updateFabricInfo();
 
@@ -695,6 +710,14 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
             mFabricInfo.setText(String.format(getString(R.string.pattern_no_fabric), defaultCount, overCount, edgeBuffer, fabricWidth, fabricHeight));
             mInProgress.setChecked(false);
+
+            mStartDateGroup.setVisibility(View.GONE);
+        } else {
+            if (mFabric.inUse()) {
+                mStartDateGroup.setVisibility(View.VISIBLE);
+            } else {
+                mStartDateGroup.setVisibility(View.GONE);
+            }
         }
     }
 

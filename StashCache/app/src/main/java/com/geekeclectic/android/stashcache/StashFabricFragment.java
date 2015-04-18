@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,18 +18,21 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
 /**
  * Fragment to display information for a fabric in the stash and allow the user to edit it.
  */
 
-public class StashFabricFragment extends Fragment {
+public class StashFabricFragment extends Fragment implements Observer {
 
     public static final String EXTRA_FABRIC_ID = "com.geekeclectic.android.stashcache.fabric_id";
     public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.fabric_calling_stash_id";
@@ -45,6 +49,12 @@ public class StashFabricFragment extends Fragment {
     private EditText mFabricHeight;
     private ListView mPatternDisplay;
     private TextView mPatternInfo;
+    private View mStartDateGroup;
+    private ImageView mEditStartDate;
+    private TextView mStartDate;
+    private View mFinishDateGroup;
+    private ImageView mEditFinishDate;
+    private TextView mFinishDate;
     private EditText mNotes;
 
     private int callingTab;
@@ -257,6 +267,26 @@ public class StashFabricFragment extends Fragment {
 
         setListViewHeightBasedOnChildren(mPatternDisplay);
 
+        mStartDateGroup = v.findViewById(R.id.fabric_start_group);
+        mEditStartDate = (ImageView)v.findViewById(R.id.fabric_start_date_edit);
+        mEditStartDate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+            }
+        });
+        mStartDate = (TextView)v.findViewById(R.id.fabric_start_date);
+
+        mFinishDateGroup = v.findViewById(R.id.fabric_finish_group);
+        mEditFinishDate = (ImageView)v.findViewById(R.id.fabric_finish_date_edit);
+        mEditFinishDate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+            }
+        });
+        mFinishDate = (TextView)v.findViewById(R.id.fabric_finish_date);
+
+        updateDateInfo();
+
         mNotes = (EditText)v.findViewById(R.id.fabric_notes);
         mNotes.setText(mFabric.getNotes());
         mNotes.addTextChangedListener(new TextWatcher() {
@@ -306,6 +336,24 @@ public class StashFabricFragment extends Fragment {
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        updateDateInfo();
+    }
+
+    private void updateDateInfo() {
+        if (mFabric.isFinished()) {
+            mStartDateGroup.setVisibility(View.VISIBLE);
+            mFinishDateGroup.setVisibility(View.VISIBLE);
+        } else if (mFabric.inUse()) {
+            mStartDateGroup.setVisibility(View.VISIBLE);
+            mFinishDateGroup.setVisibility(View.GONE);
+        } else {
+            mStartDateGroup.setVisibility(View.GONE);
+            mFinishDateGroup.setVisibility(View.GONE);
+        }
     }
 
     private class PatternAdapter extends ArrayAdapter<StashPattern> {
