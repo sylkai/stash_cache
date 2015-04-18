@@ -16,6 +16,8 @@ import android.support.v4.app.DialogFragment;
 public class PickOneDialogFragment extends DialogFragment implements OnClickListener {
 
     static final String TAG = "PickOneDialog";
+    public static final String EXTRA_RESOURCE = "com.geekeclectic.android.stashcache.pick_one_res";
+    public static final String EXTRA_SELECTED = "com.geekeclectic.android.stashcache.selected";
 
     private static int mSelectedIndex;
     private static int mResourceArray;
@@ -26,9 +28,10 @@ public class PickOneDialogFragment extends DialogFragment implements OnClickList
     }
 
     public static PickOneDialogFragment newInstance(int res, int selected) {
+        Bundle args = new Bundle();
         final PickOneDialogFragment dialog = new PickOneDialogFragment();
-        mResourceArray = res;
-        mSelectedIndex = selected;
+        args.putInt(EXTRA_RESOURCE, res);
+        args.putInt(EXTRA_SELECTED, selected);
 
         return dialog;
     }
@@ -39,6 +42,9 @@ public class PickOneDialogFragment extends DialogFragment implements OnClickList
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mResourceArray = getArguments().getInt(EXTRA_RESOURCE);
+        mSelectedIndex = getArguments().getInt(EXTRA_SELECTED);
+
         final Builder builder = new Builder(this.getActivity());
 
         builder.setSingleChoiceItems(mResourceArray, mSelectedIndex, this);

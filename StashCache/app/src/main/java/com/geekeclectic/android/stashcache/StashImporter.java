@@ -255,6 +255,7 @@ public class StashImporter {
                     sb.append(System.getProperty("line.separator"));
                 }
 
+                // cut off the last line separator
                 sb.setLength(sb.length() - 1);
                 fabric.setNotes(sb.toString().replace(" * ", "*").replace(" - ", "-"));
             }
@@ -350,6 +351,7 @@ public class StashImporter {
                     sb.append(System.getProperty("line.separator"));
                 }
 
+                // cut off the last line separator
                 sb.setLength(sb.length() - 1);
                 fabric.setNotes(sb.toString().replace(" * ", "*").replace(" - ", "-"));
             }
@@ -443,6 +445,7 @@ public class StashImporter {
                     sb.append(System.getProperty("line.separator"));
                 }
 
+                // cut off the last line separator
                 sb.setLength(sb.length() - 1);
                 fabric.setNotes(sb.toString().replace(" * ", "*").replace(" - ", "-"));
             }

@@ -46,7 +46,7 @@ import java.util.UUID;
  * display of the fragment in case the underlying information for the Pattern has been updated.
  */
 
-public class StashPatternFragment extends Fragment implements PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, Observer, SelectThreadQuantityDialogFragment.SelectThreadQuantityDialogListener, SelectEmbellishmentQuantityDialogFragment.SelectEmbellishmentQuantityDialogListener {
+public class StashPatternFragment extends Fragment implements DatePickerDialogFragment.DatePickerDialogListener, PickOneDialogFragment.OnDialogPickOneListener, SelectFabricDialogFragment.SelectFabricDialogListener, Observer, SelectThreadQuantityDialogFragment.SelectThreadQuantityDialogListener, SelectEmbellishmentQuantityDialogFragment.SelectEmbellishmentQuantityDialogListener {
 
     public static final String EXTRA_PATTERN_ID = "com.geekeclectic.android.stashcache.pattern_id";
     public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.calling_stash_id";
@@ -58,6 +58,7 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
 
     private static final String DIALOG_FABRIC = "fabric";
     private static final String DIALOG_THREAD = "thread";
+    private static final String DIALOG_DATE = "date";
     private static final int VIEW_ID = StashConstants.PATTERN_VIEW;
 
     private StashPattern mPattern;
@@ -410,7 +411,18 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mEditStartDate = (ImageView)v.findViewById(R.id.pattern_start_date_edit);
         mEditStartDate.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                Calendar calendar;
 
+                if (mFabric.getStartDate() != null) {
+                    calendar = mFabric.getStartDate();
+                } else {
+                    calendar = Calendar.getInstance();
+                }
+
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.newInstance(calendar);
+                dialog.setDatePickerDialogListener(mFragment);
+                dialog.show(fm, DIALOG_DATE);
             }
         });
 
@@ -653,6 +665,11 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         ((EmbellishmentAdapter) mEmbellishmentDisplayList.getAdapter()).notifyDataSetChanged();
     }
 
+    public void onDateSet(Calendar calendar) {
+        mFabric.setStartDate(calendar);
+        updateFabricInfo();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
@@ -672,6 +689,8 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
         mFabric = mPattern.getFabric();
         if (mFabric == null) {
             mCurrentFabric.clear();
+        } else if (mCurrentFabric.isEmpty()) {
+            mCurrentFabric.add(mFabric.getId());
         } else if (mFabric.getId() != mCurrentFabric.get(0)) {
             mCurrentFabric.clear();
             mCurrentFabric.add(mFabric.getId());

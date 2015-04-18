@@ -50,6 +50,8 @@
     <string name="edit_embellishment_stash">Edit Quantities</string>
     <string name="embellishment_stashQuantity">Edit embellishments in stash</string>
 
+    <string name="date_picker_title">Select the date:</string>
+
     <string name="export_pattern">Export Pattern</string>
     <string name="pattern_info">Pattern Info</string>
     <string name="pattern_name_hint">Pattern Name</string>

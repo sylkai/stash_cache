@@ -34,14 +34,16 @@ import java.util.UUID;
  * Fragment to display information for a fabric in the stash and allow the user to edit it.
  */
 
-public class StashFabricFragment extends Fragment implements Observer {
+public class StashFabricFragment extends Fragment implements DatePickerDialogFragment.DatePickerDialogListener, Observer {
 
     public static final String EXTRA_FABRIC_ID = "com.geekeclectic.android.stashcache.fabric_id";
     public static final String EXTRA_TAB_ID = "com.geekeclectic.android.stashcache.fabric_calling_stash_id";
 
     private static final int VIEW_ID = StashConstants.FABRIC_VIEW;
+    private static final String DIALOG_DATE = "date";
 
     private StashFabric mFabric;
+    private StashFabricFragment mFragment;
     private ArrayList<StashPattern> mPattern;
     private EditText mFabricSource;
     private EditText mFabricType;
@@ -58,6 +60,7 @@ public class StashFabricFragment extends Fragment implements Observer {
     private ImageView mEditFinishDate;
     private TextView mFinishDate;
     private EditText mNotes;
+    private boolean mSettingStartDate;
 
     private int callingTab;
 
@@ -79,6 +82,8 @@ public class StashFabricFragment extends Fragment implements Observer {
         if (mFabric.usedFor() != null) {
             mPattern.add(mFabric.usedFor());
         }
+
+        mFragment = this;
     }
 
     public static StashFabricFragment newInstance(UUID patternId, int tab) {
@@ -273,7 +278,19 @@ public class StashFabricFragment extends Fragment implements Observer {
         mEditStartDate = (ImageView)v.findViewById(R.id.fabric_start_date_edit);
         mEditStartDate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                mSettingStartDate = true;
+                Calendar calendar;
 
+                if (mFabric.getStartDate() != null) {
+                    calendar = mFabric.getStartDate();
+                } else {
+                    calendar = Calendar.getInstance();
+                }
+
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.newInstance(calendar);
+                dialog.setDatePickerDialogListener(mFragment);
+                dialog.show(fm, DIALOG_DATE);
             }
         });
         mStartDate = (TextView)v.findViewById(R.id.fabric_start_date);
@@ -282,7 +299,19 @@ public class StashFabricFragment extends Fragment implements Observer {
         mEditFinishDate = (ImageView)v.findViewById(R.id.fabric_finish_date_edit);
         mEditFinishDate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                mSettingStartDate = false;
+                Calendar calendar;
 
+                if (mFabric.getEndDate() != null) {
+                    calendar = mFabric.getEndDate();
+                } else {
+                    calendar = Calendar.getInstance();
+                }
+
+                DatePickerDialogFragment dialog = DatePickerDialogFragment.newInstance(calendar);
+                dialog.setDatePickerDialogListener(mFragment);
+                dialog.show(fm, DIALOG_DATE);
             }
         });
         mFinishDate = (TextView)v.findViewById(R.id.fabric_finish_date);
@@ -306,6 +335,16 @@ public class StashFabricFragment extends Fragment implements Observer {
         });
 
         return v;
+    }
+
+    public void onDateSet(Calendar calendar) {
+        if (mSettingStartDate) {
+            mFabric.setStartDate(calendar);
+        } else {
+            mFabric.setEndDate(calendar);
+        }
+
+        updateDateInfo();
     }
 
     private void setListViewHeightBasedOnChildren(ListView listView) {
