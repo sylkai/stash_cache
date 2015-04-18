@@ -24,6 +24,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
@@ -347,9 +349,33 @@ public class StashFabricFragment extends Fragment implements Observer {
         if (mFabric.isFinished()) {
             mStartDateGroup.setVisibility(View.VISIBLE);
             mFinishDateGroup.setVisibility(View.VISIBLE);
+
+            Calendar startDate = mFabric.getStartDate();
+            if (startDate != null) {
+                String startDateText = startDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + " " + startDate.get(Calendar.DAY_OF_MONTH) + ", " + startDate.get(Calendar.YEAR);
+                mStartDate.setText(startDateText);
+            } else {
+                mStartDate.setText(R.string.no_date_set);
+            }
+
+            Calendar finishDate = mFabric.getEndDate();
+            if (finishDate != null) {
+                String finishDateText = finishDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + " " + finishDate.get(Calendar.DAY_OF_MONTH) + ", " + finishDate.get(Calendar.YEAR);
+                mFinishDate.setText(finishDateText);
+            } else {
+                mFinishDate.setText(R.string.no_date_set);
+            }
         } else if (mFabric.inUse()) {
             mStartDateGroup.setVisibility(View.VISIBLE);
             mFinishDateGroup.setVisibility(View.GONE);
+
+            Calendar useStartDate = mFabric.getStartDate();
+            if (useStartDate != null) {
+                String useStartDateText = useStartDate.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + " " + useStartDate.get(Calendar.DAY_OF_MONTH) + ", " + useStartDate.get(Calendar.YEAR);
+                mStartDate.setText(useStartDateText);
+            } else {
+                mStartDate.setText(R.string.no_date_set);
+            }
         } else {
             mStartDateGroup.setVisibility(View.GONE);
             mFinishDateGroup.setVisibility(View.GONE);

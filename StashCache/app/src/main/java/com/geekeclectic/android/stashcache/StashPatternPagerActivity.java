@@ -24,6 +24,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
@@ -235,6 +236,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
     private void markPatternAsComplete(StashPattern pattern, StashFabric fabric) {
         if (fabric != null) {
             fabric.setComplete(true);
+            fabric.setEndDate(Calendar.getInstance());
             StashData.get(this).removeFabricFromStash(fabric.getId());
         }
 

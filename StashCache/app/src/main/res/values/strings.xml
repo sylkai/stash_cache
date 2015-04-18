@@ -80,6 +80,7 @@
 
     <string name="start_date_info">Started</string>
     <string name="finish_date_info">Finished</string>
+    <string name="no_date_set">No Date Set</string>
 
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>

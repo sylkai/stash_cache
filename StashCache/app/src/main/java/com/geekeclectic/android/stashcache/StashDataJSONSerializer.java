@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -47,7 +48,7 @@ public class StashDataJSONSerializer {
 
     }
 
-    public void loadStash(StashData stashData) throws IOException, JSONException {
+    public void loadStash(StashData stashData) throws IOException, JSONException, ParseException {
         BufferedReader reader = null;
 
         try {
@@ -146,7 +147,7 @@ public class StashDataJSONSerializer {
         stashData.setThreadData(threadMap, threadList, stashThreadList);
     }
 
-    private void fillFabricData(JSONArray array, StashData stashData) throws JSONException {
+    private void fillFabricData(JSONArray array, StashData stashData) throws JSONException, ParseException {
         HashMap<UUID, StashFabric> fabricMap = new HashMap<UUID, StashFabric>();
         ArrayList<UUID> fabricList = new ArrayList<UUID>();
         ArrayList<UUID> stashFabricList = new ArrayList<UUID>();

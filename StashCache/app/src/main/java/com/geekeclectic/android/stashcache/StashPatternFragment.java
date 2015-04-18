@@ -30,7 +30,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.UUID;
@@ -315,6 +317,12 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             public void onClick(View v) {
                 boolean checked = ((CheckBox) v).isChecked();
                 mFabric.setUse(checked);
+
+                // if the box has been set and there is no existing start date, create one
+                if (checked && mFabric.getStartDate() == null) {
+                    mFabric.setStartDate(Calendar.getInstance());
+                }
+
                 updateFabricInfo();
             }
         });
@@ -714,7 +722,15 @@ public class StashPatternFragment extends Fragment implements PickOneDialogFragm
             mStartDateGroup.setVisibility(View.GONE);
         } else {
             if (mFabric.inUse()) {
-                mStartDateGroup.setVisibility(View.VISIBLE);
+                if (mFabric.getStartDate() != null) {
+                    mStartDateGroup.setVisibility(View.VISIBLE);
+                    Calendar date = mFabric.getStartDate();
+
+                    String dateText = date.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + " " + date.get(Calendar.DAY_OF_MONTH) + ", " + date.get(Calendar.YEAR);
+                    mStartDate.setText(dateText);
+                } else {
+                    mStartDate.setText(R.string.no_date_set);
+                }
             } else {
                 mStartDateGroup.setVisibility(View.GONE);
             }

@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -60,7 +61,7 @@ public class StashFabric extends StashObject {
         mComplete = false;
     }
 
-    public StashFabric(JSONObject json, Context context) throws JSONException {
+    public StashFabric(JSONObject json, Context context) throws JSONException, ParseException {
         // load fabricId and necessary numbers
         mFabricCount = json.getInt(JSON_COUNT);
         setContext(context.getApplicationContext());
@@ -95,6 +96,14 @@ public class StashFabric extends StashObject {
         if (json.has(JSON_NOTES)) {
             mNotes = json.getString(JSON_NOTES);
         }
+
+        if (json.has(JSON_START_DATE)) {
+            mStartDate = ISO8601.toCalendar(json.getString(JSON_START_DATE));
+        }
+
+        if (json.has(JSON_END_DATE)) {
+            mEndDate = ISO8601.toCalendar(json.getString(JSON_END_DATE));
+        }
     }
 
     public JSONObject toJSON() throws JSONException {
@@ -121,6 +130,14 @@ public class StashFabric extends StashObject {
 
         if (mNotes != null) {
             json.put(JSON_NOTES, mNotes);
+        }
+
+        if (mStartDate != null) {
+            json.put(JSON_START_DATE, ISO8601.fromCalendar(mStartDate));
+        }
+
+        if (mEndDate != null) {
+            json.put(JSON_END_DATE, ISO8601.fromCalendar(mEndDate));
         }
 
         return json;
@@ -242,6 +259,22 @@ public class StashFabric extends StashObject {
 
         mStitchWidth = (mFabricWidth - edge_buffer * StashConstants.TWO_BORDERS) * mFabricCount / mOverCount;
         mStitchHeight = (mFabricHeight - edge_buffer * StashConstants.TWO_BORDERS) * mFabricCount / mOverCount;
+    }
+
+    public void setStartDate(Calendar date) {
+        mStartDate = date;
+    }
+
+    public Calendar getStartDate() {
+        return mStartDate;
+    }
+
+    public void setEndDate(Calendar date) {
+        mEndDate = date;
+    }
+
+    public Calendar getEndDate() {
+        return mEndDate;
     }
 
 }
