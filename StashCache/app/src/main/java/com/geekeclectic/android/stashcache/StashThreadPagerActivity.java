@@ -121,6 +121,16 @@ public class StashThreadPagerActivity extends FragmentActivity {
                 }
 
                 return true;
+            case R.id.menu_item_preferences:
+                Intent intent = new Intent(this, StashPreferencesActivity.class);
+                startActivity(intent);
+
+                return true;
+            case R.id.menu_item_help:
+                Intent helpIntent = new Intent(this, StashHelpActivity.class);
+                startActivity(helpIntent);
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

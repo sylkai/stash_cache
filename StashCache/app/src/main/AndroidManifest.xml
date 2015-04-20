@@ -62,6 +62,14 @@
                 android:value=".StashOverviewActivity" />
 
         </activity>
+        <activity
+            android:name=".StashHelpActivity"
+            android:label="@string/app_help"
+            android:windowSoftInputMode="stateHidden">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value=".StashOverviewActivity" />
+
+        </activity>
     </application>
 
 </manifest>

@@ -202,7 +202,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 chooseIntent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(chooseIntent, "select file"), REQUEST_CHOOSE_STASH);
 
-                return super.onOptionsItemSelected(item);
+                return true;
             case R.id.menu_item_export_stash:
                 StashExporter exporter = new StashExporter();
 
@@ -220,7 +220,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 } catch (IOException e) {
                     Toast.makeText(StashOverviewActivity.this, getString(R.string.export_error_stash), Toast.LENGTH_SHORT).show();
                 }
-                return super.onOptionsItemSelected(item);
+                return true;
             case R.id.menu_item_delete_stash:
                 // display a dialog box to confirm that the user absolutely wants to delete the stash
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -246,12 +246,16 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
                 builder.show();
 
-                return super.onOptionsItemSelected(item);
+                return true;
             case R.id.menu_item_preferences:
                 Intent intent = new Intent(this, StashPreferencesActivity.class);
                 startActivityForResult(intent, REQUEST_PREFERENCES_UPDATE);
 
-                return super.onOptionsItemSelected(item);
+                return true;
+            case R.id.menu_item_help:
+                Intent helpIntent = new Intent(this, StashHelpActivity.class);
+                startActivity(helpIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

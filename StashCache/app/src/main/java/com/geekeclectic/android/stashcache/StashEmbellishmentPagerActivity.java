@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -116,6 +117,16 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
                         break;
                     }
                 }
+
+                return true;
+            case R.id.menu_item_preferences:
+                Intent intent = new Intent(this, StashPreferencesActivity.class);
+                startActivity(intent);
+
+                return true;
+            case R.id.menu_item_help:
+                Intent helpIntent = new Intent(this, StashHelpActivity.class);
+                startActivity(helpIntent);
 
                 return true;
             default:

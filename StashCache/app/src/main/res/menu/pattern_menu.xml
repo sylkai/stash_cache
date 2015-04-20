@@ -21,6 +21,12 @@
             android:icon="@drawable/ic_menu_upload"
             android:title="@string/export_pattern" />
 
+        <item android:id="@+id/menu_item_preferences"
+            android:title="@string/preferences" />
+
+        <item android:id="@+id/menu_item_help"
+            android:title="@string/help" />
+
     </group>
 
 </menu>

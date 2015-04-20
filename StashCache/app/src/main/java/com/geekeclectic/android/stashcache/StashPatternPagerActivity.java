@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,6 +41,8 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
 
     private ViewPager mViewPager;
     private ArrayList<StashPattern> mPatterns;
+
+    private int REQUEST_PREFERENCES_UPDATE = 1;
 
     private int callingTab;
 
@@ -222,7 +225,16 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 } catch (IOException e) {
                     Toast.makeText(StashPatternPagerActivity.this, getString(R.string.export_error_pattern), Toast.LENGTH_SHORT).show();
                 }
-                return super.onOptionsItemSelected(item);
+                return true;
+            case R.id.menu_item_preferences:
+                Intent intent = new Intent(this, StashPreferencesActivity.class);
+                startActivityForResult(intent, REQUEST_PREFERENCES_UPDATE);
+
+                return true;
+            case R.id.menu_item_help:
+                Intent helpIntent = new Intent(this, StashHelpActivity.class);
+                startActivity(helpIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -231,6 +243,17 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
     private void setPatternList() {
         mPatterns = StashData.get(this).getPatternData();
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_PREFERENCES_UPDATE) {
+            updateFragments();
+        }
+
+        // required to have the activity call this method on the current fragments as well (see http://stackoverflow.com/a/6147919
+        // for reference)
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void markPatternAsComplete(StashPattern pattern, StashFabric fabric) {

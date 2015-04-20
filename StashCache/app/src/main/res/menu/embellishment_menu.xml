@@ -6,4 +6,10 @@
         android:title="@string/new_embellishment"
         android:showAsAction="ifRoom|withText" />
 
+    <item android:id="@+id/menu_item_preferences"
+        android:title="@string/preferences" />
+
+    <item android:id="@+id/menu_item_help"
+        android:title="@string/help" />
+
 </menu>

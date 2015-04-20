@@ -149,6 +149,19 @@
     <string name="skeins_setting">Patterns use full skeins</string>
     <string name="skeins_setting_summary">Assume that patterns use the full skein of thread</string>
 
+    <string name="app_help">StashCache Help</string>
+    <string name="help">Help</string>
+    <string name="help_welcome">Thanks for using StashCache!</string>
+    <string name="help_intro"><![CDATA[Tutorials, FAQs, and more are available on <a href="http://www.geekeclectic.com/stashcache/">our website</a>, but here is a quick overview of some key functions.]]></string>
+    <string name="help_add">To add an item to the app, look for this icon in the menu bar. Item type depends on the active view.</string>
+    <string name="help_edit">To edit a list - either quantities in the stash or what a pattern needs - press this icon.</string>
+    <string name="help_delete">To delete an item from the app, press and hold until this icon appears in the top right. Select the items you want to delete and press the trash can.</string>
+    <string name="help_categories">There are three categories in the drop-down menu: your stash, your shopping list, and the master list.</string>
+    <string name="help_stash">The stash shows items you own. Patterns and fabrics are owned by default. Threads and embellishments must have a quantity.</string>
+    <string name="help_shopping">The shopping list shows what you need to purchase to finish kitting a marked pattern, plus any additional items you have marked for purchase.</string>
+    <string name="help_master">The master list shows all the items the app has information on, whether or not they are in your stash. This includes fabric for completed projects.</string>
+
+
     <string-array name="fabric_choice_picker">
         <item>Choose existing fabric</item>
         <item>Enter new fabric</item>
