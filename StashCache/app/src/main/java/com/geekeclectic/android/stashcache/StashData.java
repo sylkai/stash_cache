@@ -191,6 +191,12 @@ public class StashData {
             embellishment.removePattern(pattern);
         }
 
+        ArrayList<UUID> completedProjects = pattern.getFinishes();
+        for (UUID finishId : completedProjects) {
+            StashFabric fabric = getFabric(finishId);
+            deleteFabric(fabric);
+        }
+
         // removes the pattern from the database
         mPatternsData.remove(pattern);
         mStashPatterns.remove(pattern);
