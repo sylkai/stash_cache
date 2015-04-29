@@ -1,7 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 /**
- * Created by sylk on 3/25/2015.
+ * Constants file - need to keep those magic numbers to a minimum!
  */
 public class StashConstants {
 

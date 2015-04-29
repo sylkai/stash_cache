@@ -31,8 +31,8 @@ import java.util.UUID;
  * each class; this deals with the overall stash.
  *
  * Pattern data must be read in last in order to create links between Pattern and Fabric (if any)
- * and Pattern and Threads (if any).  Relies on having access to threadMap and fabricMap to build
- * connections.
+ * and Pattern and Threads/Embellishments (if any).  Relies on having access to threadMap and
+ * fabricMap to build connections.
  */
 public class StashDataJSONSerializer {
 

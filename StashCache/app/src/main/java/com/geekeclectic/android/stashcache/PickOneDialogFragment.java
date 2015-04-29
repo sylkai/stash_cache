@@ -32,6 +32,7 @@ public class PickOneDialogFragment extends DialogFragment implements OnClickList
         final PickOneDialogFragment dialog = new PickOneDialogFragment();
         args.putInt(EXTRA_RESOURCE, res);
         args.putInt(EXTRA_SELECTED, selected);
+        dialog.setArguments(args);
 
         return dialog;
     }
