@@ -15,7 +15,7 @@
     <string name="delete_stash_additional">You\'ll lose all your information!</string>
     <string name="delete_stash_ok">Erase</string>
     <string name="delete_stash_back">Cancel</string>
-    <string name="send_file_to">Choose where to put the exported file:</string>
+    <string name="send_file_to">Export file to:</string>
     <string name="add_new">Add New</string>
 
     <string name="export_error_stash">There was an error writing the stash file.</string>
