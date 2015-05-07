@@ -21,6 +21,7 @@ import java.util.UUID;
 /**
  * Host activity for a viewpager to display StashFabric fragments to the user, in order to allow
  * swiping between fragments on the list.  Uses a FragmentStatePagerAdapter to reduce memory load.
+ * Always pulls from the master list to avoid issues with changes to what is in stash while paging.
  */
 
 public class StashFabricPagerActivity extends FragmentActivity {
@@ -94,6 +95,8 @@ public class StashFabricPagerActivity extends FragmentActivity {
         return true;
     }
 
+    // keep in mind need to tweak the menu item visibility so "remove finish" only shows for fabric
+    // associated with a finished piece
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         StashFabric fabric = StashData.get(this).getFabric(mFabrics.get((mViewPager.getCurrentItem())));
@@ -193,6 +196,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
             return fragment;
         }
 
+        // don't forget to remove the observer from the list when destroying the fragment
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             // if fragment is being removed from memory, remove it from list of observers

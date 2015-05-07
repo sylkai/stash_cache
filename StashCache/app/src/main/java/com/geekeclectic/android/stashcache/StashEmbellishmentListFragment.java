@@ -140,6 +140,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
+        // to make Java happy
         try {
             mCallback = (UpdateListFragmentsListener) activity;
         } catch (ClassCastException e) {
@@ -147,6 +148,8 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         }
     }
 
+    // called after the view is created to set the empty message (since otherwise it could be called
+    // before the list object was created)
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -236,6 +239,8 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         startActivity(i);
     }
 
+    // update the list (in the case of things like changes to the stash list) and create and set
+    // a new adapter (because otherwise it wasn't updating despite datasetchanged)
     public void onEmbellishmentQuantitiesUpdate() {
         mEmbellishments = getListFromStash();
         Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));

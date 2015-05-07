@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -37,7 +36,6 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
     private ArrayList<UUID> mFabrics;
     private UpdateListFragmentsListener mCallback;
 
-    private static final String TAG = "FabricListFragment";
     private static final int FABRIC_GROUP_ID = R.id.fabric_context_menu;
     private static final String FABRIC_VIEW_ID = "com.geekeclectic.android.stashcache.fabric_view_id";
 
@@ -152,6 +150,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         }
     }
 
+    // called after the view is created to set the empty list message because otherwise errors
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -219,7 +218,6 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashFabric from the adapter
         UUID fabricId = ((FabricAdapter)getListAdapter()).getItem(position);
-        Log.d(TAG, fabricId.toString() + " was selected.");
 
         // start StashFabricPagerActivity
         Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);

@@ -19,6 +19,8 @@ import java.util.UUID;
 /**
  * Host activity for a viewpager to display StashThread fragments to the user, in order to allow
  * swiping between fragments on the list.  Uses a FragmentStatePagerAdapter to reduce memory load.
+ * Only displays the master thread list to avoid issues with adding/subtracting items from stash/
+ * shopping list during display.
  */
 public class StashThreadPagerActivity extends FragmentActivity {
 

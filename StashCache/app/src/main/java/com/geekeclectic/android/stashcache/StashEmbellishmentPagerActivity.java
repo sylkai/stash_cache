@@ -18,6 +18,8 @@ import java.util.UUID;
 /**
  * Host activity for a viewpager to display StashEmbellishment fragments to the user, in order to allow
  * swiping between fragments on the list.  Uses a FragmentStatePagerAdapter to reduce memory load.
+ * The base list is the master list, regardless of calling tab, because of issues with handling
+ * addition/subtraction to the stash/shopping lists while sorting.
  */
 public class StashEmbellishmentPagerActivity extends FragmentActivity {
 

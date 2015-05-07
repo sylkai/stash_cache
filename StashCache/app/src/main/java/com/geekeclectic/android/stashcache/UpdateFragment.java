@@ -10,7 +10,7 @@ import android.support.v4.app.Fragment;
 public abstract class UpdateFragment extends Fragment {
 
     public interface OnTabSwipeListener {
-        public void onTabSwipe(int tabSelected);
+        void onTabSwipe(int tabSelected);
     }
 
     public abstract void stashChanged();

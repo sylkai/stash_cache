@@ -152,6 +152,8 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
         mFabricType.setText(mFabric.getType());
         mFabricType.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!c.toString().equals(mFabric.getType())) {
                     mFabric.setType(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();
@@ -172,6 +174,8 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
         mFabricColor.setText(mFabric.getColor());
         mFabricColor.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!c.toString().equals(mFabric.getColor())) {
                     mFabric.setColor(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();
@@ -192,6 +196,8 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
         mFabricCount.setText(Integer.toString(mFabric.getCount()));
         mFabricCount.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!Integer.toString(mFabric.getCount()).equals(c.toString())) {
                     if (c.length() > 0) {
                         mFabric.setCount(Integer.parseInt(c.toString()));
@@ -279,9 +285,11 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
         mEditStartDate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
+                // boolean used to keep track of which view to update on the callback from the datepicker
                 mSettingStartDate = true;
                 Calendar calendar;
 
+                // if there is an existing calendar, pull it; otherwise create a new calendar
                 if (mFabric.getStartDate() != null) {
                     calendar = mFabric.getStartDate();
                 } else {
@@ -300,6 +308,7 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
         mEditFinishDate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
+                // boolean used to keep track of which view to update on the callback from the datepicker
                 mSettingStartDate = false;
                 Calendar calendar;
 
@@ -338,6 +347,7 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
     }
 
     public void onDateSet(Calendar calendar) {
+        // depending on which date was edited, set the appropriate calendar
         if (mSettingStartDate) {
             mFabric.setStartDate(calendar);
         } else {
@@ -385,6 +395,7 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
     }
 
     private void updateDateInfo() {
+        // show both start and end date if fabric is finished
         if (mFabric.isFinished()) {
             mStartDateGroup.setVisibility(View.VISIBLE);
             mFinishDateGroup.setVisibility(View.VISIBLE);
@@ -404,6 +415,7 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
             } else {
                 mFinishDate.setText(R.string.no_date_set);
             }
+        // if fabric is in use, show the start date
         } else if (mFabric.inUse()) {
             mStartDateGroup.setVisibility(View.VISIBLE);
             mFinishDateGroup.setVisibility(View.GONE);
@@ -415,6 +427,7 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
             } else {
                 mStartDate.setText(R.string.no_date_set);
             }
+        // fabric is not in use and not finished, so show no dates
         } else {
             mStartDateGroup.setVisibility(View.GONE);
             mFinishDateGroup.setVisibility(View.GONE);

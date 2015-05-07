@@ -30,17 +30,21 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
 
     // to send selection back to the PatternFragment for linking
     public interface SelectFabricDialogListener {
-        public void onSelectedFabric(UUID fabricId);
+        void onSelectedFabric(UUID fabricId);
     }
 
     public static SelectFabricDialogFragment newInstance(ArrayList<UUID> fabrics, int currentFabric) {
         final SelectFabricDialogFragment dialog = new SelectFabricDialogFragment();
+
+        // list is sorted before creating the fragment and the index is correct for the sorted list
+        // so no need to resort
         mFabrics = fabrics;
         mSelectedIndex = currentFabric;
 
         return dialog;
     }
 
+    // set the calling fragment as listener (called after dialog is created)
     public void setSelectFabricDialogListener(SelectFabricDialogListener listener) {
         mSelectFabricDialogCallback = listener;
     }

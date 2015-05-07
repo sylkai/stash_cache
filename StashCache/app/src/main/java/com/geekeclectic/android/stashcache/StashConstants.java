@@ -40,11 +40,19 @@ public class StashConstants {
     public static final int USE_EXISTING_FABRIC = 0;
     public static final int REMOVE_FABRIC = 2;
 
+    // NOTE FOR DEFAULTS - ALSO NEED TO CHANGE THESE IN THE PREFERENCE FILES
     public static final String DEFAULT_COUNT = "32";
     public static final String DEFAULT_BORDER = "3.0";
     public static final String OVER_TWO_DEFAULT = "25";
 
     public static final String IN_USE = "in use";
+    public static final String TEXT_EXTENSION = ".txt";
+    public static final String BETWEEN_ITEMS = "---";
+    public static final String BETWEEN_CATEGORIES = "***";
+    public static final String PATTERN_ITEMS = "-";
+    public static final String PATTERN_CATEGORIES = "*";
+
+    public static final String KITTED = "kitted";
 
     public static final int TWO_BORDERS = 2;
 

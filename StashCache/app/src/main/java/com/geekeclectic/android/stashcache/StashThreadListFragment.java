@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -36,7 +35,6 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
     private int mViewCode;
     private UpdateListFragmentsListener mCallback;
 
-    private static final String TAG = "ThreadListFragment";
     private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
     private static final String THREAD_VIEW_ID = "com.geekeclectic.android.stashcache.thread_view_id";
     private static final String EDIT_STASH_DIALOG = "edit stash thread dialog";
@@ -137,6 +135,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         return v;
     }
 
+    // has to be done after view creation to avoid an NPE
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -231,7 +230,6 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashThread from adapter
         UUID threadId = ((ThreadAdapter)getListAdapter()).getItem(position);
-        Log.d(TAG, threadId.toString() + " was clicked.");
 
         // start StashThreadPagerActivity
         Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);

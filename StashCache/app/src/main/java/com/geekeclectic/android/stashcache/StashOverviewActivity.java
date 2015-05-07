@@ -48,6 +48,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     private int currentView;
     private Menu menuRef;
 
+    // create the fragment based on the current tab
     protected UpdateFragment createFragment(int currentTab) {
         if (currentTab == StashConstants.STASH_TAB) {
             return new StashOverviewPagerFragment();
@@ -72,6 +73,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
         String[] strings = getResources().getStringArray(R.array.drop_down_list);
 
+        // if created with a bundle that has info about the view and fragment, grab that info
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_VIEW_ID)) {
             currentView = savedInstanceState.getInt(KEY_VIEW_ID);
             currentTab = savedInstanceState.getInt(KEY_FRAGMENT_ID);
@@ -153,6 +155,9 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         shoppingList.updateShoppingList(this);
     }
 
+    // because of delay on updating the action bar menu items when calling from the fragments, all
+    // menu items for the fragments are set to display or not here (frustrating but necessary for
+    // response time)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -178,6 +183,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         StashData.get(this).saveStash();
     }
 
+    // update the shopping list onResume, just in case
     @Override
     public void onResume() {
         super.onResume();
@@ -261,6 +267,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         }
     }
 
+    // update the int for currentView when swiping tabs and update the menu items accordingly
     public void onTabSwipe(int selectedView) {
         currentView = selectedView;
         if (menuRef != null) {
@@ -268,11 +275,13 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         }
     }
 
+    // called to trigger updates on the list fragment
     public void onListFragmentUpdate() {
         UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         fragment.stashChanged();
     }
 
+    // the view numbers can change if changing to/from the shoppingList tab, so this adjust appropriately
     private void adjustViewsIfNeeded(int changeTabTo) {
         // current view is shopping list, so need to adjust to no fabric view by adding 1
         if (currentTab == StashConstants.SHOPPING_TAB) {
@@ -287,6 +296,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         }
     }
 
+    // sets the visible menu items based on the current tab and view
     private void setVisibleMenuItems() {
         if (menuRef.hasVisibleItems()) {
             menuRef.setGroupVisible(R.id.menu_add_edit, false);
@@ -351,6 +361,8 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            // create the overlay dialog and don't let the user cancel out of it
             dialog = TransparentProgressDialog.show(StashOverviewActivity.this);
             dialog.setCancelable(false);
         }

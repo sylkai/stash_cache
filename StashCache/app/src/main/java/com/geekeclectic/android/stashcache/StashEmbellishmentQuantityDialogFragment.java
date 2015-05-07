@@ -17,8 +17,9 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * This dialog fragment allows the user to set which embellishments (and how many) a pattern calls
- * for.  The list is populated by all embellishments in the master list.
+ * This dialog fragment allows the user to set which embellishments (and how many) are in the stash.
+ * The list is populated by all embellishments in the master list.  Changes are immediate, so there
+ * is no "cancel" button to alert the user to this.
  */
 public class StashEmbellishmentQuantityDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -26,8 +27,9 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
     private QuantityAdapter mAdapter;
     private StashEmbellishmentQuantityDialogListener mStashEmbellishmentQuantityDialogCallback;
 
+    // let the listener know that the update is complete to refresh the list display
     public interface StashEmbellishmentQuantityDialogListener {
-        public void onEmbellishmentQuantitiesUpdate();
+        void onEmbellishmentQuantitiesUpdate();
     }
 
     public static StashEmbellishmentQuantityDialogFragment newInstance(ArrayList<UUID> embellishments, Context context) {
@@ -40,6 +42,7 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
         return dialog;
     }
 
+    // called to set the calling fragment to as the listener, after dialog creation
     public void setStashEmbellishmentQuantityDialogCallback(StashEmbellishmentQuantityDialogListener listener) {
         mStashEmbellishmentQuantityDialogCallback = listener;
     }
@@ -77,7 +80,7 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
         StashData stash;
 
         public QuantityAdapter(ArrayList<UUID> threads) {
-            super(getActivity(), 0, threads);
+            super(getActivity(), StashConstants.NO_RESOURCE, threads);
             stash = StashData.get(getActivity());
         }
 

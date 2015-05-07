@@ -66,6 +66,8 @@ public class StashOverviewPagerFragment extends UpdateFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        // this is here to make Java happy
         try {
             mCallback = (OnTabSwipeListener) activity;
         } catch (ClassCastException e) {
@@ -85,6 +87,7 @@ public class StashOverviewPagerFragment extends UpdateFragment {
         }
     }
 
+    // allows host activity to set the active view
     @Override
     public void setCurrentView(int view) {
         currentView = view;
@@ -177,6 +180,7 @@ public class StashOverviewPagerFragment extends UpdateFragment {
             }
         }
 
+        // remove observer from the list on item destruction
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             Fragment fragment = (Fragment)object;

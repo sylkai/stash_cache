@@ -6,7 +6,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -63,6 +62,7 @@ public class StashData {
         mStashEmbellishmentList = new ArrayList<UUID>();
         mShoppingEmbellishmentList = new ArrayList<UUID>();
 
+        // need reference to ourselves to pass into the serializer
         sStash = this;
 
         // pass stash to JSON serializer to be filled in
@@ -72,7 +72,7 @@ public class StashData {
             Log.e(TAG, "error loading stash: ", e);
         }
 
-        // sort the lists, since reading them from the map means that the sorted order was not preserved
+        // sort the lists, in case something got messed up in the read-in (should be sorted)
         // by doing an initial sort, there is not a long delay when calling a list for the first time
         // after loading the data from JSON
         Collections.sort(mThreadsList, new StashThreadComparator(mAppContext));
@@ -169,7 +169,10 @@ public class StashData {
     public void addPattern(StashPattern pattern) {
         // adds a pattern to the database
         mPatternsData.add(pattern);
-        mStashPatterns.add(pattern);
+
+        if (pattern.inStash()) {
+            mStashPatterns.add(pattern);
+        }
     }
 
     public void deletePattern(StashPattern pattern) {

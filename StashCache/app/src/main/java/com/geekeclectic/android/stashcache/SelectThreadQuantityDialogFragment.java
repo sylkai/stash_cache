@@ -19,7 +19,8 @@ import java.util.UUID;
 
 /**
  * This dialog fragment allows the user to set which embellishments (and how many) a pattern calls
- * for.  The list is populated by all embellishments in the master list.
+ * for.  The list is populated by all embellishments in the master list.  Changes are made
+ * immediately and so there is no "cancel" button to communicate this to the user.
  */
 public class SelectThreadQuantityDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -28,8 +29,9 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
     private QuantityAdapter mAdapter;
     private SelectThreadQuantityDialogListener mSelectThreadQuantityDialogCallback;
 
+    // call back to the listener to tell it to refresh the display list
     public interface SelectThreadQuantityDialogListener {
-        public void onThreadQuantitiesUpdate();
+        void onThreadQuantitiesUpdate();
     }
 
     public static SelectThreadQuantityDialogFragment newInstance(ArrayList<UUID> threads, StashPattern pattern, Context context) {
@@ -43,6 +45,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
         return dialog;
     }
 
+    // set the calling fragment as the listener after the dialog is created
     public void setSelectThreadQuantityDialogCallback(SelectThreadQuantityDialogListener listener) {
         mSelectThreadQuantityDialogCallback = listener;
     }

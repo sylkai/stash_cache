@@ -12,17 +12,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,7 +31,8 @@ import java.util.UUID;
  * Activity to host PatternFragments in a ViewPager (allow swiping side to side) using a
  * FragmentStatePagerAdapter to avoid clogging up the memory with fragments.  Implements the
  * ChangedFragmentListener to listen for a notice to trigger the fragment refresh for the fragments
- * loaded by the adapter to update display in case changes needed in display.
+ * loaded by the adapter to update display in case changes needed in display.  Only displays the
+ * master list to avoid issues with changing the list during display.
  */
 
 public class StashPatternPagerActivity extends FragmentActivity implements StashPatternFragment.ChangedFragmentListener {
@@ -117,6 +115,8 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         MenuItem removeStash = menu.findItem(R.id.menu_item_pattern_remove_stash);
         MenuItem addStash = menu.findItem(R.id.menu_item_pattern_add_stash);
 
+        // if it is not the shopping tab that called the pager, allow the user to add/remove pattern
+        // to the stash as appropriate (given its status in the stash)
         if (callingTab != StashConstants.SHOPPING_TAB) {
             if (pattern.inStash()) {
                 removeStash.setVisible(true);
@@ -177,6 +177,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 boolean updateStash = sharedPreferences.getBoolean(StashPreferencesActivity.KEY_UPDATE_STASH, false);
                 boolean overlapNotAllowed = sharedPreferences.getBoolean(StashPreferencesActivity.KEY_NEW_SKEIN_FOR_EACH, false);
 
+                // tell the user what will happen if they confirm finishing the project
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.pattern_finish_title);
                 if (updateStash && overlapNotAllowed) {
@@ -242,7 +243,6 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
 
     private void setPatternList() {
         mPatterns = StashData.get(this).getPatternData();
-
     }
 
     @Override
@@ -256,7 +256,10 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    // called when marking the pattern as complete
     private void markPatternAsComplete(StashPattern pattern, StashFabric fabric) {
+        // if there was fabric associated with the pattern, mark it as complete and remove it from the stash
+        // association with fabric will be dealt with in patternCompleted()
         if (fabric != null) {
             fabric.setComplete(true);
             fabric.setEndDate(Calendar.getInstance());
@@ -267,6 +270,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         boolean updateStash = sharedPreferences.getBoolean(StashPreferencesActivity.KEY_UPDATE_STASH, false);
         boolean overlapNotAllowed = sharedPreferences.getBoolean(StashPreferencesActivity.KEY_NEW_SKEIN_FOR_EACH, false);
 
+        // user wants the program to update the stash quantities
         if (updateStash) {
             ArrayList <UUID> threadList = pattern.getThreadList();
             for (UUID threadId : threadList) {
@@ -339,6 +343,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
             return fragment;
         }
 
+        // don't forget to delete the observer when the item is destroyed
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             // if fragment is being removed from memory, remove it from list of observers

@@ -13,7 +13,8 @@ import java.util.Calendar;
 /**
  * DatePickerDialog, implemented based in part on example from the Big Nerd Ranch book and part
  * individual work.  Allows the user to set the day, month, and year, and communicates it back
- * to the user as a calendar item.
+ * to the user as a calendar item.  Used to set start and end dates for projects (so hour+ timing
+ * is not required).
  */
 public class DatePickerDialogFragment extends DialogFragment {
 
@@ -22,10 +23,12 @@ public class DatePickerDialogFragment extends DialogFragment {
     private Calendar mCalendar;
     private static DatePickerDialogListener mDatePickerDialogCallback;
 
+    // send the calendar object back to the calling fragment to allow it to be saved
     public interface DatePickerDialogListener {
         void onDateSet(Calendar calendar);
     }
 
+    // the calendar is created and passed in to the datepicker by the host fragment
     public static DatePickerDialogFragment newInstance(Calendar calendar) {
         Bundle args = new Bundle();
         args.putSerializable(EXTRA_CALENDAR, calendar);
@@ -36,6 +39,8 @@ public class DatePickerDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    // set the listener to communicate the results back to (called by the host after creating the
+    // fragment)
     public void setDatePickerDialogListener(DatePickerDialogListener listener) {
         mDatePickerDialogCallback = listener;
     }
@@ -44,6 +49,7 @@ public class DatePickerDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mCalendar = (Calendar)getArguments().getSerializable(EXTRA_CALENDAR);
 
+        // set the year/month/day based on the calendar
         int year = mCalendar.get(Calendar.YEAR);
         int month = mCalendar.get(Calendar.MONTH);
         int day = mCalendar.get(Calendar.DAY_OF_MONTH);
@@ -53,11 +59,13 @@ public class DatePickerDialogFragment extends DialogFragment {
         DatePicker datePicker = (DatePicker)v.findViewById(R.id.dialog_date_datePicker);
         datePicker.init(year, month, day, new DatePicker.OnDateChangedListener() {
             public void onDateChanged(DatePicker view, int year, int month, int day) {
+                // create a new calendar (to avoid modifying the existing one if the user cancels)
                 mCalendar = Calendar.getInstance();
                 mCalendar.set(Calendar.YEAR, year);
                 mCalendar.set(Calendar.MONTH, month);
                 mCalendar.set(Calendar.DAY_OF_MONTH, day);
 
+                // store the new calendar to be returned when the user hits ok
                 getArguments().putSerializable(EXTRA_CALENDAR, mCalendar);
             }
         });
@@ -67,6 +75,7 @@ public class DatePickerDialogFragment extends DialogFragment {
                 .setTitle(R.string.date_picker_title)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        // return the calendar to the user
                         mDatePickerDialogCallback.onDateSet(mCalendar);
                         dialog.dismiss();
                     }

@@ -23,10 +23,12 @@ public class PickOneDialogFragment extends DialogFragment implements OnClickList
     private static int mResourceArray;
     private static OnDialogPickOneListener mDialogPickOneCallback;
 
+    // listener needs to know which id was selected
     public interface OnDialogPickOneListener {
-        public void onSelectedOption(int dialogId);
+        void onSelectedOption(int dialogId);
     }
 
+    // store the info in arguments to recreate the dialog if the device is rotated
     public static PickOneDialogFragment newInstance(int res, int selected) {
         Bundle args = new Bundle();
         final PickOneDialogFragment dialog = new PickOneDialogFragment();
@@ -37,6 +39,7 @@ public class PickOneDialogFragment extends DialogFragment implements OnClickList
         return dialog;
     }
 
+    // set the calling fragment as listener, after dialog creation
     public void setDialogPickOneListener(OnDialogPickOneListener listener) {
         mDialogPickOneCallback = listener;
     }
@@ -69,6 +72,7 @@ public class PickOneDialogFragment extends DialogFragment implements OnClickList
                 break;
             default:  // user is selecting an option
                 mSelectedIndex = which;
+                getArguments().putInt(EXTRA_SELECTED, mSelectedIndex);
                 break;
         }
     }

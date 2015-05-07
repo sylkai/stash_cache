@@ -2,7 +2,6 @@ package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ScrollView;
 
@@ -31,23 +30,20 @@ public class VerticalScrollView extends ScrollView{
         switch (action)
         {
             case MotionEvent.ACTION_DOWN:
-                // Log.i("VerticalScrollView", "onInterceptTouchEvent: DOWN super false" );
                 super.onTouchEvent(ev);
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                return false; // redirect MotionEvents to ourself
+                return false;
 
             case MotionEvent.ACTION_CANCEL:
-                // Log.i("VerticalScrollView", "onInterceptTouchEvent: CANCEL super false" );
                 super.onTouchEvent(ev);
                 break;
 
             case MotionEvent.ACTION_UP:
-                // Log.i("VerticalScrollView", "onInterceptTouchEvent: UP super false" );
                 return false;
 
-            default: // Log.i("VerticalScrollView", "onInterceptTouchEvent: " + action ); break;
+            default:
         }
 
         return false;
@@ -56,7 +52,6 @@ public class VerticalScrollView extends ScrollView{
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         super.onTouchEvent(ev);
-        // Log.i("VerticalScrollView", "onTouchEvent. action: " + ev.getAction() );
         return true;
     }
 }

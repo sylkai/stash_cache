@@ -84,6 +84,7 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
         }
     }
 
+    // allows the host activity to set which view should be active
     @Override
     public void setCurrentView(int view) {
         currentView = view;
@@ -171,6 +172,7 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
             }
         }
 
+        // have to remember to remove the observer when the item is destroyed!
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             Fragment fragment = (Fragment)object;
@@ -186,7 +188,8 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
             mObservers.notifyObservers();
         }
 
-        // returns the current fragment for that position, if it exists
+        // returns the current fragment for that position, if it exists so that actions can be
+        // called on it (like onActivityResult)
         public Fragment getCurrentFragment(int position) {
             Fragment fragment;
             switch (position) {

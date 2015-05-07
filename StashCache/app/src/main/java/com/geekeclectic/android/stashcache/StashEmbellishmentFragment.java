@@ -133,6 +133,8 @@ public class StashEmbellishmentFragment extends Fragment{
         mEmbellishmentSource.setText(mEmbellishment.getSource());
         mEmbellishmentSource.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!c.toString().equals(mEmbellishment.getSource())) {
                     mEmbellishment.setSource(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();
@@ -154,6 +156,8 @@ public class StashEmbellishmentFragment extends Fragment{
         mEmbellishmentType.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (!c.toString().equals(mEmbellishment.getType())) {
+                    // listener appears to be called on fragment creation so only make changes
+                    // if things have actually been changed
                     mEmbellishment.setType(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();
                     actionBar.setSubtitle(mEmbellishment.toString());
@@ -173,6 +177,8 @@ public class StashEmbellishmentFragment extends Fragment{
         mEmbellishmentId.setText(mEmbellishment.getCode());
         mEmbellishmentId.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!c.toString().equals(mEmbellishment.getCode())) {
                     mEmbellishment.setCode(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();

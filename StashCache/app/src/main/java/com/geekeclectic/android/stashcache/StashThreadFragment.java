@@ -133,6 +133,8 @@ public class StashThreadFragment extends Fragment {
         mThreadSource.setText(mThread.getSource());
         mThreadSource.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!c.toString().equals(mThread.getSource())) {
                     mThread.setSource(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();
@@ -153,6 +155,8 @@ public class StashThreadFragment extends Fragment {
         mThreadType.setText(mThread.getType());
         mThreadType.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!c.toString().equals(mThread.getType())) {
                     mThread.setType(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();
@@ -173,6 +177,8 @@ public class StashThreadFragment extends Fragment {
         mThreadId.setText(mThread.getCode());
         mThreadId.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!c.toString().equals(mThread.getCode())) {
                     mThread.setCode(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();

@@ -13,7 +13,8 @@ import java.util.UUID;
 /*
  * Each instance of this class corresponds to a pattern in the stash.  The pattern is assigned a
  * unique ID. Fields to track name, designer, pattern size (height and width), associated fabric,
- * and associated threads.
+ * and associated threads.  Thread and embellishment quantities stored in a map by ID. Finishes are
+ * stored as an arraylist of UUIDs for the fabric.
  */
 
 public class StashPattern extends StashObject {
@@ -38,9 +39,6 @@ public class StashPattern extends StashObject {
     private static final String JSON_EMBELLISHMENTS = "embellishments";
     private static final String JSON_PATTERN = "pattern id";
     private static final String JSON_PHOTO = "photo";
-    private static final String JSON_QUANTITIES = "required quantities";
-    private static final String JSON_QUANTITY_ID = "id code";
-    private static final String JSON_QUANTITY_ENTRY = "number";
     private static final String JSON_KITTED = "kitted";
     private static final String JSON_STASH = "in stash";
     private static final String JSON_FINISHES = "finishes";
@@ -99,6 +97,8 @@ public class StashPattern extends StashObject {
             mInStash = true;
         }
 
+        // quantities stored by writing the thread id n times (where n is the quantity), so read it
+        // that way
         mQuantities = new HashMap<UUID, Integer>();
         mThreads = new ArrayList<UUID>();
         if (json.has(JSON_THREADS)) {
@@ -126,6 +126,8 @@ public class StashPattern extends StashObject {
             }
         }
 
+        // quantities stored by writing the thread id n times (where n is the quantity), so read it
+        // that way
         mEmbellishments = new ArrayList<UUID>();
         if (json.has(JSON_EMBELLISHMENTS)) {
             JSONArray array = json.getJSONArray(JSON_EMBELLISHMENTS);
@@ -149,7 +151,7 @@ public class StashPattern extends StashObject {
             }
         }
 
-
+        // read in finishes, if they exist
         mFinishes = new ArrayList<UUID>();
         if (json.has(JSON_FINISHES)) {
             JSONArray array = json.getJSONArray(JSON_FINISHES);
@@ -389,6 +391,8 @@ public class StashPattern extends StashObject {
     }
 
     public void patternCompleted() {
+        // when the pattern is marked complete, move the fabric to the finishes list (if there is)
+        // and remove the kitted marking
         if (mPatternFabric != null) {
             mFinishes.add(mPatternFabric.getId());
             mPatternFabric = null;

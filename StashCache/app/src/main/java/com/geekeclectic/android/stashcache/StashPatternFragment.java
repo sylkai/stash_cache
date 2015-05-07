@@ -97,7 +97,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
     private String mPhotoPath;
 
     public interface ChangedFragmentListener {
-        public void updateFragments();
+        void updateFragments();
     }
 
     public StashPatternFragment() {
@@ -174,11 +174,13 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
         }
     }
 
+    // may be used later with the photo stuff
     @Override
     public void onStart() {
         super.onStart();
     }
 
+    // may be used later with the photo stuff
     @Override
     public void onStop() {
         super.onStop();
@@ -258,6 +260,8 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
         mTitleField.setText(mPattern.getPatternName());
         mTitleField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed
                 if (!c.toString().equals(mPattern.getPatternName())) {
                     mPattern.setPatternName(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();
@@ -279,6 +283,8 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
         mSourceField.setText(mPattern.getSource());
         mSourceField.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
+                // listener appears to be called on fragment creation so only make changes
+                // if things have actually been changed+
                 if (!c.toString().equals(mPattern.getSource())) {
                     mPattern.setSource(c.toString());
                     ActionBar actionBar = getActivity().getActionBar();
@@ -442,9 +448,6 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
             }
         });
 
-        /*mThreadInfo = (TextView)v.findViewById(R.id.pattern_thread_display);
-        updateThreadInfo();*/
-
         mThreadDisplayList = (ListView)v.findViewById(R.id.pattern_thread_list);
         Collections.sort(mThreadList, new StashThreadComparator(getActivity()));
         ThreadAdapter adapter = new ThreadAdapter(mThreadList);
@@ -471,7 +474,6 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
 
                 // create a copy of the thread list to avoid modification errors
                 SelectEmbellishmentQuantityDialogFragment dialog = SelectEmbellishmentQuantityDialogFragment.newInstance(StashData.get(getActivity()).getEmbellishmentList(), mPattern, getActivity());
-                //dialog.setSelectThreadDialogListener(mFragment);
                 dialog.setSelectEmbellishmentQuantityDialogCallback(mFragment);
                 dialog.show(fm, DIALOG_THREAD);
             }
@@ -513,6 +515,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
             }
         });
 
+        // only shows the finishes list if there are actual finishes
         if (!mFinishesList.isEmpty()) {
             mFinishTitle.setVisibility(View.VISIBLE);
             mFinishList.setVisibility(View.VISIBLE);
@@ -526,6 +529,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
         return v;
     }
 
+    // called when the user has made a selection in the fabric choice dialog box
     public void onSelectedOption(int selectedIndex) {
         if (selectedIndex == StashConstants.USE_EXISTING_FABRIC) {
             // user chose to use existing fabric
@@ -590,6 +594,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
         }
     }
 
+    // called when the user has picked a fabric from the list of fabrics that can fit the pattern
     public void onSelectedFabric(UUID fabricId) {
         if (mFabric == null || mFabric.getId() != fabricId) {
             // if user kept the same fabric, do nothing
@@ -600,6 +605,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
                 mCurrentFabric.clear();
             }
 
+            // get the new fabric
             mFabric = StashData.get(getActivity()).getFabric(fabricId);
 
             if (mFabric.usedFor() != null) {
@@ -612,59 +618,28 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
             mPattern.setFabric(mFabric);
             mCurrentFabric.add(mFabric.getId());
 
+            // update all displayed info
             updateFabricInfo();
             mCallback.updateFragments();
             mInProgress.setEnabled(true);
         }
     }
 
-    /*public void onThreadsSelected(ArrayList<UUID> selectedThreads) {
-        ArrayList<UUID> removeThreads = new ArrayList<UUID>();
-
-        for (UUID threadId : mThreadList) {
-            if (selectedThreads.contains(threadId)) {
-                // was and is still on the list, no changes needed
-                selectedThreads.remove(threadId);
-            } else {
-                // is no longer on the list, note that it needs to be removed & info updated
-                removeThreads.add(threadId);
-            }
-        }
-
-        // selectedThreads now contains just new additions, removeThreads just threads that need
-        // removal from the list
-
-        for (UUID threadId : removeThreads) {
-            // remove association to pattern
-            StashThread thread = StashData.get(getActivity().getApplicationContext()).getThread(threadId);
-            thread.removePattern(mPattern);
-
-            // remove from list
-            mPattern.removeThread(thread);
-        }
-
-        for (UUID threadId : selectedThreads) {
-            // add association to pattern
-            StashThread thread = StashData.get(getActivity().getApplicationContext()).getThread(threadId);
-            thread.usedInPattern(mPattern);
-
-            // add to list
-            mPattern.addThread(thread);
-        }
-
-        updateThreadInfo();
-    }*/
-
+    // called once the user has updated the thread quantities to notify the pattern fragment to
+    // refresh the display list
     public void onThreadQuantitiesUpdate() {
         Collections.sort(mThreadList, new StashThreadComparator(getActivity()));
         ((ThreadAdapter)mThreadDisplayList.getAdapter()).notifyDataSetChanged();
     }
 
+    // called once the user has updated the embellishment quantities to notify the pattern fragment
+    // to refresh the display list
     public void onEmbellishmentQuantitiesUpdate() {
         Collections.sort(mEmbellishmentList, new StashEmbellishmentComparator(getActivity()));
         ((EmbellishmentAdapter) mEmbellishmentDisplayList.getAdapter()).notifyDataSetChanged();
     }
 
+    // called when the datepicker has been used to update the date displayed
     public void onDateSet(Calendar calendar) {
         mFabric.setStartDate(calendar);
         updateFabricInfo();
@@ -683,6 +658,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
         }
     }
 
+    // called when triggered by the observer to let the fragment know to refresh itself
     @Override
     public void update(Observable observable, Object data) {
         // refresh the fabric from the pattern data
@@ -702,6 +678,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
         // update other display bits
         mIsKitted.setChecked(mPattern.isKitted());
 
+        // update the finish display
         FabricAdapter adapter = (FabricAdapter)mFinishList.getAdapter();
         adapter.notifyDataSetChanged();
         if (!mFinishesList.isEmpty()) {
@@ -715,12 +692,15 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
         }
     }
 
+    // called any time the user needs to update the fabric info
     private void updateFabricInfo() {
         FabricAdapter adapter = (FabricAdapter)mFabricDisplay.getAdapter();
         adapter.notifyDataSetChanged();
         setListViewHeightBasedOnChildren(mFabricDisplay);
 
         if (mFabric == null) {
+            // calculate the size of fabric needed based on the defaults and update the empty listview
+            // to show it
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             double edgeBuffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));
             int defaultCount = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_COUNT_SETTING, StashConstants.DEFAULT_COUNT));
@@ -740,6 +720,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
 
             mStartDateGroup.setVisibility(View.GONE);
         } else {
+            // determine which bits are needed to be displayed (depending on whether the mFabric is in use)
             if (mFabric.inUse()) {
                 if (mFabric.getStartDate() != null) {
                     mStartDateGroup.setVisibility(View.VISIBLE);

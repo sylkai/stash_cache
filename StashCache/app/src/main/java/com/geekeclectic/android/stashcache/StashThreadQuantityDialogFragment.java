@@ -17,8 +17,9 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * This dialog fragment allows the user to set which embellishments (and how many) a pattern calls
- * for.  The list is populated by all embellishments in the master list.
+ * This dialog fragment allows the user to set which threads (and how many) are in the stash.  The
+ * list is populated by all threads in the master list. Changes are immediate so there is no "cancel"
+ * button.
  */
 public class StashThreadQuantityDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -26,8 +27,9 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
     private QuantityAdapter mAdapter;
     private StashThreadQuantityDialogListener mStashThreadQuantityDialogCallback;
 
+    // will let the calling fragment know to update the display
     public interface StashThreadQuantityDialogListener {
-        public void onThreadQuantitiesUpdate();
+        void onThreadQuantitiesUpdate();
     }
 
     public static StashThreadQuantityDialogFragment newInstance(ArrayList<UUID> threads, Context context) {
@@ -40,6 +42,7 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
         return dialog;
     }
 
+    // called by the calling fragment to set for the callback
     public void setStashThreadQuantityDialogCallback(StashThreadQuantityDialogListener listener) {
         mStashThreadQuantityDialogCallback = listener;
     }
@@ -47,7 +50,6 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
-
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();
 

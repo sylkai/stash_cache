@@ -258,8 +258,9 @@ public class StashEmbellishment extends StashObject {
         }
     }
 
+    // returns true if additional marked for purchase or number needed is greater than number owned
     public boolean needToBuy() {
-        return (mNumberNeeded + mNumberAdditional) > mNumberOwned;
+        return (mNumberNeeded > mNumberOwned || mNumberAdditional > 0);
     }
 
     public ArrayList<StashPattern> getPatternList() {

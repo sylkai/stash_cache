@@ -15,7 +15,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
- * Created by sylk on 4/20/2015.
+ * Fragment to provide a basic help page for the user of the app.  Includes a link to the website
+ * with an extensive tutorial, FAQs, etc.
  */
 public class StashHelpFragment extends Fragment{
 

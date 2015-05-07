@@ -28,10 +28,10 @@ public class StashImporter {
     private static HashMap<String, ArrayList<UUID>> embellishmentMap;
     private static InputStream in;
     private static String UTF8 = "utf8";
-    private static String stashBlockDivider = "***";
-    private static String stashTypeDivider = "---";
-    private static String patternBlockDivider = "*";
-    private static String patternTypeDivider = "-";
+    private static String stashBlockDivider = StashConstants.BETWEEN_CATEGORIES;
+    private static String stashTypeDivider = StashConstants.BETWEEN_ITEMS;
+    private static String patternBlockDivider = StashConstants.PATTERN_CATEGORIES;
+    private static String patternTypeDivider = StashConstants.PATTERN_ITEMS;
     private static String lastRead;
     private Context mContext;
 
@@ -46,6 +46,8 @@ public class StashImporter {
     public int importStash(Context context) throws IOException {
         mContext = context;
         StashData stash = StashData.get(mContext);
+
+        // read in what already is in stash into shorted key maps for easy finding
         populateMaps(stash);
 
         BufferedReader reader = null;
@@ -57,6 +59,7 @@ public class StashImporter {
 
             Log.d(TAG, "Reader successfully opened.");
 
+            // lastRead keeps track of what the previously read line was for passing between functions
             lastRead = "";
 
             readStashThread(reader, stash);
@@ -80,6 +83,7 @@ public class StashImporter {
             }
         }
 
+        // return the proper constant to let the user know if everything imported properly
         if (fileFormattedCorrectly && allNumbersFormatted) {
             return StashConstants.FILE_IMPORT_ALL_CLEAR;
         } else if (!fileFormattedCorrectly) {
@@ -89,6 +93,7 @@ public class StashImporter {
         }
     }
 
+    // called to read in the info for one pattern
     private StashPattern readPatternInfo(BufferedReader reader, StashData stash) throws IOException {
         // read in pattern information
         String title = lastRead;
@@ -138,8 +143,8 @@ public class StashImporter {
         if (!lastRead.equals(patternBlockDivider)) {
             pattern.setKitted(true);
 
-            // move forward one line to skip the first *
-            reader.readLine();
+            // move forward one line end on the *
+            lastRead = reader.readLine();
         }
 
         return pattern;
@@ -150,12 +155,20 @@ public class StashImporter {
 
             StashPattern pattern = readPatternInfo(reader, stash);
 
+            // if something went wrong in the creation of the pattern, break this loop
+            if (pattern == null) {
+                break;
+            }
+
             pattern.setInStash(inStash);
 
+            // patterns are added to stash automatically on creation, so remove it if it should not
+            // be in the stash
             if (!inStash) {
                 stash.removePatternFromStash(pattern);
             }
 
+            // try to read in the fabric info for the pattern, if there is some (break if an error)
             if (!readPatternFabric(reader, stash, pattern)) {
                 break;
             }
@@ -177,7 +190,6 @@ public class StashImporter {
     }
 
     private void readStashFabric(BufferedReader reader, StashData stash) throws IOException {
-
         // read in fabric data; end of the block is marked by *** and will break loop
         while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
             // skip a line if the current line marks the fabric delimiter ---
@@ -206,6 +218,7 @@ public class StashImporter {
             Double height;
             Double width;
 
+            // try to read in the count number
             if (checkToContinue(lastRead)) {
                 break;
             } else {
@@ -217,18 +230,7 @@ public class StashImporter {
                 }
             }
 
-            lastRead = reader.readLine();
-            if (checkToContinue(lastRead)) {
-                break;
-            } else {
-                try {
-                    height = Double.parseDouble(lastRead);
-                } catch (NumberFormatException e) {
-                    height = StashConstants.DOUBLE_ZERO;
-                    allNumbersFormatted = false;
-                }
-            }
-
+            // try to read in the width number
             lastRead = reader.readLine();
             if (checkToContinue(lastRead)) {
                 break;
@@ -241,15 +243,31 @@ public class StashImporter {
                 }
             }
 
-            StashFabric fabric = createNewFabric(source, type, color, count, height, width, stash);
+            // try to read in the height number
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                break;
+            } else {
+                try {
+                    height = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    height = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            StashFabric fabric = createNewFabric(source, type, color, count, width, height, stash);
 
             lastRead = reader.readLine();
 
+            // if there are notes info, prep to read it in
             if (!lastRead.equals(stashBlockDivider) && !lastRead.equals(stashTypeDivider)) {
                 StringBuilder sb = new StringBuilder();
+                // save the first bit that was read in
                 sb.append(lastRead);
                 sb.append(System.getProperty("line.separator"));
 
+                // add the additional note info
                 while (!(lastRead = reader.readLine()).equals(stashBlockDivider) && !lastRead.equals(stashTypeDivider)) {
                     sb.append(lastRead);
                     sb.append(System.getProperty("line.separator"));
@@ -257,9 +275,12 @@ public class StashImporter {
 
                 // cut off the last line separator
                 sb.setLength(sb.length() - 1);
-                fabric.setNotes(sb.toString().replace(" * ", "*").replace(" - ", "-"));
+
+                // eliminate the extra spaces added to keep the notes from mixing up the importer
+                fabric.setNotes(sb.toString().replace(" * ", StashConstants.PATTERN_CATEGORIES).replace(" - ", StashConstants.PATTERN_ITEMS));
             }
 
+            // finished reading stash fabrics, so break out of the loop
             if (lastRead.equals(stashBlockDivider)) {
                 break;
             }
@@ -286,6 +307,7 @@ public class StashImporter {
             Double fabric_height;
             Double fabric_width;
 
+            // try to read in the count
             lastRead = reader.readLine();
             if (checkToContinue(lastRead)) {
                 return false;
@@ -298,18 +320,7 @@ public class StashImporter {
                 }
             }
 
-            lastRead = reader.readLine();
-            if (checkToContinue(lastRead)) {
-                return false;
-            } else {
-                try {
-                    fabric_height = Double.parseDouble(lastRead);
-                } catch (NumberFormatException e) {
-                    fabric_height = StashConstants.DOUBLE_ZERO;
-                    allNumbersFormatted = false;
-                }
-            }
-
+            // try to read in the width
             lastRead = reader.readLine();
             if (checkToContinue(lastRead)) {
                 return false;
@@ -322,12 +333,25 @@ public class StashImporter {
                 }
             }
 
-            StashFabric fabric = createNewFabric(source, type, color, count, fabric_height, fabric_width, stash);
+            // try to read in the height
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                return false;
+            } else {
+                try {
+                    fabric_height = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    fabric_height = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
+
+            StashFabric fabric = createNewFabric(source, type, color, count, fabric_width, fabric_height, stash);
 
             pattern.setFabric(fabric);
             fabric.setUsedFor(pattern);
 
-            // if the next line is not a *, the fabric is marked as in use
+            // if the next line is "in use", the fabric is marked as in use
             lastRead = reader.readLine();
             if (lastRead.equals(StashConstants.IN_USE)) {
                 fabric.setUse(true);
@@ -339,13 +363,20 @@ public class StashImporter {
 
                 // move forward one line to skip the first *
                 lastRead = reader.readLine();
+            // fabric is not in use, so we need to skip the empty lines for that info
+            } else {
+                lastRead = reader.readLine();
+                lastRead = reader.readLine();
             }
 
+            // if there are notes, read them in
             if (!lastRead.equals(patternBlockDivider)) {
                 StringBuilder sb = new StringBuilder();
+                // save the read information
                 sb.append(lastRead);
                 sb.append(System.getProperty("line.separator"));
 
+                // read in the additonal information
                 while (!(lastRead = reader.readLine()).equals(patternBlockDivider) && !lastRead.equals(patternTypeDivider)) {
                     sb.append(lastRead);
                     sb.append(System.getProperty("line.separator"));
@@ -353,7 +384,9 @@ public class StashImporter {
 
                 // cut off the last line separator
                 sb.setLength(sb.length() - 1);
-                fabric.setNotes(sb.toString().replace(" * ", "*").replace(" - ", "-"));
+
+                // fix the extra spaces added to keep the importer happy
+                fabric.setNotes(sb.toString().replace(" * ", StashConstants.PATTERN_CATEGORIES).replace(" - ", StashConstants.PATTERN_ITEMS));
             }
         }
 
@@ -361,7 +394,6 @@ public class StashImporter {
     }
 
     private void readFinishes(BufferedReader reader, StashData stash, StashPattern pattern) throws IOException, ParseException {
-
         while (!lastRead.equals(stashTypeDivider) && (lastRead = reader.readLine()) != null) {
             String source = lastRead;
             String type = reader.readLine();
@@ -380,6 +412,7 @@ public class StashImporter {
             Double fabric_height;
             Double fabric_width;
 
+            // try to read in count
             lastRead = reader.readLine();
             if (checkToContinue(lastRead)) {
                 break;
@@ -392,18 +425,7 @@ public class StashImporter {
                 }
             }
 
-            lastRead = reader.readLine();
-            if (checkToContinue(lastRead)) {
-                break;
-            } else {
-                try {
-                    fabric_height = Double.parseDouble(lastRead);
-                } catch (NumberFormatException e) {
-                    fabric_height = StashConstants.DOUBLE_ZERO;
-                    allNumbersFormatted = false;
-                }
-            }
-
+            // try to read in width
             lastRead = reader.readLine();
             if (checkToContinue(lastRead)) {
                 break;
@@ -416,18 +438,34 @@ public class StashImporter {
                 }
             }
 
-            StashFabric fabric = createNewFabric(source, type, color, count, fabric_height, fabric_width, stash);
+            // try to read in height
+            lastRead = reader.readLine();
+            if (checkToContinue(lastRead)) {
+                break;
+            } else {
+                try {
+                    fabric_height = Double.parseDouble(lastRead);
+                } catch (NumberFormatException e) {
+                    fabric_height = StashConstants.DOUBLE_ZERO;
+                    allNumbersFormatted = false;
+                }
+            }
 
+            StashFabric fabric = createNewFabric(source, type, color, count, fabric_width, fabric_height, stash);
+
+            // fabric is for a finish, so make all the connections and remove it from the stash
             fabric.setUsedFor(pattern);
             fabric.setComplete(true);
             pattern.addFinish(fabric);
             stash.removeFabricFromStash(fabric.getId());
 
+            // read in start date (process if line is not empty)
             lastRead = reader.readLine();
             if (!lastRead.equals("")) {
                 fabric.setStartDate(ISO8601.toCalendar(lastRead));
             }
 
+            // read in finish date (process if line is not empty)
             lastRead = reader.readLine();
             if (!lastRead.equals("")) {
                 fabric.setEndDate(ISO8601.toCalendar(lastRead));
@@ -435,11 +473,15 @@ public class StashImporter {
 
             lastRead = reader.readLine();
 
+            // if there are notes, read them in
             if (!lastRead.equals(patternBlockDivider) && !lastRead.equals(stashTypeDivider)) {
                 StringBuilder sb = new StringBuilder();
+
+                // save the previously read info
                 sb.append(lastRead);
                 sb.append(System.getProperty("line.separator"));
 
+                // read to the end of the notes
                 while ((lastRead = reader.readLine()) != null && (!lastRead.equals(patternBlockDivider) && !lastRead.equals(patternTypeDivider) && !lastRead.equals("---"))) {
                     sb.append(lastRead);
                     sb.append(System.getProperty("line.separator"));
@@ -447,17 +489,19 @@ public class StashImporter {
 
                 // cut off the last line separator
                 sb.setLength(sb.length() - 1);
-                fabric.setNotes(sb.toString().replace(" * ", "*").replace(" - ", "-"));
+
+                // fix the extra spaces added to keep the importer happy
+                fabric.setNotes(sb.toString().replace(" * ", StashConstants.PATTERN_CATEGORIES).replace(" - ", StashConstants.PATTERN_ITEMS));
             }
 
-            if (lastRead == null || lastRead.equals("***") || lastRead.equals("---")) {
+            // break the loop at the end of the file/section/item
+            if (lastRead == null || lastRead.equals(StashConstants.BETWEEN_CATEGORIES) || lastRead.equals(StashConstants.BETWEEN_ITEMS)) {
                 break;
             }
         }
     }
 
     private void readStashThread(BufferedReader reader, StashData stash) throws IOException {
-
         // read in thread data; end of thread block is marked by *** and will break loop
         while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
             // store source and type information
@@ -475,6 +519,7 @@ public class StashImporter {
                 }
 
                 String key;
+                // if there are spaces in the title, split on the space and use the first section as the key
                 if (lastRead.contains(" ")) {
                     key = lastRead.split("\\s")[0];
                 } else {
@@ -485,14 +530,13 @@ public class StashImporter {
 
             // if we broke out of the previous loop due to end of the block, break out of the larger
             // loop before reading the next line
-            if (lastRead.equals(stashBlockDivider)) {
+            if (lastRead != null && lastRead.equals(stashBlockDivider)) {
                 break;
             }
         }
     }
 
     private void readThread(BufferedReader reader, StashData stash) throws IOException {
-
         // read in thread data; end of thread block is marked by *** and will break loop
         while ((lastRead = reader.readLine()) != null && !lastRead.equals(stashBlockDivider)) {
             // store source and type information
@@ -510,6 +554,7 @@ public class StashImporter {
                 }
 
                 String key;
+                // if there are spaces in the title, split on the space and use the first section as the key
                 if (lastRead.contains(" ")) {
                     key = lastRead.split("\\s")[0];
                 } else {
@@ -542,6 +587,7 @@ public class StashImporter {
                 }
 
                 String key;
+                // if there are spaces in the title, split on the space and use the first section as the key
                 if (lastRead.contains(" ")) {
                     key = lastRead.split("\\s")[0];
                 } else {
@@ -549,6 +595,7 @@ public class StashImporter {
                 }
                 StashThread thread = findOrAddThread(source, type, lastRead, key, stash);
 
+                // used in the pattern, so wire this up
                 thread.usedInPattern(pattern);
                 pattern.increaseQuantity(thread);
             }
@@ -580,7 +627,7 @@ public class StashImporter {
                 incrementOrAddEmbellishment(source, type, lastRead, stash);
             }
 
-            if (lastRead.equals(stashBlockDivider)) {
+            if (lastRead != null && lastRead.equals(stashBlockDivider)) {
                 break;
             }
         }
@@ -631,6 +678,7 @@ public class StashImporter {
 
                 StashEmbellishment embellishment = findOrAddEmbellishment(source, type, lastRead, stash);
 
+                // used in the pattern, so wire it up
                 embellishment.usedInPattern(pattern);
                 pattern.increaseQuantity(embellishment);
             }
@@ -644,6 +692,7 @@ public class StashImporter {
     private StashThread createNewThread(String source, String type, String id, String key, StashData stash, boolean inStash) {
         StashThread thread = new StashThread(mContext);
 
+        // set info for the new thread
         thread.setSource(source);
         thread.setType(type);
         thread.setCode(id);
@@ -651,8 +700,10 @@ public class StashImporter {
             thread.increaseOwnedQuantity();
         }
 
+        // add the thread to the stash
         stash.addThread(thread);
 
+        // add the thread to the list for that key
         if (threadMap.get(key) == null) {
             ArrayList<UUID> threadList = new ArrayList<UUID>();
             threadList.add(thread.getId());
@@ -665,9 +716,10 @@ public class StashImporter {
         return thread;
     }
 
-    private StashFabric createNewFabric(String source, String type, String color, int count, Double height, Double width, StashData stash) {
+    private StashFabric createNewFabric(String source, String type, String color, int count, Double width, Double height, StashData stash) {
         StashFabric fabric = new StashFabric(mContext);
 
+        // set all appropriate fields for the fabric
         fabric.setSource(source);
         fabric.setType(type);
         fabric.setColor(color);
@@ -683,6 +735,7 @@ public class StashImporter {
     private StashEmbellishment createNewEmbellishment(String source, String type, String id, StashData stash, boolean inStash) {
         StashEmbellishment embellishment = new StashEmbellishment(mContext);
 
+        // set the appropriate fields
         embellishment.setSource(source);
         embellishment.setType(type);
         embellishment.setCode(id);
@@ -692,6 +745,7 @@ public class StashImporter {
 
         stash.addEmbellishment(embellishment);
 
+        // add the id to the lookup map (don't need to do the splitting like we do for thread)
         if (embellishmentMap.get(id) == null) {
             ArrayList<UUID> embellishmentList = new ArrayList<UUID>();
             embellishmentList.add(embellishment.getId());
@@ -708,20 +762,26 @@ public class StashImporter {
         ArrayList<UUID> threadList = threadMap.get(key);
         StashThread thread;
 
+        // if there is a list of things for the key, check to see if any match the thread
         if (threadList != null) {
             for (UUID threadId : threadList) {
                 thread = stash.getThread(threadId);
                 if (isSameThread(thread, source, type, id, key)) {
+                    // if it is the same thread but has a different key, save the longer form of the id
                     if (!key.equals(id) && key.equalsIgnoreCase(thread.getCode())) {
                         thread.setCode(id);
                     }
+
+                    // this is only called for things in stash, so increase the number owned
                     thread.increaseOwnedQuantity();
                     return;
                 }
             }
 
+            // didn't find a match, so make a new thread
             createNewThread(source, type, id, key, stash, true);
         } else {
+            // there was no list, so create a new thread
             createNewThread(source, type, id, key, stash, true);
         }
     }
@@ -730,18 +790,24 @@ public class StashImporter {
         ArrayList<UUID> threadList = threadMap.get(key);
         StashThread thread;
 
+        // check to see if the thread exists on the list for that key
         if (threadList != null) {
             for (UUID threadId : threadList) {
                 thread = stash.getThread(threadId);
                 if (isSameThread(thread, source, type, key, id)) {
+                    // if it is the same thread and the key is a shorter version of the id, save the
+                    // longer form of the id
                     if (!key.equals(id) && key.equalsIgnoreCase(thread.getCode())) {
                         thread.setCode(id);
                     }
+
+                    // return the thread for connections (called for patterns)
                     return thread;
                 }
             }
         }
 
+        // no matching thread found, so create a new one and return it to the calling function
         thread = createNewThread(source, type, id, key, stash, false);
 
         return thread;
@@ -751,17 +817,21 @@ public class StashImporter {
         ArrayList<UUID> embellishmentList = embellishmentMap.get(id);
         StashEmbellishment embellishment;
 
+        // check to see if the embellishment is on the list
         if (embellishmentList != null) {
             for (UUID embellishmentId : embellishmentList) {
                 embellishment = stash.getEmbellishment(embellishmentId);
                 if (embellishment.getSource().equalsIgnoreCase(source) && embellishment.getType().equalsIgnoreCase(type) && embellishment.getCode().equalsIgnoreCase(id)) {
+                    // increment up the number owned (only called for the stash building)
                     embellishment.increaseOwned();
                     return;
                 }
             }
 
+            // no match found, so make a new embellishment
             createNewEmbellishment(source, type, id, stash, true);
         } else {
+            // no list, so create a new embellishment
             createNewEmbellishment(source, type, id, stash, true);
         }
     }
@@ -770,19 +840,24 @@ public class StashImporter {
         ArrayList<UUID> embellishmentList = embellishmentMap.get(id);
         StashEmbellishment embellishment;
 
+        // check to see if the embellishment is on the list
         if (embellishmentList != null) {
             for (UUID embellishmentId : embellishmentList) {
                 embellishment = stash.getEmbellishment(embellishmentId);
                 if (embellishment.getSource().equalsIgnoreCase(source) && embellishment.getType().equalsIgnoreCase(type) && embellishment.getCode().equalsIgnoreCase(id)) {
+                    // return the match
                     return embellishment;
                 }
             }
 
+            // no match, so create a new one
             embellishment = createNewEmbellishment(source, type, id, stash, false);
         } else {
+            // no list so no match, create a new one
             embellishment = createNewEmbellishment(source, type, id, stash, false);
         }
 
+        // return the embellishment
         return embellishment;
     }
 
@@ -790,9 +865,10 @@ public class StashImporter {
     // if it does return true, it marks the file format check as false so that the user can be alerted
     // that there was a formatting issue
     private boolean checkToContinue(String toCheck) {
-        if (toCheck != null && !toCheck.equals("***") && !toCheck.equals("---") && !toCheck.equals("*") && !toCheck.equals("-")) {
+        if (toCheck != null && !toCheck.equals(StashConstants.BETWEEN_CATEGORIES) && !toCheck.equals(StashConstants.BETWEEN_ITEMS) && !toCheck.equals(StashConstants.PATTERN_CATEGORIES) && !toCheck.equals(StashConstants.PATTERN_ITEMS)) {
             return false;
         } else {
+            // there was an error in the formatting somewhere, so flag it and return true to break
             fileFormattedCorrectly = false;
             return true;
         }

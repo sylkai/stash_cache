@@ -1,10 +1,9 @@
 package com.geekeclectic.android.stashcache;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 
 /**
- * Created by sylk on 4/20/2015.
+ * Activity to host the help fragment.
  */
 public class StashHelpActivity extends SingleFragmentActivity {
 

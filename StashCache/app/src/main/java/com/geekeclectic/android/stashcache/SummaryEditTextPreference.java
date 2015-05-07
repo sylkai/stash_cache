@@ -24,7 +24,7 @@ public class SummaryEditTextPreference extends EditTextPreference {
         super(context);
     }
 
-    // According to ListPreference implementation
+    // according to ListPreference implementation
     @Override
     public CharSequence getSummary() {
         String text = getText();

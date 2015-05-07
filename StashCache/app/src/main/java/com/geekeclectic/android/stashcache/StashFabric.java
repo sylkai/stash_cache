@@ -251,12 +251,14 @@ public class StashFabric extends StashObject {
         double edge_buffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));
         int over_default = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_CROSSOVER, StashConstants.OVER_TWO_DEFAULT));
 
+        // if the fabric count is above the default, calculate it stitching over two (otherwise over one)
         if (mFabricCount > over_default) {
             mOverCount = StashConstants.OVER_TWO;
         } else {
             mOverCount = StashConstants.OVER_ONE;
         }
 
+        // calculate the stitching width and height (in stitches) after subtracting the two borders
         mStitchWidth = (mFabricWidth - edge_buffer * StashConstants.TWO_BORDERS) * mFabricCount / mOverCount;
         mStitchHeight = (mFabricHeight - edge_buffer * StashConstants.TWO_BORDERS) * mFabricCount / mOverCount;
     }

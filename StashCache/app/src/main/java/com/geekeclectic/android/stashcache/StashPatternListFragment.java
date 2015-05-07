@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -33,7 +32,6 @@ import java.util.Observer;
 
 public class StashPatternListFragment extends UpdateListFragment implements Observer {
 
-    private static final String TAG = "PatternListFragment";
     private static final int PATTERN_GROUP_ID = R.id.pattern_context_menu;
     private static final String PATTERN_VIEW_ID = "com.geekeclectic.android.stashcache.pattern_view_id";
     private int mViewCode;
@@ -137,6 +135,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         return v;
     }
 
+    // has to be done after the view is created or running the risk of a NPE error
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -217,7 +216,6 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashPattern from the adapter
         StashPattern pattern = ((PatternAdapter)getListAdapter()).getItem(position);
-        Log.d(TAG, pattern.getPatternName() + "wasClicked");
 
         // start StashPatternPagerActivity
         Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
@@ -301,6 +299,8 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
             vh.patternKitted.setTag(pattern);
             vh.patternKitted.setChecked(pattern.isKitted());
 
+            // when patterns both in and out of stash are displayed (on the master list), patterns
+            // no longer in stash are gray
             if (!pattern.inStash()) {
                 vh.patternName.setTextColor(Color.GRAY);
                 vh.patternSource.setTextColor(Color.GRAY);

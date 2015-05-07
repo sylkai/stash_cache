@@ -5,7 +5,8 @@ import android.content.Context;
 import java.util.UUID;
 
 /**
- * Parent class for all objects included in the stash.  Contains id and manufacturer info.
+ * Parent class for all objects included in the stash.  Contains id and manufacturer info.  Also has
+ * photo info although photos are not currently implemented.
  */
 
 public class StashObject {

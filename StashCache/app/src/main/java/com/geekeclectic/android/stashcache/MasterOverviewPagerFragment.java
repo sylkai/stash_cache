@@ -178,6 +178,7 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
             }
         }
 
+        // remember to delete the observer on item destruction!
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             Fragment fragment = (Fragment)object;
@@ -193,7 +194,8 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
             mObservers.notifyObservers();
         }
 
-        // returns the current fragment for that position, if it exists
+        // returns the current fragment for that position, if it exists (to allow action on the
+        // fragment like calling onActivityResult)
         public Fragment getCurrentFragment(int position) {
             Fragment fragment;
             switch (position) {

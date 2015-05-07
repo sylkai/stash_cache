@@ -29,8 +29,6 @@ public class StashCreateShoppingList {
 
     public void updateShoppingList(Context context) {
         StashData stash = StashData.get(context);
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean overlap = !sharedPrefs.getBoolean(StashPreferencesActivity.KEY_NEW_SKEIN_FOR_EACH, false);
         ArrayList<StashPattern> patternList = stash.getPatternData();
 
         // reset all information stored in thread/embellishments, to account for patterns being
