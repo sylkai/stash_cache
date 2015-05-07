@@ -2,8 +2,58 @@
 <resources>
 
     <string name="app_name">Stash Cache</string>
+    <string name="splash_screen">Stash Cache</string>
     <string name="action_settings">Action Settings</string>
+    <string name="stash_export">stash_export.txt</string>
 
+    <string name="zero">0</string>
+    <string name="zero_point">0.0</string>
+
+    <string name="import_file">Import</string>
+    <string name="export_stash">Export Stash</string>
+    <string name="delete_stash">Delete Stash</string>
+    <string name="delete_stash_warning">Delete complete stash?</string>
+    <string name="delete_stash_additional">You\'ll lose all your information!</string>
+    <string name="delete_stash_ok">Erase</string>
+    <string name="delete_stash_back">Cancel</string>
+    <string name="send_file_to">Export file to:</string>
+    <string name="add_new">Add New</string>
+
+    <string name="export_error_stash">There was an error writing the stash file.</string>
+    <string name="export_error_pattern">There was an error writing the pattern file.</string>
+
+    <string name="embellishment">Embellishment</string>
+    <string name="pattern">Pattern</string>
+    <string name="fabric">Fabric</string>
+    <string name="thread">Thread</string>
+
+    <string name="pref_pattern_fits">Other Defaults</string>
+    <string name="pref_fabric_defaults">Defaults For Fabric</string>
+
+    <string name="border_setting">Width of border</string>
+    <string name="border_summary">Calculations assume a border of %s inches.</string>
+
+    <string name="count_setting">Fabric count</string>
+    <string name="count_summary">Calculations assume %s count fabric.</string>
+
+    <string name="over_setting">Over two</string>
+    <string name="over_summary">If checked, assumes stitching over 2. </string>
+
+    <string name="update_stash">Update stash on finish</string>
+    <string name="update_stash_summary">Remove the supplies used from the stash when marking a pattern as complete. If using full skeins, full skeins will be removed. </string>
+
+    <string name="crossover_setting">Calculating fit</string>
+    <string name="crossover_summary">Fabric above %s count is assumed to be stitched over 2 when determining if a pattern will fit.</string>
+
+    <string name="edit_thread_stash">Edit Quantities</string>
+    <string name="thread_stashQuantity">Edit thread in stash</string>
+
+    <string name="edit_embellishment_stash">Edit Quantities</string>
+    <string name="embellishment_stashQuantity">Edit embellishments in stash</string>
+
+    <string name="date_picker_title">Select the date:</string>
+
+    <string name="export_pattern">Export Pattern</string>
     <string name="pattern_info">Pattern Info</string>
     <string name="pattern_name_hint">Pattern Name</string>
     <string name="designer_hint">Source</string>
@@ -11,10 +61,29 @@
     <string name="pattern_width_label">Width</string>
     <string name="pattern_height_label">Height</string>
     <string name="pattern_thread_info">Threads</string>
+    <string name="pattern_embellishment_info">Embellishments</string>
     <string name="pattern_thread_details"> </string>
     <string name="pattern_fabric_title">Fabric</string>
-    <string name="pattern_no_fabric">No fabric selected.</string>
-    <string name="pattern_no_thread">No threads selected.</string>
+    <string name="pattern_no_fabric">No fabric selected.  Using your defaults of %1$d count fabric over %2$d with a border of %3$.2f inches, you need a piece of fabric at least %4$.2f inches by %5$.2f inches.</string>
+    <string name="pattern_thread_detail">No threads selected.</string>
+    <string name="pattern_embellishment_detail">No embellishments selected.</string>
+    <string name="is_kitted">Kitted?</string>
+    <string name="in_progress">In Progress?</string>
+    <string name="finish_project">Mark As Complete</string>
+    <string name="remove_stash">Remove Pattern</string>
+    <string name="add_stash">Add To Stash</string>
+    <string name="pattern_finish_title">Congratulations on a finish!</string>
+    <string name="pattern_finish_no_overlap">If you confirm this, the stash will update to remove ALL the floss and embellishments called for by this pattern. If you still have some left to keep in the stash, you will have to update them manually.</string>
+    <string name="pattern_finish_overlap">If you confirm this, the stash will update to remove ALL embellishments and any skeins of thread over the first. If you want to adjust any quantities beyond this, you will have to update them manually.</string>
+    <string name="pattern_finish_no_update">If you confirm this, the stash will move the fabric associated with this pattern to the completion list, but will not edit the quantity of other materials. If you want to adjust those, you will have to update them manually.</string>
+    <string name="pattern_finish_does_nothing">You\'ve said you don\'t want the stash to update automatically, and there\'s no fabric associated with this pattern, so this button really just offers you congratulations! If you want to adjust the quantities of items in your stash, you need to do it manually.</string>
+    <string name="thanks">Thanks!</string>
+    <string name="oops">Oops, I didn\'t finish yet!</string>
+    <string name="finish_list">Finishes</string>
+
+    <string name="start_date_info">Started</string>
+    <string name="finish_date_info">Finished</string>
+    <string name="no_date_set">No Date Set</string>
 
     <string name="thread_info">Thread Info</string>
     <string name="thread_source_hint">Manufacturer</string>
@@ -22,8 +91,27 @@
     <string name="thread_id_hint">ID Code</string>
     <string name="skeins_info">In Stash</string>
     <string name="skeins_owned_label">Skeins Owned</string>
+    <string name="total_skeins_label">Total For Kitted Patterns</string>
+    <string name="skeins_needed_label">Missing For Kitted Patterns</string>
+    <string name="skeins_toBuy_label">Additional Skeins To Buy</string>
+    <string name="skeins_toBuyTotal_label">Total Skeins To Buy</string>
     <string name="thread_pattern_info">Used In</string>
     <string name="thread_pattern_detail">Not used in any patterns.</string>
+    <string name="thread_selectQuantity">Set threads used in pattern:</string>
+
+    <string name="embellishment_info">Embellishment Info</string>
+    <string name="embellishment_source_hint">Manufacturer</string>
+    <string name="embellishment_type_hint">Embellishment Type</string>
+    <string name="embellishment_id_hint">ID Code</string>
+    <string name="stash_info">In Stash</string>
+    <string name="number_owned_label">Number Owned</string>
+    <string name="total_needed_label">Total For Kitted Patterns</string>
+    <string name="number_needed_label">Missing For Kitted Patterns</string>
+    <string name="number_toBuy_label">Additional To Buy</string>
+    <string name="number_toBuyTotal_label">Total To Buy</string>
+    <string name="embellishment_pattern_info">Used In</string>
+    <string name="embellishment_pattern_detail">Not used in any patterns.</string>
+    <string name="embellishment_selectQuantity">Set embellishments used in pattern:</string>
 
     <string name="fabric_info">Fabric Info</string>
     <string name="fabric_source_hint">Company</string>
@@ -35,17 +123,45 @@
     <string name="fabric_height_label">Height</string>
     <string name="fabric_pattern_info">Used For</string>
     <string name="fabric_pattern_detail">Not associated with any patterns.</string>
+    <string name="remove_finish">Undo Finish</string>
+    <string name="fabric_notes">Notes</string>
+    <string name="fabric_notes_hint">Miscellaneous notes.</string>
 
     <string name="fabric_list_title">Fabric</string>
     <string name="thread_list_title">Threads</string>
     <string name="pattern_list_title">Patterns</string>
+    <string name="embellishment_list_title">Embellishments</string>
+    <string name="shopping_pattern_list_title">Fabric For</string>
 
     <string name="new_pattern">New Pattern</string>
     <string name="new_thread">New Thread</string>
     <string name="new_fabric">New Fabric</string>
+    <string name="new_embellishment">New Item</string>
     <string name="delete_pattern">Delete Pattern</string>
     <string name="delete_thread">Delete Thread</string>
     <string name="delete_fabric">Delete Fabric</string>
+    <string name="delete_embellishment">Delete Item</string>
+
+    <string name="successful_import">File imported successfully!</string>
+    <string name="incorrect_file_format">At least one item did not import properly. Please check the file formatting.</string>
+    <string name="incorrect_number_format">At least one set of numbers did not import properly. Please check the file formatting.</string>
+
+    <string name="preferences">Settings</string>
+    <string name="skeins_setting">Patterns use full skeins</string>
+    <string name="skeins_setting_summary">Assume that patterns use the full skein of thread</string>
+
+    <string name="app_help">StashCache Help</string>
+    <string name="help">Help</string>
+    <string name="help_welcome">Thanks for using StashCache!</string>
+    <string name="help_intro"><![CDATA[Tutorials, FAQs, and more are available on <a href="http://www.geekeclectic.com/stashcache/">our website</a>, but here is a quick overview of some key functions.]]></string>
+    <string name="help_add">To add an item to the app, look for this icon in the menu bar. Item type depends on the active view.</string>
+    <string name="help_edit">To edit a list - either quantities in the stash or what a pattern needs - press this icon.</string>
+    <string name="help_delete">To delete an item from the app, press and hold until this icon appears in the top right. Select the items you want to delete and press the trash can.</string>
+    <string name="help_categories">There are three categories in the drop-down menu: your stash, your shopping list, and the master list.</string>
+    <string name="help_stash">The stash shows items you own. Patterns and fabrics are owned by default. Threads and embellishments must have a quantity.</string>
+    <string name="help_shopping">The shopping list shows what you need to purchase to finish kitting a marked pattern, plus any additional items you have marked for purchase.</string>
+    <string name="help_master">The master list shows all the items the app has information on, whether or not they are in your stash. This includes fabric for completed projects.</string>
+
 
     <string-array name="fabric_choice_picker">
         <item>Choose existing fabric</item>
@@ -53,7 +169,13 @@
         <item>Remove assigned fabric</item>
     </string-array>
 
-    <string name="ok">Ok</string>
+    <string-array name="drop_down_list">
+        <item>Stash</item>
+        <item>Master List</item>
+        <item>Shopping List</item>
+    </string-array>
+
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
     <string name="fabric_selectPattern">Not assigned to any pattern.</string>

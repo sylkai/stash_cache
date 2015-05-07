@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.geekeclectic.android.stashcache.StashThreadFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/embellishment_info"
+            style="?android:listSeparatorTextViewStyle" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/embellishment_source"
+            android:inputType="textCapWords"
+            android:hint="@string/embellishment_source_hint" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/embellishment_type"
+            android:inputType="textCapWords"
+            android:hint="@string/embellishment_type_hint" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/embellishment_id"
+            android:inputType="textCapWords"
+            android:hint="@string/embellishment_id_hint" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stash_info"
+            android:layout_marginBottom="8dp"
+            style="?android:listSeparatorTextViewStyle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/number_owned_label"
+                android:layout_weight="1"
+                android:layout_marginLeft="4dp"
+                android:layout_gravity="center_vertical" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:id="@+id/embellishment_decrease_button_owned"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:text="-" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/embellishment_stash_quantity"
+                android:text="0"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:padding="4dp" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:id="@+id/embellishment_increase_button_owned"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="+" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height= "1dp"
+            android:layout_marginBottom="8dp"
+            android:background="#e0e0e0" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/total_needed_label"
+                android:layout_weight="1"
+                android:layout_marginLeft="4dp"
+                android:layout_gravity="center_vertical" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:visibility="invisible"
+                android:text="-" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/embellishment_total_quantity_needed"
+                android:text="0"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:padding="4dp" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:visibility="invisible"
+                android:text="+" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/number_needed_label"
+                android:layout_weight="1"
+                android:layout_marginLeft="4dp"
+                android:layout_gravity="center_vertical" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:visibility="invisible"
+                android:text="-" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/embellishment_quantity_needed"
+                android:text="0"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:padding="4dp" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:visibility="invisible"
+                android:text="+" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/number_toBuy_label"
+                android:layout_weight="1"
+                android:layout_marginLeft="4dp"
+                android:layout_gravity="center_vertical" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:id="@+id/embellishment_decrease_button_toBuy"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:text="-" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/embellishment_toBuy_quantity"
+                android:text="0"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:padding="4dp" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:id="@+id/embellishment_increase_button_toBuy"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="+" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height= "1dp"
+            android:layout_marginBottom="8dp"
+            android:background="#e0e0e0" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/number_toBuyTotal_label"
+                android:layout_weight="1"
+                android:layout_marginLeft="4dp"
+                android:layout_gravity="center_vertical" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:visibility="invisible"
+                android:text="-" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/embellishment_quantity_total"
+                android:text="0"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:padding="4dp" />
+
+            <Button
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/round_button"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:visibility="invisible"
+                android:text="+" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/embellishment_pattern_info"
+            android:layout_marginBottom="4dp"
+            style="?android:listSeparatorTextViewStyle" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/embellishment_pattern_list" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/embellishment_pattern_display"
+            android:visibility="gone"
+            android:text="@string/embellishment_pattern_detail" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_item_pattern"
+        android:icon="@drawable/ic_menu_add"
+        android:title="@string/new_pattern"
+        android:showAsAction="ifRoom|withText" />
+
+    <group android:id="@+id/stash_context_menu">
+
+        <item android:id="@+id/menu_item_finish_project"
+            android:title="@string/finish_project" />
+
+        <item android:id="@+id/menu_item_pattern_remove_stash"
+            android:title="@string/remove_stash" />
+
+        <item android:id="@+id/menu_item_pattern_add_stash"
+            android:title="@string/add_stash" />
+
+        <item android:id="@+id/menu_item_export_pattern"
+            android:icon="@drawable/ic_menu_upload"
+            android:title="@string/export_pattern" />
+
+        <item android:id="@+id/menu_item_preferences"
+            android:title="@string/preferences" />
+
+        <item android:id="@+id/menu_item_help"
+            android:title="@string/help" />
+
+    </group>
+
+</menu>

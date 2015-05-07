@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/menu_add_edit">
+
+        <item android:id="@+id/menu_item_new_pattern"
+            android:icon="@drawable/ic_menu_add"
+            android:title="@string/new_pattern"
+            android:showAsAction="ifRoom|withText"
+            android:visible="false" />
+
+        <item android:id="@+id/menu_item_new_fabric"
+            android:icon="@drawable/ic_menu_add"
+            android:title="@string/new_fabric"
+            android:showAsAction="ifRoom|withText"
+            android:visible="false" />
+
+        <item android:id="@+id/menu_item_edit_thread_stash"
+            android:icon="@drawable/ic_menu_edit"
+            android:title="@string/edit_thread_stash"
+            android:showAsAction="ifRoom|withText"
+            android:visible="false" />
+
+        <item android:id="@+id/menu_item_new_thread"
+            android:icon="@drawable/ic_menu_add"
+            android:title="@string/new_thread"
+            android:showAsAction="ifRoom|withText"
+            android:visible="false" />
+
+        <item android:id="@+id/menu_item_edit_embellishment_stash"
+            android:icon="@drawable/ic_menu_edit"
+            android:title="@string/edit_embellishment_stash"
+            android:showAsAction="ifRoom|withText"
+            android:visible="false" />
+
+        <item android:id="@+id/menu_item_new_embellishment"
+            android:icon="@drawable/ic_menu_add"
+            android:title="@string/new_embellishment"
+            android:showAsAction="ifRoom|withText"
+            android:visible="false" />
+
+    </group>
+
+    <group android:id="@+id/stash_context_menu">
+
+        <item android:id="@+id/menu_item_import_stash"
+            android:icon="@drawable/ic_menu_import"
+            android:title="@string/import_file" />
+
+        <item android:id="@+id/menu_item_export_stash"
+            android:icon="@drawable/ic_menu_upload"
+            android:title="@string/export_stash" />
+
+        <item android:id="@+id/menu_item_delete_stash"
+            android:icon="@drawable/ic_menu_delete"
+            android:title="@string/delete_stash" />
+
+        <item android:id="@+id/menu_item_preferences"
+            android:title="@string/preferences" />
+
+        <item android:id="@+id/menu_item_help"
+            android:title="@string/help" />
+
+    </group>
+
+</menu>

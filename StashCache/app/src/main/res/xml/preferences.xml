@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_fabric_defaults"
+        android:key="pref_key_fabric_defaults">
+
+        <CheckBoxPreference
+            android:key="pref_default_over"
+            android:title="@string/over_setting"
+            android:summary="@string/over_summary"
+            android:defaultValue="true" />
+
+        <com.geekeclectic.android.stashcache.SummaryEditTextPreference
+            android:key="pref_border_width"
+            android:title="@string/border_setting"
+            android:summary="@string/border_summary"
+            android:defaultValue="3.0"
+            android:inputType="numberDecimal"
+            android:numeric="decimal" />
+
+        <com.geekeclectic.android.stashcache.SummaryEditTextPreference
+            android:key="pref_default_count"
+            android:title="@string/count_setting"
+            android:summary="@string/count_summary"
+            android:defaultValue="32"
+            android:inputType="number"
+            android:numeric="integer" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_pattern_fits"
+        android:key="pref_key_pattern_fits">
+
+        <CheckBoxPreference
+            android:key="new_skein_for_each"
+            android:title="@string/skeins_setting"
+            android:summary="@string/skeins_setting_summary"
+            android:defaultValue="false" />
+
+        <com.geekeclectic.android.stashcache.SummaryEditTextPreference
+            android:key="pref_default_crossover"
+            android:title="@string/crossover_setting"
+            android:summary="@string/crossover_summary"
+            android:defaultValue="25"
+            android:inputType="number"
+            android:numeric="integer" />
+
+        <CheckBoxPreference
+            android:key="pref_update_stash"
+            android:title="@string/update_stash"
+            android:summary="@string/update_stash_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

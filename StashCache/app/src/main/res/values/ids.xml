@@ -4,5 +4,6 @@
     <item type="id" name="patternViewPager" />
     <item type="id" name="fabricViewPager" />
     <item type="id" name="threadViewPager" />
+    <item type="id" name="embellishmentViewPager" />
 
 </resources>

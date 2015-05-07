@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_item_fabric"
+        android:icon="@drawable/ic_menu_add"
+        android:title="@string/new_fabric"
+        android:showAsAction="ifRoom|withText" />
+
+    <item android:id="@+id/menu_item_fabric_remove_finish"
+        android:title="@string/remove_finish"
+        android:visible="false" />
+
+    <item android:id="@+id/menu_item_preferences"
+        android:title="@string/preferences" />
+
+    <item android:id="@+id/menu_item_help"
+        android:title="@string/help" />
+
+</menu>

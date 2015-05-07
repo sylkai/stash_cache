@@ -1,10 +1,10 @@
 package com.geekeclectic.android.stashcache;
 
-import android.os.Build;
-import android.support.v4.app.ListFragment;
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentManager;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -15,24 +15,33 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.ArrayAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CheckBox;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
 /**
  * Fragment to display list of threads.  Long press allows user to select items to be deleted.
  */
-public class StashThreadListFragment extends ListFragment {
+public class StashThreadListFragment extends UpdateListFragment implements Observer, StashThreadQuantityDialogFragment.StashThreadQuantityDialogListener {
 
     private ArrayList<UUID> mThreads;
+    private int mViewCode;
+    private UpdateListFragmentsListener mCallback;
 
-    private static final String TAG = "ThreadListFragment";
     private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
+    private static final String THREAD_VIEW_ID = "com.geekeclectic.android.stashcache.thread_view_id";
+    private static final String EDIT_STASH_DIALOG = "edit stash thread dialog";
+
+    public StashThreadListFragment() {
+        // required empty public constructor
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,11 +49,24 @@ public class StashThreadListFragment extends ListFragment {
         setHasOptionsMenu(true);
 
         // get the current list of threads to display
-        mThreads = StashData.get(getActivity()).getThreadList();
+        mViewCode = getArguments().getInt(THREAD_VIEW_ID);
+
+        mThreads = getListFromStash();
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
 
         // create and set adapter using thread list
         ThreadAdapter adapter = new ThreadAdapter(mThreads);
         setListAdapter(adapter);
+    }
+
+    public static StashThreadListFragment newInstance(int viewCode) {
+        Bundle args = new Bundle();
+        args.putInt(THREAD_VIEW_ID, viewCode);
+
+        StashThreadListFragment fragment = new StashThreadListFragment();
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
@@ -83,8 +105,9 @@ public class StashThreadListFragment extends ListFragment {
                                 StashData stash = StashData.get(getActivity());
                                 for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                     if (getListView().isItemChecked(i)) {
-                                        // if item has been selected, delete it from the stash
                                         StashThread thread = stash.getThread(adapter.getItem(i));
+
+                                        // delete thread from the stash
                                         stash.deleteThread(thread);
                                     }
                                 }
@@ -93,6 +116,7 @@ public class StashThreadListFragment extends ListFragment {
 
                                 // refresh the list
                                 adapter.notifyDataSetChanged();
+                                mCallback.onListFragmentUpdate();
                                 return true;
                             default:
                                 return false;
@@ -111,10 +135,23 @@ public class StashThreadListFragment extends ListFragment {
         return v;
     }
 
+    // has to be done after view creation to avoid an NPE
     @Override
-    public void onResume() {
-        super.onResume();
-        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setAppropriateEmptyMessage();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // exception handling here to make Android/Java happy
+        try {
+            mCallback = (UpdateListFragmentsListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement UpdateListFragmentsListener");
+        }
     }
 
     @Override
@@ -128,13 +165,33 @@ public class StashThreadListFragment extends ListFragment {
         switch (item.getItemId()) {
             case R.id.menu_item_new_thread:
                 // create a new thread
-                StashThread thread = new StashThread();
+                StashThread thread = new StashThread(getActivity());
                 StashData.get(getActivity()).addThread(thread);
 
                 // start StashThreadFragment with the new thread
                 Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
                 i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, thread.getId());
-                startActivityForResult(i, 0);
+                i.putExtra(StashThreadFragment.EXTRA_TAB_ID, mViewCode);
+
+                // be sure that the parent fragment will have its onActivityResult called (see
+                // http://stackoverflow.com/questions/6147884/onactivityresult-not-being-called-in-fragment?rq=1#comment27590801_6147919)
+                getParentFragment().startActivityForResult(i, 0);
+                return true;
+            case R.id.menu_item_edit_thread_stash:
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+
+                ArrayList<UUID> threadList;
+                // show the master list if on the stash tab
+                if (mViewCode == StashConstants.STASH_TAB) {
+                    threadList = new ArrayList<UUID>(StashData.get(getActivity()).getThreadList());
+                // show the master list on the master tab or the shopping list on the shopping tab
+                } else {
+                    threadList = new ArrayList<UUID>(mThreads);
+                }
+
+                StashThreadQuantityDialogFragment dialog = StashThreadQuantityDialogFragment.newInstance(threadList, getActivity());
+                dialog.setStashThreadQuantityDialogCallback(this);
+                dialog.show(fm, EDIT_STASH_DIALOG);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -151,16 +208,18 @@ public class StashThreadListFragment extends ListFragment {
         if (item.getGroupId() == THREAD_GROUP_ID) {
             // if called by this fragment
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            StashData stash = StashData.get(getActivity());
             int position = info.position;
             ThreadAdapter adapter = (ThreadAdapter) getListAdapter();
-            StashThread thread = StashData.get(getActivity()).getThread(adapter.getItem(position));
+            StashThread thread = stash.getThread(adapter.getItem(position));
 
             switch (item.getItemId()) {
                 case R.id.menu_item_delete_thread:
                     // delete the thread from the stash
-                    StashData.get(getActivity()).deleteThread(thread);
+                    stash.deleteThread(thread);
                     adapter.notifyDataSetChanged();
-                    return true;
+                    mCallback.onListFragmentUpdate();
+                    return super.onContextItemSelected(item);
             }
         }
 
@@ -171,18 +230,71 @@ public class StashThreadListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         // get StashThread from adapter
         UUID threadId = ((ThreadAdapter)getListAdapter()).getItem(position);
-        Log.d(TAG, threadId.toString() + " was clicked.");
 
         // start StashThreadPagerActivity
         Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
         i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, threadId);
+        i.putExtra(StashThreadFragment.EXTRA_TAB_ID, mViewCode);
         startActivity(i);
+    }
+
+    public void onThreadQuantitiesUpdate() {
+        mThreads = getListFromStash();
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
+        ThreadAdapter adapter = new ThreadAdapter(mThreads);
+        setListAdapter(adapter);
+
+        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    private ArrayList<UUID> getListFromStash() {
+        if (mViewCode == StashConstants.MASTER_TAB) {
+            return StashData.get(getActivity()).getThreadList();
+        } else if (mViewCode == StashConstants.STASH_TAB) {
+            return StashData.get(getActivity()).getThreadStashList();
+        } else {
+            return StashData.get(getActivity()).getThreadShoppingList();
+        }
+    }
+
+    private void setAppropriateEmptyMessage() {
+        if (mViewCode == StashConstants.MASTER_TAB) {
+            setEmptyText("You have not entered any threads.");
+        } else if (mViewCode == StashConstants.STASH_TAB) {
+            setEmptyText("There are no threads in your stash.");
+        } else {
+            setEmptyText("There are no threads on your shopping list.");
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // sort the list in case anything changed
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
+        // make sure the adapter is notified that the data set may have changed
+        ThreadAdapter adapter = (ThreadAdapter)getListAdapter();
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        if (mThreads != getListFromStash()) {
+            mThreads = getListFromStash();
+            Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
+            ThreadAdapter adapter = new ThreadAdapter(mThreads);
+            setListAdapter(adapter);
+        }
+
+        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     private class ThreadAdapter extends ArrayAdapter<UUID> {
 
         public ThreadAdapter(ArrayList<UUID> threads) {
-            super(getActivity(), 0, threads);
+            super(getActivity(), StashConstants.NO_RESOURCE, threads);
         }
 
         @Override
@@ -190,20 +302,39 @@ public class StashThreadListFragment extends ListFragment {
             // if we weren't given a view, inflate one
             if (convertView == null) {
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_thread, null);
+
+                ViewHolder vh = new ViewHolder();
+                vh.threadInfo = (TextView)convertView.findViewById(R.id.thread_list_item_flossIdTextView);
+                vh.threadType = (TextView)convertView.findViewById(R.id.thread_list_item_flossTypeTextView);
+                vh.quantity = (TextView)convertView.findViewById(R.id.thread_list_item_quantity);
+                convertView.setTag(vh);
             }
+
+            ViewHolder vh = (ViewHolder)convertView.getTag();
 
             // configure the view for this thread
             StashThread thread = StashData.get(getActivity()).getThread(getItem(position));
 
-            TextView threadTextView = (TextView)convertView.findViewById(R.id.thread_list_item_flossIdTextView);
-            threadTextView.setText(thread.toString());
+            vh.threadInfo.setText(thread.getDescriptor());
+            vh.threadType.setText(thread.getType());
 
-            CheckBox ownedCheckBox = (CheckBox)convertView.findViewById(R.id.thread_list_item_ownedCheckBox);
-            ownedCheckBox.setChecked(thread.isOwned());
+            if (mViewCode == StashConstants.SHOPPING_TAB) {
+                vh.quantity.setText(Integer.toString(thread.getSkeinsToBuy()));
+            } else if (mViewCode == StashConstants.MASTER_TAB) {
+                vh.quantity.setText(Integer.toString(thread.getSkeinsOwned()) + " / " + Integer.toString(thread.getSkeinsToBuy()));
+            } else {
+                vh.quantity.setText(Integer.toString(thread.getSkeinsOwned()));
+            }
 
             return convertView;
         }
 
+    }
+
+    private static class ViewHolder {
+        public TextView threadInfo;
+        public TextView threadType;
+        public TextView quantity;
     }
 
 }

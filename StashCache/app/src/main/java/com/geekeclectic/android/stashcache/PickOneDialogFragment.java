@@ -16,29 +16,39 @@ import android.support.v4.app.DialogFragment;
 public class PickOneDialogFragment extends DialogFragment implements OnClickListener {
 
     static final String TAG = "PickOneDialog";
+    public static final String EXTRA_RESOURCE = "com.geekeclectic.android.stashcache.pick_one_res";
+    public static final String EXTRA_SELECTED = "com.geekeclectic.android.stashcache.selected";
 
     private static int mSelectedIndex;
     private static int mResourceArray;
     private static OnDialogPickOneListener mDialogPickOneCallback;
 
+    // listener needs to know which id was selected
     public interface OnDialogPickOneListener {
-        public void onSelectedOption(int dialogId);
+        void onSelectedOption(int dialogId);
     }
 
+    // store the info in arguments to recreate the dialog if the device is rotated
     public static PickOneDialogFragment newInstance(int res, int selected) {
+        Bundle args = new Bundle();
         final PickOneDialogFragment dialog = new PickOneDialogFragment();
-        mResourceArray = res;
-        mSelectedIndex = selected;
+        args.putInt(EXTRA_RESOURCE, res);
+        args.putInt(EXTRA_SELECTED, selected);
+        dialog.setArguments(args);
 
         return dialog;
     }
 
+    // set the calling fragment as listener, after dialog creation
     public void setDialogPickOneListener(OnDialogPickOneListener listener) {
         mDialogPickOneCallback = listener;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mResourceArray = getArguments().getInt(EXTRA_RESOURCE);
+        mSelectedIndex = getArguments().getInt(EXTRA_SELECTED);
+
         final Builder builder = new Builder(this.getActivity());
 
         builder.setSingleChoiceItems(mResourceArray, mSelectedIndex, this);
@@ -62,6 +72,7 @@ public class PickOneDialogFragment extends DialogFragment implements OnClickList
                 break;
             default:  // user is selecting an option
                 mSelectedIndex = which;
+                getArguments().putInt(EXTRA_SELECTED, mSelectedIndex);
                 break;
         }
     }

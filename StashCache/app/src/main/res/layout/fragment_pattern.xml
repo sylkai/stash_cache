@@ -1,16 +1,39 @@
-<ScrollView
+<com.geekeclectic.android.stashcache.VerticalScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
     tools:context="com.geekeclectic.android.stashcache.StashPatternFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:paddingRight="16dp"
         android:paddingLeft="16dp"
         android:orientation="vertical">
+
+        <!--<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_centerInParent="true"
+                android:id="@+id/pattern_photo_detail"
+                android:scaleType="centerCrop" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:id="@+id/pattern_photoButton"
+                android:src="@android:drawable/ic_menu_camera"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true" />
+
+        </RelativeLayout>-->
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -27,13 +50,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/pattern_name_hint"
-                android:id="@+id/pattern_name" />
+                android:id="@+id/pattern_name"
+                android:inputType="textCapWords" />
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/designer_hint"
-                android:id="@+id/designer_name" />
+                android:id="@+id/designer_name"
+                android:inputType="textCapWords"/>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/is_kitted"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/pattern_kitted"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/in_progress"
+                    android:layout_weight="1"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/pattern_in_progress"
+                    android:enabled="false" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -55,7 +115,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:id="@+id/pattern_width"
-                android:layout_weight="1" />
+                android:gravity="right"
+                android:layout_weight="1"
+                android:hint="@string/zero" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -69,7 +131,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:id="@+id/pattern_height"
-                android:layout_weight="1" />
+                android:gravity="right"
+                android:layout_weight="1"
+                android:hint="@string/zero"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -85,12 +149,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:src="@android:drawable/ic_menu_edit"
+            <ImageView
+                android:src="@drawable/ic_menu_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/pattern_fabric_edit"
-                android:background= "@android:color/background_light"
                 android:clickable="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
@@ -108,22 +171,82 @@
 
         </RelativeLayout>
 
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:padding="4dp"
+            android:id="@+id/pattern_fabric_display_list" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:id="@+id/pattern_fabric_display" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:id="@+id/pattern_start_group"
+            android:visibility="gone"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/ic_menu_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pattern_start_date_edit"
+                android:clickable="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/start_date_info"
+                android:layout_marginBottom="4dp"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                android:id="@+id/pattern_start"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_centerInParent="true" />
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_centerInParent="true"
+                android:layout_toLeftOf="@id/pattern_start_date_edit"
+                android:layout_toStartOf="@id/pattern_start_date_edit"
+                android:layout_toRightOf="@id/pattern_start"
+                android:layout_toEndOf="@id/pattern_start">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:text="to be replaced"
+                    android:id="@+id/pattern_start_date"
+                    android:textAllCaps="true"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center" />
+
+            </FrameLayout>
+
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:src="@android:drawable/ic_menu_edit"
+            <ImageView
+                android:src="@drawable/ic_menu_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/pattern_thread_edit"
-                android:background= "@android:color/background_light"
                 android:clickable="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
@@ -141,12 +264,74 @@
 
         </RelativeLayout>
 
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:padding="4dp"
+            android:id="@+id/pattern_thread_list" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pattern_thread_display"
-            android:text="@string/pattern_thread_details" />
+            android:visibility="gone"
+            android:text="@string/pattern_thread_detail" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:src="@drawable/ic_menu_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pattern_embellishment_edit"
+                android:clickable="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pattern_embellishment_info"
+                android:layout_marginBottom="4dp"
+                style="?android:listSeparatorTextViewStyle"
+                android:layout_toLeftOf="@id/pattern_embellishment_edit"
+                android:layout_toStartOf="@id/pattern_embellishment_edit"/>
+
+        </RelativeLayout>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:padding="4dp"
+            android:id="@+id/pattern_embellishment_list" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pattern_embellishment_display"
+            android:visibility="gone"
+            android:text="@string/pattern_embellishment_detail" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/finish_list"
+            android:id="@+id/pattern_finish_list_title"
+            android:visibility="invisible"
+            style="?android:listSeparatorTextViewStyle" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:padding="4dp"
+            android:visibility="invisible"
+            android:id="@+id/pattern_finish_list" />
 
     </LinearLayout>
 
-</ScrollView>
+</com.geekeclectic.android.stashcache.VerticalScrollView>
