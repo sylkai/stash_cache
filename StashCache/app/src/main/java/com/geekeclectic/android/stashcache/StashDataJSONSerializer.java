@@ -52,18 +52,27 @@ public class StashDataJSONSerializer {
         BufferedReader reader = null;
 
         try {
-            String openFile;
+            String openFile = null;
             InputStream in = null;
 
             try {
                 in = mContext.openFileInput(mFilename);
                 openFile = mFilename;
             } catch (FileNotFoundException e) {
-                openFile = mBackupFile;
+                try {
+                    in = mContext.openFileInput(mBackupFile);
+                    openFile = mBackupFile;
+                } catch (FileNotFoundException f) {
+                    // happens first time the program is opened
+                }
             } finally {
                 if (in != null) {
                     in.close();
                 }
+            }
+
+            if (openFile == null) {
+                throw new FileNotFoundException();
             }
 
             in = mContext.openFileInput(openFile);
@@ -71,7 +80,7 @@ public class StashDataJSONSerializer {
             //read the file into a StringBuilder
             reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder jsonString = new StringBuilder();
-            String line = null;
+            String line;
 
             while ((line = reader.readLine()) != null) {
                 // omit line breaks as irrelevant
