@@ -535,8 +535,8 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
             // user chose to use existing fabric
             Log.d(TAG, "User chose to use existing fabric");
 
-            // get list of all fabric
-            ArrayList<UUID> fabricStash = StashData.get(getActivity()).getFabricList();
+            // get list of all fabric in the stash
+            ArrayList<UUID> fabricStash = StashData.get(getActivity()).getStashFabricList();
             ArrayList<UUID> possibleFabrics = new ArrayList<UUID>();
             int previousFabric;
 
