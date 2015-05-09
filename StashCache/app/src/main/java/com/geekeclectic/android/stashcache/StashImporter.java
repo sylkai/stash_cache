@@ -574,6 +574,11 @@ public class StashImporter {
 
         // if thread information is entered, check for thread in stash already and add it if not present
         while ((lastRead = reader.readLine()) != null) {
+            // break if we encounter * indicating the end of the thread block (for when user entered no threads
+            if (lastRead.equals(patternBlockDivider)) {
+                break;
+            }
+
             String source = lastRead;
             String type = reader.readLine();
             if (checkToContinue(type)) {
@@ -600,6 +605,7 @@ public class StashImporter {
                 pattern.increaseQuantity(thread);
             }
 
+            // found the end of the thread block (user entered threads) so break
             if (lastRead == null || lastRead.equals(patternBlockDivider)) {
                 break;
             }
@@ -664,6 +670,11 @@ public class StashImporter {
 
         // if embellishment information is entered, check for embellishment in stash already and add it if not present
         while ((lastRead = reader.readLine()) != null) {
+            // user entered no threads, but there is finish information/another pattern/end of pattern block
+            if (lastRead.equals(patternBlockDivider) || lastRead.equals(stashTypeDivider) || lastRead.equals(stashBlockDivider)) {
+                break;
+            }
+
             String source = lastRead;
             String type = reader.readLine();
             if (checkToContinue(type)) {
@@ -683,6 +694,7 @@ public class StashImporter {
                 pattern.increaseQuantity(embellishment);
             }
 
+            // user did enter embellishments, but end of file/finish information/another pattern/end of pattern block
             if (lastRead == null || lastRead.equals(patternBlockDivider) || lastRead.equals(stashTypeDivider) || lastRead.equals(stashBlockDivider)) {
                 break;
             }
