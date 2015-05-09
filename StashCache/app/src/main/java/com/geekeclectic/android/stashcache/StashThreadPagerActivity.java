@@ -26,6 +26,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
     private ViewPager mViewPager;
     private ArrayList<UUID> mThreads;
+    private int mCurrentThread;
     private int callingTab;
 
     @Override
@@ -68,11 +69,14 @@ public class StashThreadPagerActivity extends FragmentActivity {
 
             public void onPageSelected(int currentThread) {
                 // keep track of which fragment is currently displayed and let the host activity know
+                mCurrentThread = currentThread;
                 StashThread thread = StashData.get(getParent()).getThread(mThreads.get(currentThread));
                 ActionBar actionBar = getActionBar();
 
-                actionBar.setTitle(getString(R.string.thread));
-                actionBar.setSubtitle(thread.toString());
+                if (actionBar != null) {
+                    actionBar.setTitle(getString(R.string.thread));
+                    actionBar.setSubtitle(thread.toString());
+                }
             }
         });
 
@@ -81,14 +85,17 @@ public class StashThreadPagerActivity extends FragmentActivity {
         for (int i = 0; i < mThreads.size(); i++) {
             if (mThreads.get(i).equals(threadId)) {
                 mViewPager.setCurrentItem(i);
+                mCurrentThread = i;
 
                 // if the current item is the first one, onPageSelected doesn't fire, so set it manually
                 if (i == 0) {
                     StashThread thread = StashData.get(this).getThread(mThreads.get(i));
                     ActionBar actionBar = getActionBar();
 
-                    actionBar.setTitle(getString(R.string.thread));
-                    actionBar.setSubtitle(thread.toString());
+                    if (actionBar != null) {
+                        actionBar.setTitle(getString(R.string.thread));
+                        actionBar.setSubtitle(thread.toString());
+                    }
                 }
                 break;
             }
@@ -110,6 +117,10 @@ public class StashThreadPagerActivity extends FragmentActivity {
                 StashThread thread = new StashThread(this);
                 StashData.get(this).addThread(thread);
 
+                StashThread currentThread = StashData.get(this).getThread(mThreads.get(mCurrentThread));
+                thread.setSource(currentThread.getSource());
+                thread.setType(currentThread.getType());
+
                 // notify the adapter the dataset has changed
                 mViewPager.getAdapter().notifyDataSetChanged();
 
@@ -118,6 +129,7 @@ public class StashThreadPagerActivity extends FragmentActivity {
                 for (int i = 0; i < mThreads.size(); i++) {
                     if (mThreads.get(i).equals(threadId)) {
                         mViewPager.setCurrentItem(i);
+                        mCurrentThread = i;
                         break;
                     }
                 }

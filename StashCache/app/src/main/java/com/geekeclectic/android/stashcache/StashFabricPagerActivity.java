@@ -30,6 +30,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
     private ArrayList<UUID> mFabrics;
 
     private int callingTab;
+    private int mCurrentFabric;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,9 +63,12 @@ public class StashFabricPagerActivity extends FragmentActivity {
                 // keep track of which fragment is currently displayed and let the host activity know
                 StashFabric fabric = StashData.get(getParent()).getFabric(mFabrics.get(currentFabric));
                 ActionBar actionBar = getActionBar();
+                mCurrentFabric = currentFabric;
 
-                actionBar.setTitle(getString(R.string.fabric));
-                actionBar.setSubtitle(fabric.getInfo());
+                if (actionBar != null) {
+                    actionBar.setTitle(getString(R.string.fabric));
+                    actionBar.setSubtitle(fabric.getInfo());
+                }
             }
         });
 
@@ -73,14 +77,17 @@ public class StashFabricPagerActivity extends FragmentActivity {
         for (int i = 0; i < mFabrics.size(); i++) {
             if (mFabrics.get(i).equals(fabricId)) {
                 mViewPager.setCurrentItem(i);
+                mCurrentFabric = i;
 
                 // onPageSelected won't fire if the item up is the first one, so need to set that up separately
                 if (i == 0) {
                     StashFabric fabric = StashData.get(this).getFabric(mFabrics.get(i));
                     ActionBar actionBar = getActionBar();
 
-                    actionBar.setTitle(getString(R.string.fabric));
-                    actionBar.setSubtitle(fabric.getInfo());
+                    if (actionBar != null) {
+                        actionBar.setTitle(getString(R.string.fabric));
+                        actionBar.setSubtitle(fabric.getInfo());
+                    }
                 }
 
                 break;
@@ -119,6 +126,12 @@ public class StashFabricPagerActivity extends FragmentActivity {
                 StashFabric fabric = new StashFabric(this);
                 StashData.get(this).addFabric(fabric);
 
+                StashFabric currentFabric = StashData.get(this).getFabric(mFabrics.get(mCurrentFabric));
+                fabric.setSource(currentFabric.getSource());
+                fabric.setColor(currentFabric.getColor());
+                fabric.setType(currentFabric.getType());
+                fabric.setCount(currentFabric.getCount());
+
                 // notify the adapter that the list has changed
                 mViewPager.getAdapter().notifyDataSetChanged();
 
@@ -127,6 +140,7 @@ public class StashFabricPagerActivity extends FragmentActivity {
                 for (int i = 0; i < mFabrics.size(); i++) {
                     if (mFabrics.get(i).equals(fabricId)) {
                         mViewPager.setCurrentItem(i);
+                        mCurrentFabric = i;
                         break;
                     }
                 }
