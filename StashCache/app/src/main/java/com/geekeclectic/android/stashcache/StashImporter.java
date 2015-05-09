@@ -885,10 +885,12 @@ public class StashImporter {
             // portion is used as the map key
             String id = thread.getCode();
             String key;
-            if (id.contains(" ")) {
+            if (id != null && id.contains(" ")) {
                 key = id.split("\\s")[0];
-            } else {
+            } else if (id != null) {
                 key = id;
+            } else {
+                key = "null";
             }
             shortThreadList = threadMap.get(key);
 
@@ -906,7 +908,13 @@ public class StashImporter {
 
         for (UUID embellishmentId : embellishmentList) {
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
-            shortEmbellishmentList = embellishmentMap.get(embellishment.getCode());
+            String id = embellishment.getCode();
+
+            if (id == null) {
+                id = "null";
+            }
+
+            shortEmbellishmentList = embellishmentMap.get(id);
 
             if (shortEmbellishmentList == null) {
                 shortEmbellishmentList = new ArrayList<UUID>();
