@@ -224,7 +224,10 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
         mFabricWidth.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
-                    mFabric.setWidth(Double.parseDouble(c.toString()));
+                    String number = c.toString();
+                    if (!number.equals(".")){
+                        mFabric.setWidth(Double.parseDouble(number));
+                    }
                 } else {
                     mFabric.setWidth(StashConstants.DOUBLE_ZERO);
                 }
@@ -244,7 +247,10 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
         mFabricHeight.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence c, int start, int before, int count) {
                 if (c.length() > 0) {
-                    mFabric.setHeight(Double.parseDouble(c.toString()));
+                    String number = c.toString();
+                    if (!number.equals(".")) {
+                        mFabric.setHeight(Double.parseDouble(c.toString()));
+                    }
                 } else {
                     mFabric.setHeight(StashConstants.DOUBLE_ZERO);
                 }

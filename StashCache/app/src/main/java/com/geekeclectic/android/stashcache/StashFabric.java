@@ -248,7 +248,13 @@ public class StashFabric extends StashObject {
         // calculates the available stitch count using the fabric size and count, minus surrounding
         // edge buffer for framing, updated every time height/width/count is changed
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        double edge_buffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));
+        String edge_number = sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER);
+        double edge_buffer;
+        if (!edge_number.equals(".")) {
+            edge_buffer = Double.parseDouble(edge_number);
+        } else {
+            edge_buffer = Double.parseDouble(StashConstants.DEFAULT_BORDER);
+        }
         int over_default = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_CROSSOVER, StashConstants.OVER_TWO_DEFAULT));
 
         // if the fabric count is above the default, calculate it stitching over two (otherwise over one)

@@ -702,7 +702,15 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
             // calculate the size of fabric needed based on the defaults and update the empty listview
             // to show it
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            double edgeBuffer = Double.parseDouble(sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER));
+            String edgeNumber = sharedPrefs.getString(StashPreferencesActivity.KEY_BORDER_SETTING, StashConstants.DEFAULT_BORDER);
+            double edgeBuffer;
+
+            if (!edgeNumber.equals(".")) {
+                edgeBuffer = Double.parseDouble(edgeNumber);
+            } else {
+                edgeBuffer = Double.parseDouble(StashConstants.DEFAULT_BORDER);
+            }
+
             int defaultCount = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_COUNT_SETTING, StashConstants.DEFAULT_COUNT));
             int overCount;
 
