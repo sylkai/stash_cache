@@ -26,6 +26,7 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
     private ViewPager mViewPager;
     private ArrayList<UUID> mEmbellishments;
     private int callingTab;
+    private int mCurrentEmbellishment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,9 +69,12 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
                 // keep track of which fragment is currently displayed and let the host activity know
                 StashEmbellishment embellishment = StashData.get(getParent()).getEmbellishment(mEmbellishments.get(currentEmbellishment));
                 ActionBar actionBar = getActionBar();
+                mCurrentEmbellishment = currentEmbellishment;
 
-                actionBar.setTitle(getString(R.string.embellishment));
-                actionBar.setSubtitle(embellishment.toString());
+                if (actionBar != null) {
+                    actionBar.setTitle(getString(R.string.embellishment));
+                    actionBar.setSubtitle(embellishment.toString());
+                }
             }
         });
 
@@ -79,14 +83,17 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
         for (int i = 0; i < mEmbellishments.size(); i++) {
             if (mEmbellishments.get(i).equals(embellishmentId)) {
                 mViewPager.setCurrentItem(i);
+                mCurrentEmbellishment = i;
 
                 // onPageSelected won't fire if the item up is the first one, so need to set that up separately
                 if (i == 0) {
                     StashEmbellishment embellishment = StashData.get(this).getEmbellishment(mEmbellishments.get(i));
                     ActionBar actionBar = getActionBar();
 
-                    actionBar.setTitle(getString(R.string.embellishment));
-                    actionBar.setSubtitle(embellishment.toString());
+                    if (actionBar != null) {
+                        actionBar.setTitle(getString(R.string.embellishment));
+                        actionBar.setSubtitle(embellishment.toString());
+                    }
                 }
                 break;
             }
@@ -108,6 +115,10 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
                 StashEmbellishment embellishment = new StashEmbellishment(this);
                 StashData.get(this).addEmbellishment(embellishment);
 
+                StashEmbellishment currentEmbellishment = StashData.get(this).getEmbellishment(mEmbellishments.get(mCurrentEmbellishment));
+                embellishment.setSource(currentEmbellishment.getSource());
+                embellishment.setType(currentEmbellishment.getType());
+
                 // notify the adapter the dataset has changed
                 mViewPager.getAdapter().notifyDataSetChanged();
 
@@ -116,6 +127,7 @@ public class StashEmbellishmentPagerActivity extends FragmentActivity {
                 for (int i = 0; i < mEmbellishments.size(); i++) {
                     if (mEmbellishments.get(i).equals(embellishmentId)) {
                         mViewPager.setCurrentItem(i);
+                        mCurrentEmbellishment = i;
                         break;
                     }
                 }

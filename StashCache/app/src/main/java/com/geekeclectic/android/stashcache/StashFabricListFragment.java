@@ -53,7 +53,7 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         // get the current list of fabrics to display
         mViewCode = getArguments().getInt(FABRIC_VIEW_ID);
 
-        getAppropriateList();
+        mFabrics = getAppropriateList();
         Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
 
         // create and set list adapter using fabrics list
@@ -223,22 +223,31 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
         i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabricId);
         i.putExtra(StashFabricFragment.EXTRA_TAB_ID, mViewCode);
-        startActivity(i);
+
+        getParentFragment().startActivityForResult(i, 0);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // sort the list in case anything changed
-        Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
-
-        // make sure the adapter is notified that the data set may have changed
-        FabricAdapter adapter = (FabricAdapter)getListAdapter();
-        adapter.notifyDataSetChanged();
+        updateList();
     }
 
     @Override
     public void update(Observable observable, Object data) {
-        Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
+        updateList();
+    }
+
+    private void updateList() {
+        if (mFabrics != getAppropriateList()) {
+            mFabrics = getAppropriateList();
+            // sort the list in case anything changed
+            Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
+
+            FabricAdapter adapter = new FabricAdapter(mFabrics);
+            setListAdapter(adapter);
+        }
+
+        // make sure the adapter is notified that the data set may have changed
         ((FabricAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
@@ -250,11 +259,11 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         }
     }
 
-    private void getAppropriateList() {
+    private ArrayList<UUID> getAppropriateList() {
         if (mViewCode == StashConstants.MASTER_TAB) {
-            mFabrics = StashData.get(getActivity()).getFabricList();
+            return StashData.get(getActivity()).getFabricList();
         } else {
-            mFabrics = StashData.get(getActivity()).getStashFabricList();
+            return StashData.get(getActivity()).getStashFabricList();
         }
     }
 

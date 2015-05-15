@@ -42,6 +42,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
 
     private int REQUEST_PREFERENCES_UPDATE = 1;
 
+    private int mCurrentPattern;
     private int callingTab;
 
     @Override
@@ -75,9 +76,12 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 // keep track of which fragment is currently displayed and let the host activity know
                 StashPattern pattern = mPatterns.get(currentPattern);
                 ActionBar actionBar = getActionBar();
+                mCurrentPattern = currentPattern;
 
-                actionBar.setTitle(getString(R.string.pattern));
-                actionBar.setSubtitle(pattern.toString());
+                if (actionBar != null) {
+                    actionBar.setTitle(getString(R.string.pattern));
+                    actionBar.setSubtitle(pattern.toString());
+                }
             }
         });
 
@@ -87,14 +91,17 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
         for (int i = 0; i < mPatterns.size(); i++) {
             if (mPatterns.get(i).getId().equals(patternId)) {
                 mViewPager.setCurrentItem(i);
+                mCurrentPattern = i;
 
                 // if the first item, onPageSelected doesn't fire to set the Title, so done here
                 if (i == 0) {
                     StashPattern pattern = mPatterns.get(i);
                     ActionBar actionBar = getActionBar();
 
-                    actionBar.setTitle(getString(R.string.pattern));
-                    actionBar.setSubtitle(pattern.toString());
+                    if (actionBar != null) {
+                        actionBar.setTitle(getString(R.string.pattern));
+                        actionBar.setSubtitle(pattern.toString());
+                    }
                 }
 
                 break;
@@ -142,6 +149,9 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 StashPattern pattern = new StashPattern(this);
                 StashData.get(this).addPattern(pattern);
 
+                StashPattern currentPattern = mPatterns.get(mCurrentPattern);
+                pattern.setSource(currentPattern.getSource());
+
                 // notify the adapter the list has changed
                 mViewPager.getAdapter().notifyDataSetChanged();
 
@@ -150,6 +160,7 @@ public class StashPatternPagerActivity extends FragmentActivity implements Stash
                 for (int i = 0; i < mPatterns.size(); i++) {
                     if (mPatterns.get(i).getId().equals(patternId)) {
                         mViewPager.setCurrentItem(i);
+                        mCurrentPattern = i;
                         break;
                     }
                 }

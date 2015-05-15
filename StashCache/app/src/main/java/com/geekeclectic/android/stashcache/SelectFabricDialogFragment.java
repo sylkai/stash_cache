@@ -73,7 +73,9 @@ public class SelectFabricDialogFragment extends DialogFragment implements Dialog
                 dialog.dismiss();
 
                 // send the selected value to the registered callback
-                mSelectFabricDialogCallback.onSelectedFabric(mFabrics.get(mSelectedIndex));
+                if (mSelectedIndex != -1) {
+                    mSelectFabricDialogCallback.onSelectedFabric(mFabrics.get(mSelectedIndex));
+                }
                 break;
             default:  // user is selecting an option
                 mSelectedIndex = which;

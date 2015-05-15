@@ -221,7 +221,8 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
         i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
         i.putExtra(StashPatternFragment.EXTRA_TAB_ID, mViewCode);
-        startActivity(i);
+
+        getParentFragment().startActivityForResult(i, 0);
     }
 
     private ArrayList<StashPattern> getListFromStash() {
@@ -234,20 +235,11 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // sort the list in case anything changed
-        Collections.sort(mPatterns, new StashPatternComparator());
-
-        // make sure the adapter is notified that the data set may have changed
-        PatternAdapter adapter = (PatternAdapter)getListAdapter();
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void update(Observable observable, Object data) {
+    private void updateList() {
         if (mPatterns != getListFromStash()) {
             mPatterns = getListFromStash();
+
+            // sort the list in case anything changed
             Collections.sort(mPatterns, new StashPatternComparator());
 
             PatternAdapter adapter = new PatternAdapter(mPatterns);
@@ -255,6 +247,16 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         }
 
         ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        updateList();
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        updateList();
     }
 
     private void setAppropriateEmptyMessage() {

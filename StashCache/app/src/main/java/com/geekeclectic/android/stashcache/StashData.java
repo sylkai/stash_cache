@@ -61,6 +61,7 @@ public class StashData {
         mEmbellishmentList = new ArrayList<UUID>();
         mStashEmbellishmentList = new ArrayList<UUID>();
         mShoppingEmbellishmentList = new ArrayList<UUID>();
+        mStashPatterns = new ArrayList<StashPattern>();
 
         // need reference to ourselves to pass into the serializer
         sStash = this;
