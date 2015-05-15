@@ -243,13 +243,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     // update the list (in the case of things like changes to the stash list) and create and set
     // a new adapter (because otherwise it wasn't updating despite datasetchanged)
     public void onEmbellishmentQuantitiesUpdate() {
-        mEmbellishments = getListFromStash();
-        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
-
-        EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);
-        setListAdapter(adapter);
-
-        ((EmbellishmentAdapter)getListAdapter()).notifyDataSetChanged();
+        updateList();
     }
 
     private ArrayList<UUID> getListFromStash() {
@@ -275,17 +269,24 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // sort the list in case anything changed
-        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
+        updateList();
+    }
 
-        // make sure the adapter is notified that the data set may have changed
-        EmbellishmentAdapter adapter = (EmbellishmentAdapter)getListAdapter();
-        adapter.notifyDataSetChanged();
+    private void updateList() {
+        if (mEmbellishments != getListFromStash()) {
+            mEmbellishments = getListFromStash();
+            Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
+
+            EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);
+            setListAdapter(adapter);
+        }
+
+        ((EmbellishmentAdapter)getListAdapter()).notifyDataSetChanged();
     }
 
     @Override
     public void update(Observable observable, Object data) {
-        ((EmbellishmentAdapter)getListAdapter()).notifyDataSetChanged();
+        updateList();
     }
 
     private class EmbellishmentAdapter extends ArrayAdapter<UUID> {

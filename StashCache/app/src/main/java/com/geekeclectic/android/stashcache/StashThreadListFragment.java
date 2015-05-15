@@ -240,11 +240,17 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
     }
 
     public void onThreadQuantitiesUpdate() {
-        mThreads = getListFromStash();
-        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+        updateList();
+    }
 
-        ThreadAdapter adapter = new ThreadAdapter(mThreads);
-        setListAdapter(adapter);
+    private void updateList() {
+        if (mThreads != getListFromStash()) {
+            mThreads = getListFromStash();
+            Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
+            ThreadAdapter adapter = new ThreadAdapter(mThreads);
+            setListAdapter(adapter);
+        }
 
         ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
     }
@@ -271,25 +277,12 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // sort the list in case anything changed
-        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
-
-        // make sure the adapter is notified that the data set may have changed
-        ThreadAdapter adapter = (ThreadAdapter)getListAdapter();
-        adapter.notifyDataSetChanged();
+        updateList();
     }
 
     @Override
     public void update(Observable observable, Object data) {
-        if (mThreads != getListFromStash()) {
-            mThreads = getListFromStash();
-            Collections.sort(mThreads, new StashThreadComparator(getActivity()));
-
-            ThreadAdapter adapter = new ThreadAdapter(mThreads);
-            setListAdapter(adapter);
-        }
-
-        ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
+        updateList();
     }
 
     private class ThreadAdapter extends ArrayAdapter<UUID> {

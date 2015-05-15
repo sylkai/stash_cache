@@ -382,6 +382,10 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+
+            StashCreateShoppingList shoppingList = new StashCreateShoppingList();
+            shoppingList.updateShoppingList(getApplicationContext());
+
             if (dialog != null) {
                 dialog.dismiss();
             }
