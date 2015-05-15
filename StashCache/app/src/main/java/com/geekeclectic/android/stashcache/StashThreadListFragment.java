@@ -235,7 +235,8 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
         i.putExtra(StashThreadFragment.EXTRA_THREAD_ID, threadId);
         i.putExtra(StashThreadFragment.EXTRA_TAB_ID, mViewCode);
-        startActivity(i);
+
+        getParentFragment().startActivityForResult(i, 0);
     }
 
     public void onThreadQuantitiesUpdate() {

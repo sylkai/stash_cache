@@ -223,7 +223,8 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
         Intent i = new Intent(getActivity(), StashFabricPagerActivity.class);
         i.putExtra(StashFabricFragment.EXTRA_FABRIC_ID, fabricId);
         i.putExtra(StashFabricFragment.EXTRA_TAB_ID, mViewCode);
-        startActivity(i);
+
+        getParentFragment().startActivityForResult(i, 0);
     }
 
     @Override

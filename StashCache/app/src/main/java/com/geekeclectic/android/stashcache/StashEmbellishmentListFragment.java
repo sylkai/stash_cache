@@ -236,7 +236,8 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
         i.putExtra(StashEmbellishmentFragment.EXTRA_EMBELLISHMENT_ID, embellishmentId);
         i.putExtra(StashEmbellishmentFragment.EXTRA_TAB_ID, mViewCode);
-        startActivity(i);
+
+        getParentFragment().startActivityForResult(i, 0);
     }
 
     // update the list (in the case of things like changes to the stash list) and create and set

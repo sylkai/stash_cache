@@ -221,7 +221,8 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         Intent i = new Intent(getActivity(), StashPatternPagerActivity.class);
         i.putExtra(StashPatternFragment.EXTRA_PATTERN_ID, pattern.getId());
         i.putExtra(StashPatternFragment.EXTRA_TAB_ID, mViewCode);
-        startActivity(i);
+
+        getParentFragment().startActivityForResult(i, 0);
     }
 
     private ArrayList<StashPattern> getListFromStash() {
