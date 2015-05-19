@@ -34,10 +34,12 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
     private ArrayList<UUID> mThreads;
     private int mViewCode;
     private UpdateListFragmentsListener mCallback;
+    private boolean mDialogUp;
 
     private static final int THREAD_GROUP_ID = R.id.thread_context_menu;
     private static final String THREAD_VIEW_ID = "com.geekeclectic.android.stashcache.thread_view_id";
     private static final String EDIT_STASH_DIALOG = "edit stash thread dialog";
+    private static final String KEY_DIALOG = "com.geekeclectic.android.stashcache.key_thread_dialog";
 
     public StashThreadListFragment() {
         // required empty public constructor
@@ -50,6 +52,12 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
 
         // get the current list of threads to display
         mViewCode = getArguments().getInt(THREAD_VIEW_ID);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_DIALOG)) {
+            mDialogUp = savedInstanceState.getBoolean(KEY_DIALOG);
+        } else {
+            mDialogUp = false;
+        }
 
         mThreads = getListFromStash();
         Collections.sort(mThreads, new StashThreadComparator(getActivity()));
@@ -67,6 +75,14 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
         fragment.setArguments(args);
 
         return fragment;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        // need to save if the dialog is active
+        savedInstanceState.putBoolean(KEY_DIALOG, mDialogUp);
     }
 
     @Override
@@ -140,6 +156,13 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setAppropriateEmptyMessage();
+
+        if (mDialogUp) {
+            FragmentManager fm = this.getChildFragmentManager();
+
+            StashThreadQuantityDialogFragment dialog = (StashThreadQuantityDialogFragment)fm.findFragmentByTag(EDIT_STASH_DIALOG);
+            dialog.setStashThreadQuantityDialogCallback(this);
+        }
     }
 
     @Override
@@ -178,7 +201,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
                 getParentFragment().startActivityForResult(i, 0);
                 return true;
             case R.id.menu_item_edit_thread_stash:
-                FragmentManager fm = getActivity().getSupportFragmentManager();
+                FragmentManager fm = this.getChildFragmentManager();
 
                 ArrayList<UUID> threadList;
                 // show the master list if on the stash tab
@@ -192,6 +215,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
                 StashThreadQuantityDialogFragment dialog = StashThreadQuantityDialogFragment.newInstance(threadList, getActivity());
                 dialog.setStashThreadQuantityDialogCallback(this);
                 dialog.show(fm, EDIT_STASH_DIALOG);
+                mDialogUp = true;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -241,6 +265,7 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
 
     public void onThreadQuantitiesUpdate() {
         updateList();
+        mDialogUp = false;
     }
 
     private void updateList() {

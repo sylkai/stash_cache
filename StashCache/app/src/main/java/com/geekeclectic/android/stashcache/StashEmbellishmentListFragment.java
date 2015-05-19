@@ -34,10 +34,12 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     private ArrayList<UUID> mEmbellishments;
     private int mViewCode;
     private UpdateListFragmentsListener mCallback;
+    private boolean mDialogUp;
 
     private static final int EMBELLISHMENT_GROUP_ID = R.id.embellishment_context_menu;
     private static final String EMBELLISHMENT_VIEW_ID = "com.geekeclectic.android.stashcache.embellishment_view_id";
     private static final String EDIT_STASH_DIALOG = "embellishment stash dialog";
+    private static final String KEY_DIALOG = "com.geekeclectic.android.stashcache.key_embellishment_dialog";
 
     public StashEmbellishmentListFragment() {
         // required empty public constructor
@@ -50,6 +52,12 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
 
         // get the current list of embellishments to display
         mViewCode = getArguments().getInt(EMBELLISHMENT_VIEW_ID, 0);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_DIALOG)) {
+            mDialogUp = savedInstanceState.getBoolean(KEY_DIALOG);
+        } else {
+            mDialogUp = false;
+        }
 
         mEmbellishments = getListFromStash();
         Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
@@ -67,6 +75,14 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         fragment.setArguments(args);
 
         return fragment;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        // need to save if the dialog is active
+        savedInstanceState.putBoolean(KEY_DIALOG, mDialogUp);
     }
 
     @Override
@@ -155,6 +171,13 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
         super.onViewCreated(view, savedInstanceState);
 
         setAppropriateEmptyMessage();
+
+        if (mDialogUp) {
+            FragmentManager fm = this.getChildFragmentManager();
+
+            StashEmbellishmentQuantityDialogFragment dialog = (StashEmbellishmentQuantityDialogFragment)fm.findFragmentByTag(EDIT_STASH_DIALOG);
+            dialog.setStashEmbellishmentQuantityDialogCallback(this);
+        }
     }
 
     @Override
@@ -181,7 +204,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
                 getParentFragment().startActivityForResult(i, 0);
                 return true;
             case R.id.menu_item_edit_embellishment_stash:
-                FragmentManager fm = getActivity().getSupportFragmentManager();
+                FragmentManager fm = this.getChildFragmentManager();
 
                 ArrayList<UUID> embellishmentList;
                 if (mViewCode == 0) {
@@ -193,6 +216,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
                 StashEmbellishmentQuantityDialogFragment dialog = StashEmbellishmentQuantityDialogFragment.newInstance(embellishmentList, getActivity());
                 dialog.setStashEmbellishmentQuantityDialogCallback(this);
                 dialog.show(fm, EDIT_STASH_DIALOG);
+                mDialogUp = true;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -244,6 +268,7 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     // a new adapter (because otherwise it wasn't updating despite datasetchanged)
     public void onEmbellishmentQuantitiesUpdate() {
         updateList();
+        mDialogUp = false;
     }
 
     private ArrayList<UUID> getListFromStash() {
