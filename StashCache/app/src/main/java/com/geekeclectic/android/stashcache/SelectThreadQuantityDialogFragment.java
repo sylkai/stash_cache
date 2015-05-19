@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
@@ -45,13 +46,12 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
         return dialog;
     }
 
-    // set the calling fragment as the listener after the dialog is created
-    public void setSelectThreadQuantityDialogCallback(SelectThreadQuantityDialogListener listener) {
-        mSelectThreadQuantityDialogCallback = listener;
-    }
-
     @Override
     public void onClick(DialogInterface dialog, int which) {
+        // target fragment set when dialog initially created, persists through rotation/sleep, managed
+        // by fragmentmanager
+        mSelectThreadQuantityDialogCallback = (SelectThreadQuantityDialogListener) getTargetFragment();
+
         switch (which) {
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();

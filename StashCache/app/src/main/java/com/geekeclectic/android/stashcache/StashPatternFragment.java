@@ -443,7 +443,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
                 FragmentManager fm = getActivity().getSupportFragmentManager();
 
                 SelectThreadQuantityDialogFragment dialog = SelectThreadQuantityDialogFragment.newInstance(StashData.get(getActivity()).getThreadList(), mPattern, getActivity());
-                dialog.setSelectThreadQuantityDialogCallback(mFragment);
+                dialog.setTargetFragment(mFragment, StashConstants.IRRELEVANT_REQUEST_CODE);
                 dialog.show(fm, DIALOG_THREAD);
             }
         });
@@ -474,7 +474,7 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
 
                 // create a copy of the thread list to avoid modification errors
                 SelectEmbellishmentQuantityDialogFragment dialog = SelectEmbellishmentQuantityDialogFragment.newInstance(StashData.get(getActivity()).getEmbellishmentList(), mPattern, getActivity());
-                dialog.setSelectEmbellishmentQuantityDialogCallback(mFragment);
+                dialog.setTargetFragment(mFragment, StashConstants.IRRELEVANT_REQUEST_CODE);
                 dialog.show(fm, DIALOG_THREAD);
             }
         });

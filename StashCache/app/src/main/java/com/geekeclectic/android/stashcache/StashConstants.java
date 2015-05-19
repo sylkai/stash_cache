@@ -57,4 +57,6 @@ public class StashConstants {
     public static final int TWO_BORDERS = 2;
 
     public static final int DISPLAY_LIST_ITEMS = 4;
+
+    public static final int IRRELEVANT_REQUEST_CODE = 0;
 }
