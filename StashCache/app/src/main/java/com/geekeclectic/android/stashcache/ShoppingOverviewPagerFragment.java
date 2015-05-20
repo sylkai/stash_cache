@@ -99,7 +99,6 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
     public class StashOverviewPagerAdapter extends FragmentStatePagerAdapter {
 
         private Observable mObservers = new FragmentObserver();
-        private WeakReference<Fragment> fabricList;
         private WeakReference<Fragment> threadList;
         private WeakReference<Fragment> embellishmentList;
         private WeakReference<Fragment> patternList;
@@ -144,9 +143,6 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
 
             // save the appropriate reference depending on the position
             switch (position) {
-                case StashConstants.FABRIC_VIEW: // fabric list
-                    fabricList = new WeakReference<Fragment>(createdFragment);
-                    break;
                 case StashConstants.THREAD_VIEW: // thread list
                     threadList = new WeakReference<Fragment>(createdFragment);
                     break;
@@ -193,18 +189,27 @@ public class ShoppingOverviewPagerFragment extends UpdateFragment {
         public Fragment getCurrentFragment(int position) {
             Fragment fragment;
             switch (position) {
-                case StashConstants.FABRIC_VIEW: // fabric list
-                    fragment = fabricList.get();
-                    return fragment;
                 case StashConstants.THREAD_VIEW: // thread list
-                    fragment = threadList.get();
-                    return fragment;
+                    if (threadList != null) {
+                        fragment = threadList.get();
+                        return fragment;
+                    } else {
+                        return null;
+                    }
                 case StashConstants.EMBELLISHMENT_VIEW: // embellishment list
-                    fragment = embellishmentList.get();
-                    return fragment;
+                    if (embellishmentList != null) {
+                        fragment = embellishmentList.get();
+                        return fragment;
+                    } else {
+                        return null;
+                    }
                 default: // pattern list
-                    fragment = patternList.get();
-                    return fragment;
+                    if (patternList != null) {
+                        fragment = patternList.get();
+                        return fragment;
+                    } else {
+                        return null;
+                    }
             }
         }
     }
