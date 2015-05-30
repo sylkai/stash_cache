@@ -190,7 +190,7 @@ public class StashExporter {
             StashThread thread = stash.getThread(threadId);
             mOrphanThread.remove(threadId);
 
-            if (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType)) {
+            if (checkForPreviousThread(thread, currentSource, currentType)) {
                 // not equal to the previous source/type
                 if (!currentSource.equals("") || !currentType.equals("")) {
                     // will not be the first item on the list, so flag to add the divider
@@ -224,8 +224,17 @@ public class StashExporter {
             }
 
             // set to match the last item entered, and reset the "new item" marker
-            currentSource = thread.getSource();
-            currentType = thread.getType();
+            if (thread.getSource() == null) {
+                currentSource = StashConstants.NULL_STRING;
+            } else {
+                currentSource = thread.getSource();
+            }
+
+            if (thread.getType() == null) {
+                currentType = StashConstants.NULL_STRING;
+            } else {
+                currentType = thread.getType();
+            }
             newItem = false;
         }
 
@@ -248,7 +257,7 @@ public class StashExporter {
             StashThread thread = stash.getThread(threadId);
             mOrphanThread.remove(threadId);
 
-            if (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType)) {
+            if (checkForPreviousThread(thread, currentSource, currentType)) {
                 // not equal to the previous source / type
                 if (!currentSource.equals("") || !currentType.equals("")) {
                     // not the first item of the thread list, so flag it to add the divider
@@ -282,8 +291,17 @@ public class StashExporter {
             }
 
             // set to match the last item entered, and reset the "new item" marker
-            currentSource = thread.getSource();
-            currentType = thread.getType();
+            if (thread.getSource() == null) {
+                currentSource = StashConstants.NULL_STRING;
+            } else {
+                currentSource = thread.getSource();
+            }
+
+            if (thread.getType() == null) {
+                currentType = StashConstants.NULL_STRING;
+            } else {
+                currentType = thread.getType();
+            }
             newItem = false;
         }
 
@@ -305,7 +323,7 @@ public class StashExporter {
             // get the thread for each entry on the list
             StashThread thread = stash.getThread(threadId);
 
-            if (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType)) {
+            if (checkForPreviousThread(thread, currentSource, currentType)) {
                 // not equal to the previous source/type
                 if (!currentSource.equals("") || !currentType.equals("")) {
                     // not the first thread, so flag it as a new item
@@ -337,8 +355,17 @@ public class StashExporter {
             sb.append(newline);
 
             // set to match the last item entered, and reset the "new item" marker
-            currentSource = thread.getSource();
-            currentType = thread.getType();
+            if (thread.getSource() == null) {
+                currentSource = StashConstants.NULL_STRING;
+            } else {
+                currentSource = thread.getSource();
+            }
+
+            if (thread.getType() == null) {
+                currentType = StashConstants.NULL_STRING;
+            } else {
+                currentType = thread.getType();
+            }
             newItem = false;
         }
 
@@ -462,7 +489,7 @@ public class StashExporter {
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
             mOrphanEmbellishments.remove(embellishmentId);
 
-            if (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType)) {
+            if (checkForPreviousEmbellishment(embellishment, currentSource, currentType)) {
                 // not the same as the previous item entered
                 if (!currentSource.equals("") || !currentType.equals("")) {
                     // not the first embellishment entered
@@ -495,8 +522,17 @@ public class StashExporter {
                 sb.append(newline);
             }
 
-            currentSource = embellishment.getSource();
-            currentType = embellishment.getType();
+            if (embellishment.getSource() == null) {
+                currentSource = StashConstants.NULL_STRING;
+            } else {
+                currentSource = embellishment.getSource();
+            }
+
+            if (embellishment.getType() == null) {
+                currentType = StashConstants.NULL_STRING;
+            } else {
+                currentType = embellishment.getType();
+            }
             newItem = false;
         }
 
@@ -519,7 +555,7 @@ public class StashExporter {
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
             mOrphanEmbellishments.remove(embellishmentId);
 
-            if (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType)) {
+            if (checkForPreviousEmbellishment(embellishment, currentSource, currentType)) {
                 // not the same as the previous embellishment entered
                 if (!currentSource.equals("") || !currentType.equals("")) {
                     // not the first embellishment entered
@@ -553,8 +589,17 @@ public class StashExporter {
             }
 
             // reset to account for the item just entered
-            currentSource = embellishment.getSource();
-            currentType = embellishment.getType();
+            if (embellishment.getSource() == null) {
+                currentSource = StashConstants.NULL_STRING;
+            } else {
+                currentSource = embellishment.getSource();
+            }
+
+            if (embellishment.getType() == null) {
+                currentType = StashConstants.NULL_STRING;
+            } else {
+                currentType = embellishment.getType();
+            }
             newItem = false;
         }
 
@@ -576,7 +621,7 @@ public class StashExporter {
             // get the thread for each entry on the list
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
 
-            if (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType)) {
+            if (checkForPreviousEmbellishment(embellishment, currentSource, currentType)) {
                 // not the same as the previous item entered
                 if (!currentSource.equals("") || !currentType.equals("")) {
                     // not the first embellishment entered
@@ -604,8 +649,17 @@ public class StashExporter {
             sb.append(embellishment.getCode());
             sb.append(newline);
 
-            currentSource = embellishment.getSource();
-            currentType = embellishment.getType();
+            if (embellishment.getSource() == null) {
+                currentSource = StashConstants.NULL_STRING;
+            } else {
+                currentSource = embellishment.getSource();
+            }
+
+            if (embellishment.getType() == null) {
+                currentType = StashConstants.NULL_STRING;
+            } else {
+                currentType = embellishment.getType();
+            }
             newItem = false;
         }
 
@@ -770,6 +824,30 @@ public class StashExporter {
         notes = notes.replace(StashConstants.PATTERN_ITEMS, " - ");
 
         return notes;
+    }
+
+    private boolean checkForPreviousThread(StashThread thread, String currentSource, String currentType) {
+        if (thread.getSource() != null && thread.getType() != null) {
+            return (!thread.getSource().equals(currentSource) || !thread.getType().equals(currentType));
+        } else if (thread.getSource() == null && thread.getType() == null) {
+            return (!currentSource.equals(StashConstants.NULL_STRING) || !currentType.equals(StashConstants.NULL_STRING));
+        } else if (thread.getSource() == null) {
+            return (!currentSource.equals(StashConstants.NULL_STRING) || !thread.getType().equals(currentType));
+        } else {
+            return (!thread.getSource().equals(currentSource) || !currentType.equals(StashConstants.NULL_STRING));
+        }
+    }
+
+    private boolean checkForPreviousEmbellishment(StashEmbellishment embellishment, String currentSource, String currentType) {
+        if (embellishment.getSource() != null && embellishment.getType() != null) {
+            return (!embellishment.getSource().equals(currentSource) || !embellishment.getType().equals(currentType));
+        } else if (embellishment.getSource() == null && embellishment.getType() == null) {
+            return (!currentSource.equals(StashConstants.NULL_STRING) || !currentType.equals(StashConstants.NULL_STRING));
+        } else if (embellishment.getSource() == null) {
+            return (!currentSource.equals(StashConstants.NULL_STRING) || !embellishment.getType().equals(currentType));
+        } else {
+            return (!embellishment.getSource().equals(currentSource) || !currentType.equals(StashConstants.NULL_STRING));
+        }
     }
 
 }
