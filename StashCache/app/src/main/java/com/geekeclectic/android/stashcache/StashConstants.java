@@ -61,4 +61,6 @@ public class StashConstants {
     public static final int IRRELEVANT_REQUEST_CODE = 0;
 
     public static final String NULL_STRING = "null";
+
+    public static final String TEXT_FILE = "text/plain";
 }

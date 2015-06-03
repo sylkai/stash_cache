@@ -2,6 +2,7 @@ package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
@@ -22,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLConnection;
 
 /**
  * Activity to host fragments (stash/master list/shopping list) each hosting a viewpager which
@@ -204,7 +207,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             case R.id.menu_item_import_stash:
                 Intent chooseIntent = new Intent();
                 chooseIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                chooseIntent.setType("text/plain");
+                chooseIntent.setType(StashConstants.TEXT_FILE);
                 chooseIntent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(chooseIntent, "select file"), REQUEST_CHOOSE_STASH);
 
@@ -324,13 +327,21 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 return;
             }
 
-            try {
-                // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
-                // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
-                AsyncStashImport importStash = new AsyncStashImport(getContentResolver().openInputStream(data.getData()), fragment);
-                importStash.execute();
-            } catch (FileNotFoundException e) {
-                //
+            Uri fileLocation = data.getData();
+            ContentResolver contentResolver = this.getContentResolver();
+            String fileType = URLConnection.guessContentTypeFromName(fileLocation.toString());
+
+            if (!fileType.equals(StashConstants.TEXT_FILE)) {
+                Toast.makeText(StashOverviewActivity.this, getString(R.string.import_error_stash), Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
+                    // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
+                    AsyncStashImport importStash = new AsyncStashImport(contentResolver.openInputStream(fileLocation), fragment);
+                    importStash.execute();
+                } catch (FileNotFoundException e) {
+                    //
+                }
             }
         } else if (requestCode == REQUEST_PREFERENCES_UPDATE) {
             StashCreateShoppingList shoppingList = new StashCreateShoppingList();

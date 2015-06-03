@@ -520,7 +520,7 @@ public class StashImporter {
 
                 String key;
                 // if there are spaces in the title, split on the space and use the first section as the key
-                if (lastRead.contains(" ")) {
+                if (lastRead.length() != 0 && lastRead.contains(" ")) {
                     key = lastRead.split("\\s")[0];
                 } else {
                     key = lastRead;
@@ -555,7 +555,7 @@ public class StashImporter {
 
                 String key;
                 // if there are spaces in the title, split on the space and use the first section as the key
-                if (lastRead.contains(" ")) {
+                if (lastRead.length() != 0 && lastRead.contains(" ")) {
                     key = lastRead.split("\\s")[0];
                 } else {
                     key = lastRead;
@@ -593,7 +593,7 @@ public class StashImporter {
 
                 String key;
                 // if there are spaces in the title, split on the space and use the first section as the key
-                if (lastRead.contains(" ")) {
+                if (lastRead.length() != 0 && lastRead.contains(" ")) {
                     key = lastRead.split("\\s")[0];
                 } else {
                     key = lastRead;
