@@ -710,7 +710,14 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
                 edgeBuffer = Double.parseDouble(StashConstants.DEFAULT_BORDER);
             }
 
-            int defaultCount = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_COUNT_SETTING, StashConstants.DEFAULT_COUNT));
+            // catches if the user sets "" as the default fabric count
+            int defaultCount;
+            try {
+                defaultCount = Integer.parseInt(sharedPrefs.getString(StashPreferencesActivity.KEY_COUNT_SETTING, StashConstants.DEFAULT_COUNT));
+            } catch (NumberFormatException e) {
+                defaultCount = Integer.parseInt(StashConstants.DEFAULT_COUNT);
+            }
+
             int overCount;
 
             if (sharedPrefs.getBoolean(StashPreferencesActivity.KEY_OVER_SETTING, true)) {

@@ -271,15 +271,17 @@ public class StashPattern extends StashObject {
         return mPatternFabric;
     }
 
-    public void removeThread(StashThread thread) {
+    public void removeThread(StashThread thread, boolean clearPattern) {
         // get rid of connections between the thread and pattern (pattern contribution to the
         // shopping list if kitted handled in removePattern (because of overlap)
         mThreads.remove(thread.getId());
         mQuantities.remove(thread.getId());
-        thread.removePattern(this);
+        if (clearPattern) {
+            thread.removePattern(this);
+        }
     }
 
-    public void removeEmbellishment(StashEmbellishment embellishment) {
+    public void removeEmbellishment(StashEmbellishment embellishment, boolean clearPattern) {
         // if the pattern was marked kitted, remove the pattern's contribution to the embellishment shopping list
         if (mIsKitted) {
             embellishment.removeNeeded(mQuantities.get(embellishment.getId()));
@@ -288,7 +290,9 @@ public class StashPattern extends StashObject {
         // get rid of connections between the embellishment and pattern
         mEmbellishments.remove(embellishment.getId());
         mQuantities.remove(embellishment.getId());
-        embellishment.removePattern(this);
+        if (clearPattern) {
+            embellishment.removePattern(this);
+        }
     }
 
     public void decreaseQuantity(StashThread thread) {
