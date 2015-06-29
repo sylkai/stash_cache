@@ -108,20 +108,21 @@ public class StashPattern extends StashObject {
                 UUID threadId = UUID.fromString(array.getString(i));
                 StashThread thread = stash.getThread(threadId);
 
+                if (thread != null) {
+                    if (mThreads.contains(threadId)) {
+                        mQuantities.put(threadId, mQuantities.get(threadId) + 1);
+                        thread.updateNeeded(this, mQuantities.get(threadId));
+                    } else {
+                        // set link in thread object to the pattern
+                        thread.usedInPattern(this);
 
-                if (mThreads.contains(threadId)) {
-                    mQuantities.put(threadId, mQuantities.get(threadId) + 1);
-                    thread.updateNeeded(this, mQuantities.get(threadId));
-                } else {
-                    // set link in thread object to the pattern
-                    thread.usedInPattern(this);
+                        // add threadId to list
+                        mThreads.add(threadId);
 
-                    // add threadId to list
-                    mThreads.add(threadId);
-
-                    // add thread to quantities map
-                    mQuantities.put(threadId, 1);
-                    thread.updateNeeded(this, mQuantities.get(threadId));
+                        // add thread to quantities map
+                        mQuantities.put(threadId, 1);
+                        thread.updateNeeded(this, mQuantities.get(threadId));
+                    }
                 }
             }
         }
@@ -136,17 +137,19 @@ public class StashPattern extends StashObject {
                 UUID embellishmentId = UUID.fromString(array.getString(i));
                 StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
 
-                if (mEmbellishments.contains(embellishmentId)) {
-                    mQuantities.put(embellishmentId, mQuantities.get(embellishmentId) + 1);
-                } else {
-                    // set link in embellishment object to the pattern
-                    embellishment.usedInPattern(this);
+                if (embellishment != null) {
+                    if (mEmbellishments.contains(embellishmentId)) {
+                        mQuantities.put(embellishmentId, mQuantities.get(embellishmentId) + 1);
+                    } else {
+                        // set link in embellishment object to the pattern
+                        embellishment.usedInPattern(this);
 
-                    // add embellishmentId to list
-                    mEmbellishments.add(embellishmentId);
+                        // add embellishmentId to list
+                        mEmbellishments.add(embellishmentId);
 
-                    // add embellishment to quantities map
-                    mQuantities.put(embellishmentId, 1);
+                        // add embellishment to quantities map
+                        mQuantities.put(embellishmentId, 1);
+                    }
                 }
             }
         }
@@ -160,8 +163,12 @@ public class StashPattern extends StashObject {
                 UUID fabricId = UUID.fromString(array.getString(i));
                 StashFabric fabric = stash.getFabric(fabricId);
 
-                fabric.setUsedFor(this);
-                mFinishes.add(fabricId);
+                // in case user has previously deleted a fabric and it was not properly removed from the finish list,
+                // prevents an error on stash read-in
+                if (fabric != null) {
+                    fabric.setUsedFor(this);
+                    mFinishes.add(fabricId);
+                }
             }
         }
     }

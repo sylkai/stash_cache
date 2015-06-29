@@ -258,7 +258,10 @@ public class StashData {
 
     public void deleteFabric(StashFabric fabric) {
         // clean up associations with this fabric
-        if (fabric.isAssigned()) {
+        if (fabric.isFinished()) {
+            StashPattern pattern = fabric.usedFor();
+            pattern.removeFinish(fabric);
+        } else if (fabric.isAssigned()) {
             StashPattern pattern = fabric.usedFor();
             pattern.setFabric(null);
         }
