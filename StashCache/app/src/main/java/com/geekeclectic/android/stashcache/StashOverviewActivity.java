@@ -413,7 +413,12 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
             Toast.makeText(StashOverviewActivity.this, toastText, Toast.LENGTH_SHORT).show();
 
-            fragment.stashChanged();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    fragment.stashChanged();
+                }
+            });
             StashData.get(getParent()).saveStash();
         }
     }
