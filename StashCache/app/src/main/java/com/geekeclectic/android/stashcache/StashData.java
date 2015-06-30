@@ -258,7 +258,10 @@ public class StashData {
 
     public void deleteFabric(StashFabric fabric) {
         // clean up associations with this fabric
-        if (fabric.isAssigned()) {
+        if (fabric.isFinished()) {
+            StashPattern pattern = fabric.usedFor();
+            pattern.removeFinish(fabric);
+        } else if (fabric.isAssigned()) {
             StashPattern pattern = fabric.usedFor();
             pattern.setFabric(null);
         }
@@ -340,8 +343,9 @@ public class StashData {
         // clean up associations to this item
         ArrayList<StashPattern> patternList = thread.getPatternsList();
         for (StashPattern pattern : patternList) {
-            pattern.removeThread(thread);
+            pattern.removeThread(thread, false);
         }
+        patternList.clear();
 
         // removes a thread from the hashmap and the lists powering the adapters
         mThreadsData.remove(thread.getId());
@@ -421,8 +425,9 @@ public class StashData {
         // clean up all associations to the embellishment
         ArrayList<StashPattern> patternList = embellishment.getPatternList();
         for (StashPattern pattern : patternList) {
-            pattern.removeEmbellishment(embellishment);
+            pattern.removeEmbellishment(embellishment, false);
         }
+        patternList.clear();
 
         // removes embellishment from the hashmap and the lists powering the adapters
         mEmbellishmentData.remove(embellishment.getId());

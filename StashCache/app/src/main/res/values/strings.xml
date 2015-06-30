@@ -21,6 +21,7 @@
 
     <string name="export_error_stash">There was an error writing the stash file.</string>
     <string name="export_error_pattern">There was an error writing the pattern file.</string>
+    <string name="import_error_stash">Imported stash file must be a text file.</string>
 
     <string name="embellishment">Embellishment</string>
     <string name="pattern">Pattern</string>

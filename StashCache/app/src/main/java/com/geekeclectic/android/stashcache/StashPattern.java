@@ -108,20 +108,21 @@ public class StashPattern extends StashObject {
                 UUID threadId = UUID.fromString(array.getString(i));
                 StashThread thread = stash.getThread(threadId);
 
+                if (thread != null) {
+                    if (mThreads.contains(threadId)) {
+                        mQuantities.put(threadId, mQuantities.get(threadId) + 1);
+                        thread.updateNeeded(this, mQuantities.get(threadId));
+                    } else {
+                        // set link in thread object to the pattern
+                        thread.usedInPattern(this);
 
-                if (mThreads.contains(threadId)) {
-                    mQuantities.put(threadId, mQuantities.get(threadId) + 1);
-                    thread.updateNeeded(this, mQuantities.get(threadId));
-                } else {
-                    // set link in thread object to the pattern
-                    thread.usedInPattern(this);
+                        // add threadId to list
+                        mThreads.add(threadId);
 
-                    // add threadId to list
-                    mThreads.add(threadId);
-
-                    // add thread to quantities map
-                    mQuantities.put(threadId, 1);
-                    thread.updateNeeded(this, mQuantities.get(threadId));
+                        // add thread to quantities map
+                        mQuantities.put(threadId, 1);
+                        thread.updateNeeded(this, mQuantities.get(threadId));
+                    }
                 }
             }
         }
@@ -136,17 +137,19 @@ public class StashPattern extends StashObject {
                 UUID embellishmentId = UUID.fromString(array.getString(i));
                 StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
 
-                if (mEmbellishments.contains(embellishmentId)) {
-                    mQuantities.put(embellishmentId, mQuantities.get(embellishmentId) + 1);
-                } else {
-                    // set link in embellishment object to the pattern
-                    embellishment.usedInPattern(this);
+                if (embellishment != null) {
+                    if (mEmbellishments.contains(embellishmentId)) {
+                        mQuantities.put(embellishmentId, mQuantities.get(embellishmentId) + 1);
+                    } else {
+                        // set link in embellishment object to the pattern
+                        embellishment.usedInPattern(this);
 
-                    // add embellishmentId to list
-                    mEmbellishments.add(embellishmentId);
+                        // add embellishmentId to list
+                        mEmbellishments.add(embellishmentId);
 
-                    // add embellishment to quantities map
-                    mQuantities.put(embellishmentId, 1);
+                        // add embellishment to quantities map
+                        mQuantities.put(embellishmentId, 1);
+                    }
                 }
             }
         }
@@ -160,8 +163,12 @@ public class StashPattern extends StashObject {
                 UUID fabricId = UUID.fromString(array.getString(i));
                 StashFabric fabric = stash.getFabric(fabricId);
 
-                fabric.setUsedFor(this);
-                mFinishes.add(fabricId);
+                // in case user has previously deleted a fabric and it was not properly removed from the finish list,
+                // prevents an error on stash read-in
+                if (fabric != null) {
+                    fabric.setUsedFor(this);
+                    mFinishes.add(fabricId);
+                }
             }
         }
     }
@@ -271,15 +278,17 @@ public class StashPattern extends StashObject {
         return mPatternFabric;
     }
 
-    public void removeThread(StashThread thread) {
+    public void removeThread(StashThread thread, boolean clearPattern) {
         // get rid of connections between the thread and pattern (pattern contribution to the
         // shopping list if kitted handled in removePattern (because of overlap)
         mThreads.remove(thread.getId());
         mQuantities.remove(thread.getId());
-        thread.removePattern(this);
+        if (clearPattern) {
+            thread.removePattern(this);
+        }
     }
 
-    public void removeEmbellishment(StashEmbellishment embellishment) {
+    public void removeEmbellishment(StashEmbellishment embellishment, boolean clearPattern) {
         // if the pattern was marked kitted, remove the pattern's contribution to the embellishment shopping list
         if (mIsKitted) {
             embellishment.removeNeeded(mQuantities.get(embellishment.getId()));
@@ -288,14 +297,21 @@ public class StashPattern extends StashObject {
         // get rid of connections between the embellishment and pattern
         mEmbellishments.remove(embellishment.getId());
         mQuantities.remove(embellishment.getId());
-        embellishment.removePattern(this);
+        if (clearPattern) {
+            embellishment.removePattern(this);
+        }
     }
 
     public void decreaseQuantity(StashThread thread) {
         // decrease quantity for thread in the quantitymap by 1, remove it from map/thread list if
         // quantity goes to 0
         UUID threadId = thread.getId();
-        Integer count = mQuantities.get(threadId);
+        Integer count;
+        if (mQuantities.containsKey(threadId)) {
+            count = mQuantities.get(threadId);
+        } else {
+            count = 0;
+        }
 
         if (count == 1) {
             mQuantities.remove(threadId);
@@ -328,7 +344,12 @@ public class StashPattern extends StashObject {
         // decrease quantity for embellishment in the quantitymap by 1, remove it from map/thread list if
         // quantity goes to 0
         UUID embellishmentId = embellishment.getId();
-        Integer count = mQuantities.get(embellishmentId);
+        Integer count;
+        if (mQuantities.containsKey(embellishmentId)) {
+            count = mQuantities.get(embellishmentId);
+        } else {
+            count = 0;
+        }
 
         if (count == 1) {
             mQuantities.remove(embellishmentId);

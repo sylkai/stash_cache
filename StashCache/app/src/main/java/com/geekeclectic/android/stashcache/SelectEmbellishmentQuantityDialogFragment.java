@@ -45,13 +45,12 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
         return dialog;
     }
 
-    // set the calling fragment listener (called after dialog creation)
-    public void setSelectEmbellishmentQuantityDialogCallback(SelectEmbellishmentQuantityDialogListener listener) {
-        mSelectEmbellishmentQuantityDialogCallback = listener;
-    }
-
     @Override
     public void onClick(DialogInterface dialog, int which) {
+        // target fragment set when dialog initially created, persists through rotation/sleep, managed
+        // by fragmentmanager
+        mSelectEmbellishmentQuantityDialogCallback = (SelectEmbellishmentQuantityDialogListener) getTargetFragment();
+
         switch (which) {
             case Dialog.BUTTON_POSITIVE:
                 dialog.dismiss();

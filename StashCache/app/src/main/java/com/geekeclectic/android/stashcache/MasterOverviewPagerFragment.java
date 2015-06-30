@@ -200,17 +200,33 @@ public class MasterOverviewPagerFragment extends UpdateFragment {
             Fragment fragment;
             switch (position) {
                 case StashConstants.FABRIC_VIEW: // fabric list
-                    fragment = fabricList.get();
-                    return fragment;
+                    if (fabricList != null) {
+                        fragment = fabricList.get();
+                        return fragment;
+                    } else {
+                        return null;
+                    }
                 case StashConstants.THREAD_VIEW: // thread list
-                    fragment = threadList.get();
-                    return fragment;
+                    if (threadList != null) {
+                        fragment = threadList.get();
+                        return fragment;
+                    } else {
+                        return null;
+                    }
                 case StashConstants.EMBELLISHMENT_VIEW: // embellishment list
-                    fragment = embellishmentList.get();
-                    return fragment;
+                    if (embellishmentList != null) {
+                        fragment = embellishmentList.get();
+                        return fragment;
+                    } else {
+                        return null;
+                    }
                 default: // pattern list
-                    fragment = patternList.get();
-                    return fragment;
+                    if (patternList != null) {
+                        fragment = patternList.get();
+                        return fragment;
+                    } else {
+                        return null;
+                    }
             }
         }
     }
