@@ -306,7 +306,12 @@ public class StashPattern extends StashObject {
         // decrease quantity for thread in the quantitymap by 1, remove it from map/thread list if
         // quantity goes to 0
         UUID threadId = thread.getId();
-        Integer count = mQuantities.get(threadId);
+        Integer count;
+        if (mQuantities.containsKey(threadId)) {
+            count = mQuantities.get(threadId);
+        } else {
+            count = 0;
+        }
 
         if (count == 1) {
             mQuantities.remove(threadId);
@@ -339,7 +344,12 @@ public class StashPattern extends StashObject {
         // decrease quantity for embellishment in the quantitymap by 1, remove it from map/thread list if
         // quantity goes to 0
         UUID embellishmentId = embellishment.getId();
-        Integer count = mQuantities.get(embellishmentId);
+        Integer count;
+        if (mQuantities.containsKey(embellishmentId)) {
+            count = mQuantities.get(embellishmentId);
+        } else {
+            count = 0;
+        }
 
         if (count == 1) {
             mQuantities.remove(embellishmentId);
