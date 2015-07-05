@@ -330,8 +330,10 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             Uri fileLocation = data.getData();
             ContentResolver contentResolver = this.getContentResolver();
             String fileType = URLConnection.guessContentTypeFromName(fileLocation.toString());
+            // fileType will be null when dealing with Google Drive, so check for that - user cannot select
+            // PDF through Google Drive (or any non-text file)
 
-            if (!fileType.equals(StashConstants.TEXT_FILE)) {
+            if (fileType != null && !fileType.equals(StashConstants.TEXT_FILE)) {
                 Toast.makeText(StashOverviewActivity.this, getString(R.string.import_error_stash), Toast.LENGTH_SHORT).show();
             } else {
                 try {
