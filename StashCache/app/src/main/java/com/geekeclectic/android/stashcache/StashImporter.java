@@ -630,7 +630,15 @@ public class StashImporter {
                     break;
                 }
 
-                incrementOrAddEmbellishment(source, type, lastRead, stash);
+                String key;
+                // if there are spaces in the title, split on the space and use the first section as the key
+                if (lastRead.length() != 0 && lastRead.contains(" ")) {
+                    key = lastRead.split("\\s")[0];
+                } else {
+                    key = lastRead;
+                }
+
+                incrementOrAddEmbellishment(source, type, lastRead, key, stash);
             }
 
             if (lastRead != null && lastRead.equals(stashBlockDivider)) {
@@ -657,7 +665,15 @@ public class StashImporter {
                     break;
                 }
 
-                findOrAddEmbellishment(source, type, lastRead, stash);
+                String key;
+                // if there are spaces in the title, split on the space and use the first section as the key
+                if (lastRead.length() != 0 && lastRead.contains(" ")) {
+                    key = lastRead.split("\\s")[0];
+                } else {
+                    key = lastRead;
+                }
+
+                findOrAddEmbellishment(source, type, lastRead, key, stash);
             }
 
             if (lastRead == null || lastRead.equals(stashBlockDivider)) {
@@ -687,7 +703,15 @@ public class StashImporter {
                     break;
                 }
 
-                StashEmbellishment embellishment = findOrAddEmbellishment(source, type, lastRead, stash);
+                String key;
+                // if there are spaces in the title, split on the space and use the first section as the key
+                if (lastRead.length() != 0 && lastRead.contains(" ")) {
+                    key = lastRead.split("\\s")[0];
+                } else {
+                    key = lastRead;
+                }
+
+                StashEmbellishment embellishment = findOrAddEmbellishment(source, type, lastRead, key, stash);
 
                 // used in the pattern, so wire it up
                 embellishment.usedInPattern(pattern);
@@ -744,7 +768,7 @@ public class StashImporter {
         return fabric;
     }
 
-    private StashEmbellishment createNewEmbellishment(String source, String type, String id, StashData stash, boolean inStash) {
+    private StashEmbellishment createNewEmbellishment(String source, String type, String id, String key, StashData stash, boolean inStash) {
         StashEmbellishment embellishment = new StashEmbellishment(mContext);
 
         // set the appropriate fields
@@ -757,13 +781,13 @@ public class StashImporter {
 
         stash.addEmbellishment(embellishment);
 
-        // add the id to the lookup map (don't need to do the splitting like we do for thread)
-        if (embellishmentMap.get(id) == null) {
+        // add the key to the lookup map (now doing splitting like for thread)
+        if (embellishmentMap.get(key) == null) {
             ArrayList<UUID> embellishmentList = new ArrayList<UUID>();
             embellishmentList.add(embellishment.getId());
-            embellishmentMap.put(id, embellishmentList);
+            embellishmentMap.put(key, embellishmentList);
         } else {
-            ArrayList<UUID> embellishmentList = embellishmentMap.get(id);
+            ArrayList<UUID> embellishmentList = embellishmentMap.get(key);
             embellishmentList.add(embellishment.getId());
         }
 
@@ -806,7 +830,7 @@ public class StashImporter {
         if (threadList != null) {
             for (UUID threadId : threadList) {
                 thread = stash.getThread(threadId);
-                if (isSameThread(thread, source, type, key, id)) {
+                if (isSameThread(thread, source, type, id, key)) {
                     // if it is the same thread and the key is a shorter version of the id, save the
                     // longer form of the id
                     if (!key.equals(id) && key.equalsIgnoreCase(thread.getCode())) {
@@ -825,15 +849,21 @@ public class StashImporter {
         return thread;
     }
 
-    private void incrementOrAddEmbellishment(String source, String type, String id, StashData stash) {
-        ArrayList<UUID> embellishmentList = embellishmentMap.get(id);
+    private void incrementOrAddEmbellishment(String source, String type, String id, String key, StashData stash) {
+        ArrayList<UUID> embellishmentList = embellishmentMap.get(key);
         StashEmbellishment embellishment;
 
         // check to see if the embellishment is on the list
         if (embellishmentList != null) {
             for (UUID embellishmentId : embellishmentList) {
                 embellishment = stash.getEmbellishment(embellishmentId);
-                if (embellishment.getSource().equalsIgnoreCase(source) && embellishment.getType().equalsIgnoreCase(type) && embellishment.getCode().equalsIgnoreCase(id)) {
+                if (isSameEmbellishment(embellishment, source, type, id, key)) {
+                    // if it is the same embellishment and the key is a shorter version of the id, save the
+                    // longer form of the id
+                    if (!key.equals(id) && key.equalsIgnoreCase(embellishment.getCode())) {
+                        embellishment.setCode(id);
+                    }
+
                     // increment up the number owned (only called for the stash building)
                     embellishment.increaseOwned();
                     return;
@@ -841,32 +871,38 @@ public class StashImporter {
             }
 
             // no match found, so make a new embellishment
-            createNewEmbellishment(source, type, id, stash, true);
+            createNewEmbellishment(source, type, id, key, stash, true);
         } else {
             // no list, so create a new embellishment
-            createNewEmbellishment(source, type, id, stash, true);
+            createNewEmbellishment(source, type, id, key, stash, true);
         }
     }
 
-    private StashEmbellishment findOrAddEmbellishment(String source, String type, String id, StashData stash) {
-        ArrayList<UUID> embellishmentList = embellishmentMap.get(id);
+    private StashEmbellishment findOrAddEmbellishment(String source, String type, String id, String key, StashData stash) {
+        ArrayList<UUID> embellishmentList = embellishmentMap.get(key);
         StashEmbellishment embellishment;
 
         // check to see if the embellishment is on the list
         if (embellishmentList != null) {
             for (UUID embellishmentId : embellishmentList) {
                 embellishment = stash.getEmbellishment(embellishmentId);
-                if (embellishment.getSource().equalsIgnoreCase(source) && embellishment.getType().equalsIgnoreCase(type) && embellishment.getCode().equalsIgnoreCase(id)) {
+                if (isSameEmbellishment(embellishment, source, type, id, key)) {
+                    // if it is the same embellishment and the key is a shorter version of the id, save the
+                    // longer form of the id
+                    if (!key.equals(id) && key.equalsIgnoreCase(embellishment.getCode())) {
+                        embellishment.setCode(id);
+                    }
+
                     // return the match
                     return embellishment;
                 }
             }
 
             // no match, so create a new one
-            embellishment = createNewEmbellishment(source, type, id, stash, false);
+            embellishment = createNewEmbellishment(source, type, id, key, stash, false);
         } else {
             // no list so no match, create a new one
-            embellishment = createNewEmbellishment(source, type, id, stash, false);
+            embellishment = createNewEmbellishment(source, type, id, key, stash, false);
         }
 
         // return the embellishment
@@ -922,11 +958,16 @@ public class StashImporter {
             StashEmbellishment embellishment = stash.getEmbellishment(embellishmentId);
             String id = embellishment.getCode();
 
-            if (id == null) {
-                id = "null";
+            String key;
+            if (id != null && id.contains(" ")) {
+                key = id.split("\\s")[0];
+            } else if (id != null) {
+                key = id;
+            } else {
+                key = "null";
             }
 
-            shortEmbellishmentList = embellishmentMap.get(id);
+            shortEmbellishmentList = embellishmentMap.get(key);
 
             if (shortEmbellishmentList == null) {
                 shortEmbellishmentList = new ArrayList<UUID>();
@@ -934,7 +975,7 @@ public class StashImporter {
 
             shortEmbellishmentList.add(embellishmentId);
 
-            embellishmentMap.put(embellishment.getCode(), shortEmbellishmentList);
+            embellishmentMap.put(key, shortEmbellishmentList);
         }
     }
 
@@ -948,6 +989,25 @@ public class StashImporter {
                     // same code, so the same
                     return true;
                 } else if (thread.getCode() != null && (thread.getCode().split("\\s")[0].equalsIgnoreCase(id) || key.equalsIgnoreCase(thread.getCode()))) {
+                    // check if the code has a bit (likely numeric) in front that matches the stored code (or vice versa)
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // check to see if the embellishment is the same
+    private boolean isSameEmbellishment(StashEmbellishment embellishment, String source, String type, String id, String key) {
+        if (embellishment.getSource() != null && embellishment.getSource().equalsIgnoreCase(source)) {
+            // same source
+            if (embellishment.getType() != null && embellishment.getType().equalsIgnoreCase(type)) {
+                // same type
+                if (embellishment.getCode() != null && embellishment.getCode().equalsIgnoreCase(id)) {
+                    // same code, so the same
+                    return true;
+                } else if (embellishment.getCode() != null && (embellishment.getCode().split("\\s")[0].equalsIgnoreCase(id) || key.equalsIgnoreCase(embellishment.getCode()))) {
                     // check if the code has a bit (likely numeric) in front that matches the stored code (or vice versa)
                     return true;
                 }
