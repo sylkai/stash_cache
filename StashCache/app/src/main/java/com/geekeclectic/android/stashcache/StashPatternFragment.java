@@ -564,8 +564,12 @@ public class StashPatternFragment extends Fragment implements DatePickerDialogFr
             // user chose to remove fabric
 
             mPattern.setFabric(null);
-            mFabric.setUsedFor(null);
-            mFabric.setUse(false);
+
+            if (mFabric != null) {
+                mFabric.setUsedFor(null);
+                mFabric.setUse(false);
+            }
+
             mFabric = null;
             mInProgress.setEnabled(false);
 
