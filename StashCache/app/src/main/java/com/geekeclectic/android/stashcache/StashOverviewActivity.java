@@ -111,6 +111,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 UpdateFragment fragment;
                 FragmentTransaction ft = fragmentManager.beginTransaction();
+                Log.d(TAG, "listener triggered");
 
                 // get (or create) the appropriate fragment
                 if (position == StashConstants.MASTER_TAB) {
@@ -209,7 +210,22 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                 chooseIntent.addCategory(Intent.CATEGORY_OPENABLE);
                 chooseIntent.setType(StashConstants.TEXT_FILE);
                 chooseIntent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(chooseIntent, "select file"), REQUEST_CHOOSE_STASH);
+
+                // solution to handle Samsung quirk from http://solvedstack.com/questions/pick-any-kind-file-via-an-intent-on-android
+                if (getPackageManager().resolveActivity(chooseIntent, 0) == null) {
+                    // check to see if the Samsung File Manager exists and can handle it
+                    Intent samsungIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
+                    samsungIntent.putExtra("CONTENT_TYPE", StashConstants.TEXT_FILE);
+                    samsungIntent.addCategory(Intent.CATEGORY_DEFAULT);
+
+                    chooseIntent = samsungIntent;
+                }
+
+                try {
+                    startActivityForResult(Intent.createChooser(chooseIntent, StashConstants.SELECT_FILE), REQUEST_CHOOSE_STASH);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(getApplicationContext(), StashConstants.NO_MANAGER_FOUND, Toast.LENGTH_SHORT).show();
+                }
 
                 return true;
             case R.id.menu_item_export_stash:
@@ -348,9 +364,10 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         } else if (requestCode == REQUEST_PREFERENCES_UPDATE) {
             StashCreateShoppingList shoppingList = new StashCreateShoppingList();
             shoppingList.updateShoppingList(this);
-
-            fragment.stashChanged();
         }
+
+        // you too can prevent OoB exceptions by making sure the lists update any time the back button is hit
+        fragment.stashChanged();
 
         // required to have the activity call this method on the current fragments as well (see http://stackoverflow.com/a/6147919
         // for reference)

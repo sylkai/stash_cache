@@ -63,4 +63,7 @@ public class StashConstants {
     public static final String NULL_STRING = "null";
 
     public static final String TEXT_FILE = "text/plain";
+
+    public static final String SELECT_FILE = "Select File:";
+    public static final String NO_MANAGER_FOUND = "There is no app installed to assist with the import.";
 }
