@@ -146,6 +146,9 @@ public class StashExporter {
     private String buildPatternString(StashPattern pattern, Context context) {
         StashData stash = StashData.get(context);
 
+        mOrphanThread = new ArrayList<UUID>(stash.getThreadList());
+        mOrphanEmbellishments = new ArrayList<UUID>(stash.getEmbellishmentList());
+
         StringBuilder sb = new StringBuilder();
 
         String betweenCategories = StashConstants.BETWEEN_CATEGORIES;
