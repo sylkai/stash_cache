@@ -336,12 +336,12 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-
         if (requestCode == REQUEST_CHOOSE_STASH) {
             if (resultCode != RESULT_OK) {
                 return;
             }
+
+            UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
             Uri fileLocation = data.getData();
             ContentResolver contentResolver = this.getContentResolver();
@@ -366,8 +366,12 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             shoppingList.updateShoppingList(this);
         }
 
-        // you too can prevent OoB exceptions by making sure the lists update any time the back button is hit
-        fragment.stashChanged();
+        if (resultCode == RESULT_CANCELED) {
+            UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+
+            // you too can prevent OoB exceptions by making sure the lists update any time the back button is hit
+            fragment.stashChanged();
+        }
 
         // required to have the activity call this method on the current fragments as well (see http://stackoverflow.com/a/6147919
         // for reference)
