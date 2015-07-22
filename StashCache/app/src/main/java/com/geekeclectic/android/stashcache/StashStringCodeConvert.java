@@ -9,10 +9,14 @@ import java.util.regex.Pattern;
 public class StashStringCodeConvert {
 
     public boolean leadsWithDigit(String code) {
-        // called to determine if a string starts with a digit
-        // from http://stackoverflow.com/questions/1223052/how-do-i-find-out-if-first-character-of-a-string-is-a-number
-        char c = code.charAt(0);
-        return (c >= '0' && c <= '9');
+        if (code.length() > 0) {
+            // called to determine if a string starts with a digit
+            // from http://stackoverflow.com/questions/1223052/how-do-i-find-out-if-first-character-of-a-string-is-a-number
+            char c = code.charAt(0);
+            return (c >= '0' && c <= '9');
+        } else {
+            return false;
+        }
     }
 
     public Integer numericCode(String code) {
