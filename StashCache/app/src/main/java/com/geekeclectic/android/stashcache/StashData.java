@@ -18,7 +18,6 @@ import java.util.UUID;
 public class StashData {
 
     private static final String TAG = "StashData";
-    private static final String FILENAME = "stash.json";
 
     private static StashData sStash;
     private Context mAppContext;
@@ -45,7 +44,7 @@ public class StashData {
     private StashData(Context appContext) {
         // set variables
         mAppContext = appContext;
-        mSerializer = new StashDataJSONSerializer(mAppContext, FILENAME);
+        mSerializer = new StashDataJSONSerializer(mAppContext, StashConstants.FILENAME);
 
         mThreadsData = new HashMap<UUID, StashThread>();
         mFabricData = new HashMap<UUID, StashFabric>();

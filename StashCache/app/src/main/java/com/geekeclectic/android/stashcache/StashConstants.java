@@ -66,4 +66,7 @@ public class StashConstants {
 
     public static final String SELECT_FILE = "Select File:";
     public static final String NO_MANAGER_FOUND = "There is no app installed to assist with the import.";
+
+    public static final String STASH_PREFERENCES_NAME = "com.geekeclectic.android.stashcache_preferences.xml";
+    public static final String FILENAME = "stash.json";
 }
