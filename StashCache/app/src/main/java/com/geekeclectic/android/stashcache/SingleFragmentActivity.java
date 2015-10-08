@@ -33,4 +33,7 @@ public abstract class SingleFragmentActivity extends FragmentActivity {
                     .commit();
         }
     }
+
+    // object for intrinsic lock
+    static final Object sDataLock = new Object();
 }

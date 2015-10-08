@@ -117,7 +117,9 @@ public class StashFabricFragment extends Fragment implements DatePickerDialogFra
     @Override
     public void onPause() {
         super.onPause();
-        StashData.get(getActivity()).saveStash();
+        synchronized (SingleFragmentActivity.sDataLock) {
+            StashData.get(getActivity()).saveStash();
+        }
     }
 
     @TargetApi(11)

@@ -22,6 +22,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -113,7 +114,9 @@ public class StashEmbellishmentFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-        StashData.get(getActivity()).saveStash();
+        synchronized (SingleFragmentActivity.sDataLock) {
+            StashData.get(getActivity()).saveStash();
+        }
     }
 
     @TargetApi(11)

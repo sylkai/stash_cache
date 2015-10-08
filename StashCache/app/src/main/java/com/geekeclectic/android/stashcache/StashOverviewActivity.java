@@ -184,7 +184,10 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     public void onPause() {
         super.onPause();
 
-        StashData.get(this).saveStash();
+        synchronized (SingleFragmentActivity.sDataLock) {
+            StashData.get(this).saveStash();
+        }
+
     }
 
     // update the shopping list onResume, just in case
@@ -438,7 +441,9 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                     fragment.stashChanged();
                 }
             });
-            StashData.get(getParent()).saveStash();
+            synchronized (SingleFragmentActivity.sDataLock) {
+                StashData.get(getParent()).saveStash();
+            }
         }
     }
 
