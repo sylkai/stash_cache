@@ -1,8 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
 import android.content.Context;
-import android.provider.MediaStore;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,9 +8,7 @@ import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -50,11 +46,12 @@ public class StashDataJSONSerializer {
 
     public void loadStash(StashData stashData) throws IOException, JSONException, ParseException {
         BufferedReader reader = null;
+        InputStream in = null;
 
         try {
             String openFile = null;
-            InputStream in = null;
 
+            // test to see which file will open (main or backup)
             try {
                 in = mContext.openFileInput(mFilename);
                 openFile = mFilename;
@@ -71,10 +68,12 @@ public class StashDataJSONSerializer {
                 }
             }
 
+            // if neither file opens, throw the FileNotFoundException to skip the rest
             if (openFile == null) {
                 throw new FileNotFoundException();
             }
 
+            // open the appropriate file
             in = mContext.openFileInput(openFile);
 
             //read the file into a StringBuilder
@@ -97,6 +96,10 @@ public class StashDataJSONSerializer {
         } catch (FileNotFoundException e) {
             // ignore because it happens when program is opened for the first time
         } finally {
+            if (in != null) {
+                in.close();
+            }
+
             if (reader != null) {
                 reader.close();
             }

@@ -4,6 +4,7 @@ import android.app.backup.BackupAgentHelper;
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.app.backup.FileBackupHelper;
+import android.app.backup.SharedPreferencesBackupHelper;
 import android.os.ParcelFileDescriptor;
 
 import java.io.IOException;
@@ -14,11 +15,15 @@ import java.io.IOException;
 public class StashBackupHelper extends BackupAgentHelper {
 
     static final String FILES_BACKUP_KEY = "stash_backup";
+    static final String PREFS_BACKUP_KEY = "prefs";
 
     @Override
     public void onCreate() {
         FileBackupHelper helper = new FileBackupHelper(this, StashConstants.FILENAME);
         addHelper(FILES_BACKUP_KEY, helper);
+
+        SharedPreferencesBackupHelper prefs_helper = new SharedPreferencesBackupHelper(this, StashConstants.STASH_PREFERENCES_NAME);
+        addHelper(PREFS_BACKUP_KEY, prefs_helper);
     }
 
     @Override
