@@ -70,6 +70,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
 
                 // thread is presumably associated with this pattern
                 mPattern.increaseQuantity(thread);
+                StashData.get(getActivity()).saveStash();
 
                 // start StashThreadFragment with the new thread
                 Intent i = new Intent(getActivity(), StashThreadPagerActivity.class);
@@ -140,6 +141,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
                     vh.patternRef.decreaseQuantity(vh.threadRef);
+                    StashData.get(getActivity()).saveStash();
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.threadRef)));
@@ -155,6 +157,7 @@ public class SelectThreadQuantityDialogFragment extends DialogFragment implement
                     ViewHolder vh = (ViewHolder)increaseButton.getTag();
 
                     vh.patternRef.increaseQuantity(vh.threadRef);
+                    StashData.get(getActivity()).saveStash();
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.threadRef)));

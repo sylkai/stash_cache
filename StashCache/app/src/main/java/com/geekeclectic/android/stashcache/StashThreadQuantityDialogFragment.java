@@ -115,6 +115,7 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
                     vh.threadRef.decreaseOwnedQuantity();
+                    StashData.get(getActivity()).saveStash();
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.threadRef.getSkeinsOwned()));
@@ -130,6 +131,7 @@ public class StashThreadQuantityDialogFragment extends DialogFragment implements
 
                     // increase the quantity of the thread for this pattern by 1
                     vh.threadRef.increaseOwnedQuantity();
+                    StashData.get(getActivity()).saveStash();
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.threadRef.getSkeinsOwned()));

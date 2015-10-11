@@ -317,6 +317,7 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
                     CheckBox checkBox = (CheckBox) view;
                     StashPattern pattern = (StashPattern) checkBox.getTag();
                     pattern.setKitted(checkBox.isChecked());
+                    StashData.get(getActivity()).saveStash();
 
                     mShoppingList.updateShoppingList(getActivity());
                     mCallback.onListFragmentUpdate();

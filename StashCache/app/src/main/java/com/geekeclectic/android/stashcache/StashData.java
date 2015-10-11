@@ -1,5 +1,6 @@
 package com.geekeclectic.android.stashcache;
 
+import android.app.backup.BackupManager;
 import android.content.Context;
 import android.util.Log;
 
@@ -95,8 +96,14 @@ public class StashData {
     public boolean saveStash() {
         // called at appropriate lifecycle events to save the stash to file
         try {
-            mSerializer.saveStash(sStash);
+            synchronized (SingleFragmentActivity.sDataLock) {
+                mSerializer.saveStash(sStash);
+            }
             Log.d(TAG, "stash saved to file");
+
+            BackupManager backupManager = new BackupManager(mAppContext);
+            backupManager.dataChanged();
+
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Error saving stash: ", e);
@@ -204,6 +211,8 @@ public class StashData {
         mPatternsData.remove(pattern);
         mStashPatterns.remove(pattern);
         mFabricForList.remove(pattern);
+
+        saveStash();
     }
 
 
@@ -269,6 +278,8 @@ public class StashData {
         mFabricData.remove(fabric.getId());
         mFabricList.remove(fabric.getId());
         mStashFabricList.remove(fabric.getId());
+
+        saveStash();
     }
 
 
@@ -351,6 +362,8 @@ public class StashData {
         mThreadsList.remove(thread.getId());
         mStashThreadsList.remove(thread.getId());
         mShoppingThreadsList.remove(thread.getId());
+
+        saveStash();
     }
 
 
@@ -433,6 +446,8 @@ public class StashData {
         mEmbellishmentList.remove(embellishment.getId());
         mStashEmbellishmentList.remove(embellishment.getId());
         mShoppingEmbellishmentList.remove(embellishment.getId());
+
+        saveStash();
     }
 
 }

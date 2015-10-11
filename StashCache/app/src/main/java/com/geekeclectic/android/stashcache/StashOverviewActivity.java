@@ -180,7 +180,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         savedInstanceState.putInt(KEY_VIEW_ID, currentView);
     }
 
-    @Override
+/*    @Override
     public void onPause() {
         super.onPause();
 
@@ -188,7 +188,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             StashData.get(this).saveStash();
         }
 
-    }
+    }*/
 
     // update the shopping list onResume, just in case
     @Override
@@ -260,7 +260,9 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // it was confirmed, so delete the stash and refresh fragments
-                        StashData.get(getParent()).deleteStash();
+                        synchronized (SingleFragmentActivity.sDataLock) {
+                            StashData.get(getParent()).deleteStash();
+                        }
                         fragment.stashChanged();
                     }
                 });

@@ -69,6 +69,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
 
                 // embellishment is presumably associated with this pattern
                 mPattern.increaseQuantity(embellishment);
+                StashData.get(getActivity()).saveStash();
 
                 // start StashEmbellishmentFragment with the new embellishment
                 Intent i = new Intent(getActivity(), StashEmbellishmentPagerActivity.class);
@@ -140,6 +141,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                     ViewHolder vh = (ViewHolder) decreaseButton.getTag();
 
                     vh.patternRef.decreaseQuantity(vh.embellishmentRef);
+                    StashData.get(getActivity()).saveStash();
 
                     // change the displayed quantity
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.embellishmentRef)));
@@ -155,6 +157,7 @@ public class SelectEmbellishmentQuantityDialogFragment extends DialogFragment im
                     ViewHolder vh = (ViewHolder)increaseButton.getTag();
 
                     vh.patternRef.increaseQuantity(vh.embellishmentRef);
+                    StashData.get(getActivity()).saveStash();
 
                     // change the displayed quantity
                     vh.quantity.setText(Integer.toString(vh.patternRef.getQuantity(vh.embellishmentRef)));

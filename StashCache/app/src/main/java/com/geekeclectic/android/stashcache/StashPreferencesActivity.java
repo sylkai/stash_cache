@@ -1,6 +1,7 @@
 package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
+import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -49,6 +50,9 @@ public class StashPreferencesActivity extends PreferenceActivity implements Shar
         // thanks StackOverflow: http://stackoverflow.com/questions/24373653/setsummary-is-not-refreshed-immediately
         BaseAdapter baseAdapter = (BaseAdapter) getPreferenceScreen().getRootAdapter();
         baseAdapter.notifyDataSetChanged();
+
+        BackupManager backupManager = new BackupManager(this);
+        backupManager.dataChanged();
     }
 
     @Override

@@ -116,6 +116,7 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
 
                     // if the quantity of this thread is > 0, decrease it by one
                     vh.embellishmentRef.decreaseOwned();
+                    StashData.get(getActivity()).saveStash();
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.embellishmentRef.getNumberOwned()));
@@ -131,6 +132,7 @@ public class StashEmbellishmentQuantityDialogFragment extends DialogFragment imp
 
                     // increase the quantity of the thread for this pattern by 1
                     vh.embellishmentRef.increaseOwned();
+                    StashData.get(getActivity()).saveStash();
 
                     // update the text display
                     vh.quantity.setText(Integer.toString(vh.embellishmentRef.getNumberOwned()));
