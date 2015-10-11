@@ -352,14 +352,8 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             if (fileType != null && !fileType.equals(StashConstants.TEXT_FILE)) {
                 Toast.makeText(StashOverviewActivity.this, getString(R.string.import_error_stash), Toast.LENGTH_SHORT).show();
             } else {
-                try {
-                    // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
-                    // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
-                    AsyncStashImport importStash = new AsyncStashImport(contentResolver.openInputStream(fileLocation), fragment);
-                    importStash.execute();
-                } catch (FileNotFoundException e) {
-                    //
-                }
+                AsyncStashImport importStash = new AsyncStashImport(contentResolver, fileLocation, fragment);
+                importStash.execute();
             }
         } else if (requestCode == REQUEST_PREFERENCES_UPDATE) {
             StashCreateShoppingList shoppingList = new StashCreateShoppingList();
@@ -377,14 +371,17 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     // import the stash as a async task with a dialog that blocks user activity on the UI thread
     // during the import
     private class AsyncStashImport extends AsyncTask<Void, Void, Void> {
+        private Uri importLocation;
+        private ContentResolver importUsing;
         private InputStream forImporter;
         private UpdateFragment fragment;
         TransparentProgressDialog dialog;
         int resultId;
 
-        public AsyncStashImport(InputStream in, UpdateFragment updateFragment) {
+        public AsyncStashImport(ContentResolver contentResolver, Uri fileLocation, UpdateFragment updateFragment) {
             super();
-            forImporter = in;
+            importLocation = fileLocation;
+            importUsing = contentResolver;
             fragment = updateFragment;
         }
 
@@ -400,6 +397,14 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
+                try {
+                    // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
+                    // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
+                    forImporter = importUsing.openInputStream(importLocation);
+                } catch (FileNotFoundException n) {
+                    //
+                }
+
                 StashImporter importer = new StashImporter(forImporter);
                 resultId = importer.importStash(getApplicationContext());
             } catch (IOException e) {
