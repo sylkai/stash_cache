@@ -15,14 +15,16 @@ import java.util.UUID;
  * http://stackoverflow.com/questions/3552756/best-way-to-get-integer-part-of-the-string-600sp
  */
 
-public class StashThreadComparator implements Comparator<UUID> {
+public class  StashThreadComparator implements Comparator<UUID> {
 
     private Context mContext;
     private StashThread thread1;
     private StashThread thread2;
+    private StashStringCodeConvert mCheck;
 
     public StashThreadComparator(Context context) {
         mContext = context;
+        mCheck = new StashStringCodeConvert();
     }
 
 
@@ -79,21 +81,22 @@ public class StashThreadComparator implements Comparator<UUID> {
     private int compareCode(String code1, String code2) {
         // codes aren't null
         if (code1 != null && code2 != null) {
-            if (code1.matches("[0-9]+") && code2.matches("[0-9]+")) {
-                // just a number, sort by the number
-                return Integer.parseInt(code1) - Integer.parseInt(code2);
-            } else if (code1.matches("[0-9]+\\s.*") && code2.matches("[0-9]+\\s.*")) {
-                // if it is a number followed by other info (color, etc.), sort by the number
-                return Integer.parseInt(code1.split("\\s")[0]) - Integer.parseInt(code2.split("\\s")[0]);
-            } else if (code1.matches("[0-9]+") && code2.matches("[0-9]+\\s.*")) {
-                return Integer.parseInt(code1) - Integer.parseInt(code2.split("\\s")[0]);
-            } else if (code1.matches("[0-9]+\\s.*") && code2.matches("[0-9]+")) {
-                return Integer.parseInt(code1.split("\\s")[0]) - Integer.parseInt(code2);
-            } else {
-                // just sort using the normal sorting, until I get fed up with Kreinik's behavior
-                return code1.compareToIgnoreCase(code2);
-            }
+            if (mCheck.leadsWithDigit(code1) && mCheck.leadsWithDigit(code2)) {
+                int intCode1 = mCheck.numericCode(code1);
+                int intCode2 = mCheck.numericCode(code2);
 
+                if (intCode1 == intCode2) {
+                    return code1.compareToIgnoreCase(code2);
+                } else {
+                    return (intCode1 - intCode2);
+                }
+            } else if(!mCheck.leadsWithDigit(code1) && !mCheck.leadsWithDigit(code2)) {
+                return code1.compareToIgnoreCase(code2);
+            } else if (mCheck.leadsWithDigit(code1)) {
+                return -1; // numeric goes first
+            } else {
+                return 1; // text comes second
+            }
         // both null so treat as equal
         } else if (code1 == null && code2 == null) {
             return 0;

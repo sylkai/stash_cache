@@ -17,9 +17,11 @@ public class StashEmbellishmentComparator implements Comparator<UUID> {
     private Context mContext;
     StashEmbellishment embellishment1;
     StashEmbellishment embellishment2;
+    private StashStringCodeConvert mCheck;
 
     public StashEmbellishmentComparator(Context context) {
         mContext = context;
+        mCheck = new StashStringCodeConvert();
     }
 
 
@@ -76,14 +78,22 @@ public class StashEmbellishmentComparator implements Comparator<UUID> {
     private int compareCode(String code1, String code2) {
         // codes aren't null
         if (code1 != null && code2 != null) {
-            // code contains only digits, so sort as ints
-            if (code1.matches("[0-9]+") && code2.matches("[0-9]+")) {
-                return Integer.parseInt(code1) - Integer.parseInt(code2);
-                // sort codes as strings
-            } else {
-                return code1.compareToIgnoreCase(code2);
-            }
+            if (mCheck.leadsWithDigit(code1) && mCheck.leadsWithDigit(code2)) {
+                int intCode1 = mCheck.numericCode(code1);
+                int intCode2 = mCheck.numericCode(code2);
 
+                if (intCode1 == intCode2) {
+                    return code1.compareToIgnoreCase(code2);
+                } else {
+                    return (intCode1 - intCode2);
+                }
+            } else if(!mCheck.leadsWithDigit(code1) && !mCheck.leadsWithDigit(code2)) {
+                return code1.compareToIgnoreCase(code2);
+            } else if (mCheck.leadsWithDigit(code1)) {
+                return -1; // numeric goes first
+            } else {
+                return 1; // text comes second
+            }
         // both are null so treat as equal
         } else if (code1 == null && code2 == null) {
             return 0;
