@@ -271,12 +271,14 @@ public class StashThreadListFragment extends UpdateListFragment implements Obser
     private void updateList() {
         if (mThreads != getListFromStash()) {
             mThreads = getListFromStash();
-            Collections.sort(mThreads, new StashThreadComparator(getActivity()));
+
 
             ThreadAdapter adapter = new ThreadAdapter(mThreads);
             setListAdapter(adapter);
         }
 
+        // has to be outside the if in order to sort when new threads are added to the list
+        Collections.sort(mThreads, new StashThreadComparator(getActivity()));
         ((ThreadAdapter)getListAdapter()).notifyDataSetChanged();
     }
 

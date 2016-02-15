@@ -2,6 +2,7 @@ package com.geekeclectic.android.stashcache;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,10 +21,17 @@ import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLConnection;
 
 /**
@@ -50,6 +58,11 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
     private int currentTab;
     private int currentView;
     private Menu menuRef;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     // create the fragment based on the current tab
     protected UpdateFragment createFragment(int currentTab) {
@@ -157,6 +170,9 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
         StashCreateShoppingList shoppingList = new StashCreateShoppingList();
         shoppingList.updateShoppingList(this);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     // because of delay on updating the action bar menu items when calling from the fragments, all
@@ -201,7 +217,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        final UpdateFragment fragment = (UpdateFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
         // handling item selection
         switch (item.getItemId()) {
@@ -223,7 +239,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
                 try {
                     startActivityForResult(Intent.createChooser(chooseIntent, StashConstants.SELECT_FILE), REQUEST_CHOOSE_STASH);
-                } catch (android.content.ActivityNotFoundException ex) {
+                } catch (ActivityNotFoundException ex) {
                     Toast.makeText(getApplicationContext(), StashConstants.NO_MANAGER_FOUND, Toast.LENGTH_SHORT).show();
                 }
 
@@ -296,7 +312,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     // called to trigger updates on the list fragment
     public void onListFragmentUpdate() {
-        UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        UpdateFragment fragment = (UpdateFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         fragment.stashChanged();
     }
 
@@ -307,7 +323,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             if (currentView > StashConstants.PATTERN_VIEW) {
                 currentView = currentView + 1;
             }
-        // switching to shopping list, so adjust to no fabric view by subtracting 1
+            // switching to shopping list, so adjust to no fabric view by subtracting 1
         } else if (changeTabTo == StashConstants.SHOPPING_TAB) {
             if (currentView > StashConstants.PATTERN_VIEW) {
                 currentView = currentView - 1;
@@ -336,7 +352,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        UpdateFragment fragment = (UpdateFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        UpdateFragment fragment = (UpdateFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
         if (requestCode == REQUEST_CHOOSE_STASH) {
             if (resultCode != RESULT_OK) {
@@ -368,13 +384,55 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "StashOverview Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.geekeclectic.android.stashcache/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "StashOverview Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://com.geekeclectic.android.stashcache/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
+
     // import the stash as a async task with a dialog that blocks user activity on the UI thread
     // during the import
     private class AsyncStashImport extends AsyncTask<Void, Void, Void> {
         private Uri importLocation;
         private ContentResolver importUsing;
         private InputStream forImporter;
+        private InputStream fromFile;
         private UpdateFragment fragment;
+        private File importFile;
         TransparentProgressDialog dialog;
         int resultId;
 
@@ -383,6 +441,7 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
             importLocation = fileLocation;
             importUsing = contentResolver;
             fragment = updateFragment;
+            importFile = new File(getCacheDir(), StashConstants.IMPORT_FILE);
         }
 
         @Override
@@ -401,12 +460,33 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
                     // in order to handle Google Drive's may-or-may-not-have-downloaded issue, using getContentResolver()
                     // per http://stackoverflow.com/questions/27771003/intent-action-get-content-with-google-drive
                     forImporter = importUsing.openInputStream(importLocation);
+                    OutputStream outputStream = new FileOutputStream(importFile);
+
+                    // to avoid reading into the importer on the not UI thread, making a copy of the file for import
+                    // to read in (because Internet activity has to stay on the background thread.  copy code pulled
+                    // from http://stackoverflow.com/questions/10854211/android-store-inputstream-in-file
+                    try {
+                        try {
+                            try {
+                                byte[] buffer = new byte[4 * 1024]; // or other buffer size
+                                int read;
+
+                                while ((read = forImporter.read(buffer)) != -1) {
+                                    outputStream.write(buffer, 0, read);
+                                }
+                                outputStream.flush();
+                            } finally {
+                                outputStream.close();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace(); // handle exception, define IOException and others
+                        }
+                    } finally {
+                        forImporter.close();
+                    }
                 } catch (FileNotFoundException n) {
                     //
                 }
-
-                StashImporter importer = new StashImporter(forImporter);
-                resultId = importer.importStash(getApplicationContext());
             } catch (IOException e) {
                 //
             }
@@ -418,8 +498,33 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            StashCreateShoppingList shoppingList = new StashCreateShoppingList();
-            shoppingList.updateShoppingList(getApplicationContext());
+            // the file has been downloaded, so now it's time to run the importer on the UI thread so it
+            // stops whining about illegalstateexceptions for the adapter.  don't forget to update the
+            // fragments at the end!
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        try {
+                            fromFile = new FileInputStream(importFile);
+                            StashImporter importer = new StashImporter(fromFile);
+                            resultId = importer.importStash(getApplicationContext());
+                        } catch (FileNotFoundException n) {
+                            //
+                        } finally {
+                            fromFile.close();
+                            importFile.delete();
+
+                            StashCreateShoppingList shoppingList = new StashCreateShoppingList();
+                            shoppingList.updateShoppingList(getApplicationContext());
+
+                            fragment.stashChanged();
+                        }
+                    } catch (IOException e) {
+                        //
+                    }
+                }
+            });
 
             if (dialog != null) {
                 dialog.dismiss();
@@ -437,12 +542,6 @@ public class StashOverviewActivity extends FragmentActivity implements UpdateFra
 
             Toast.makeText(StashOverviewActivity.this, toastText, Toast.LENGTH_SHORT).show();
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    fragment.stashChanged();
-                }
-            });
             StashData.get(getParent()).saveStash();
         }
     }

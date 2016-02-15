@@ -300,12 +300,12 @@ public class StashEmbellishmentListFragment extends UpdateListFragment implement
     private void updateList() {
         if (mEmbellishments != getListFromStash()) {
             mEmbellishments = getListFromStash();
-            Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
 
             EmbellishmentAdapter adapter = new EmbellishmentAdapter(mEmbellishments);
             setListAdapter(adapter);
         }
 
+        Collections.sort(mEmbellishments, new StashEmbellishmentComparator(getActivity()));
         ((EmbellishmentAdapter)getListAdapter()).notifyDataSetChanged();
     }
 

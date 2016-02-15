@@ -240,12 +240,13 @@ public class StashFabricListFragment extends UpdateListFragment implements Obser
     private void updateList() {
         if (mFabrics != getAppropriateList()) {
             mFabrics = getAppropriateList();
-            // sort the list in case anything changed
-            Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
 
             FabricAdapter adapter = new FabricAdapter(mFabrics);
             setListAdapter(adapter);
         }
+
+        // sort the list in case anything changed
+        Collections.sort(mFabrics, new StashFabricComparator(getActivity()));
 
         // make sure the adapter is notified that the data set may have changed
         ((FabricAdapter)getListAdapter()).notifyDataSetChanged();

@@ -239,12 +239,12 @@ public class StashPatternListFragment extends UpdateListFragment implements Obse
         if (mPatterns != getListFromStash()) {
             mPatterns = getListFromStash();
 
-            // sort the list in case anything changed
-            Collections.sort(mPatterns, new StashPatternComparator());
-
             PatternAdapter adapter = new PatternAdapter(mPatterns);
             setListAdapter(adapter);
         }
+
+        // sort the list in case anything changed
+        Collections.sort(mPatterns, new StashPatternComparator());
 
         ((PatternAdapter)getListAdapter()).notifyDataSetChanged();
     }
